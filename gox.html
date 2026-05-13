@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gox — strict static analyzer for Go</title>
+    <meta name="description" content="gox is a strict, opinionated static analyzer for Go. Zero external dependencies. Built to catch the silent bugs LLMs introduce.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-from: #060a0e;
+            --bg-to: #0a1620;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-strong: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(120, 200, 240, 0.25);
+            --text: #e8f3fa;
+            --text-muted: rgba(207, 216, 220, 0.65);
+            --text-dim: rgba(207, 216, 220, 0.4);
+            --accent: #6ebee6;
+            --accent-warm: #cdb478;
+            --danger: #d97870;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at 50% -20%, var(--bg-to) 0%, var(--bg-from) 70%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: #b6e1f5; }
+        code, pre {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        :not(pre) > code {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            padding: 0.1em 0.4em;
+            border-radius: 4px;
+            font-size: 0.88em;
+            color: #cfe7f3;
+        }
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            padding: 7rem 0 5rem;
+            overflow: hidden;
+        }
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .hero-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 35%, rgba(80, 170, 220, 0.18) 0%, transparent 45%);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
+        }
+        .hero-eyebrow .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-warm);
+            box-shadow: 0 0 8px var(--accent-warm);
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        h1.hero-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 6.5rem);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            line-height: 1;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 24px rgba(80, 170, 220, 0.35);
+        }
+        .hero-title .accent {
+            color: var(--accent);
+        }
+        .hero-sub {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 560px;
+            margin: 0 auto 2.5rem;
+        }
+        .hero-cta {
+            display: inline-flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            color: var(--text);
+        }
+        .btn-primary {
+            background: linear-gradient(180deg, rgba(110, 190, 230, 0.18) 0%, rgba(110, 190, 230, 0.08) 100%);
+            border-color: rgba(110, 190, 230, 0.4);
+            color: #e8f3fa;
+        }
+        .btn-primary:hover {
+            border-color: rgba(110, 190, 230, 0.7);
+            box-shadow: 0 0 24px rgba(110, 190, 230, 0.25);
+        }
+
+        /* Sections */
+        section.block {
+            position: relative;
+            padding: 4rem 0;
+        }
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+        }
+        .section-heading {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.15;
+            margin-bottom: 1.25rem;
+        }
+        .section-lead {
+            color: var(--text-muted);
+            max-width: 640px;
+            font-size: 1.05rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Terminal */
+        .terminal {
+            background: #050a10;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+        }
+        .terminal-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+        .terminal-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .terminal-dot.r { background: #ff5f56; }
+        .terminal-dot.y { background: #ffbd2e; }
+        .terminal-dot.g { background: #27c93f; }
+        .terminal-title {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .terminal-body {
+            padding: 1.25rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: #cfe7f3;
+            overflow-x: auto;
+        }
+        .terminal-body .prompt { color: var(--accent); }
+        .terminal-body .comment { color: var(--text-dim); }
+        .terminal-body .err { color: var(--danger); }
+        .terminal-body .warn { color: var(--accent-warm); }
+        .terminal-body .ok { color: #7fc99f; }
+
+        /* Rules grid */
+        .rules {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.75rem;
+        }
+        .rule {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            transition: all 0.2s ease;
+        }
+        .rule:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            transform: translateY(-2px);
+        }
+        .rule-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .rule-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Annotations table */
+        .annotations {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .annotations th, .annotations td {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.92rem;
+        }
+        .annotations tr:last-child td { border-bottom: none; }
+        .annotations th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .annotations td:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-warm);
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .annotations td:last-child { color: var(--text-muted); }
+
+        /* Perf */
+        .perf {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .perf-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .perf-num {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .perf-num .unit {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 0.15em;
+        }
+        .perf-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .perf-foot {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        /* Callout */
+        .callout {
+            border-left: 2px solid var(--accent);
+            background: var(--surface);
+            border-radius: 0 10px 10px 0;
+            padding: 1rem 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin: 1.5rem 0;
+        }
+        .callout strong { color: var(--text); }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .footer a {
+            color: var(--text-muted);
+            margin: 0 0.5rem;
+        }
+        .footer a:hover { color: var(--text); }
+
+        @media (max-width: 640px) {
+            section.block { padding: 3rem 0; }
+            .hero { padding: 5rem 0 3rem; }
+            .terminal-body { font-size: 0.78rem; padding: 1rem; }
+            .annotations th:first-child, .annotations td:first-child { padding-left: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <canvas id="particles-canvas" aria-hidden="true"></canvas>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="container hero-inner">
+            <span class="hero-eyebrow"><span class="dot"></span>Experimental · used daily</span>
+            <h1 class="hero-title"><span class="accent">gox</span></h1>
+            <p class="hero-sub">A strict, opinionated static analyzer for Go. Built to catch the silent bugs an LLM writing Go without supervision is most likely to introduce — be loud, be opinionated, fail closed.</p>
+            <div class="hero-cta">
+                <a class="btn btn-primary" href="https://github.com/mentasystems/gox" target="_blank" rel="noopener">View on GitHub →</a>
+                <a class="btn" href="#install">Install</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="block">
+            <div class="container">
+                <div class="section-label">In one command</div>
+                <h2 class="section-heading">See what it catches.</h2>
+                <p class="section-lead">Run <code>gox check ./...</code> on a Go package. Every rule defaults to error and points at the exact line.</p>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">~/code/my-service</span>
+                    </div>
+<pre class="terminal-body"><span class="prompt">$</span> gox check ./...
+<span class="warn">internal/auth/login.go:42:6:</span> <span class="err">errcheck</span>: error return from <span class="ok">db.Close()</span> dropped
+    hint: assign to <span class="ok">_ =</span>, return it, or annotate with <span class="ok">// safe-ignore: &lt;why&gt;</span>
+<span class="warn">internal/orders/transfer.go:118:5:</span> <span class="err">namedargs</span>: call to <span class="ok">transfer(orderID, userID)</span> needs labels
+    hint: <span class="ok">transfer(/* orderID */ a, /* userID */ b)</span>
+<span class="warn">pkg/parser/lex.go:201:8:</span> <span class="err">shadow</span>: declaration of "err" shadows outer variable
+<span class="warn">cmd/worker/main.go:67:2:</span> <span class="err">goroutine</span>: fire-and-forget <span class="ok">go run()</span> without errgroup / WaitGroup / cancel
+<span class="comment">gox: 4 issue(s)</span>
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">10 rules</div>
+                <h2 class="section-heading">What it catches.</h2>
+                <p class="section-lead">Each rule targets a high-frequency LLM bug class — silent failures that compile clean and pass tests.</p>
+                <div class="rules">
+                    <div class="rule"><div class="rule-name">errcheck</div><div class="rule-desc"><code>error</code> return values dropped silently.</div></div>
+                    <div class="rule"><div class="rule-name">shadow</div><div class="rule-desc"><code>:=</code> re-declaring an outer variable (except <code>ok</code>).</div></div>
+                    <div class="rule"><div class="rule-name">forcetypeassert</div><div class="rule-desc"><code>x := v.(T)</code> without the comma-ok form.</div></div>
+                    <div class="rule"><div class="rule-name">namedargs</div><div class="rule-desc">2+ args of the same basic type at user-code call sites without <code>/* paramName */</code> labels.</div></div>
+                    <div class="rule"><div class="rule-name">exhaustive</div><div class="rule-desc">Non-exhaustive switch on iota enums or sealed interfaces.</div></div>
+                    <div class="rule"><div class="rule-name">noglobals</div><div class="rule-desc">Mutable package-level <code>var</code> declarations.</div></div>
+                    <div class="rule"><div class="rule-name">banany</div><div class="rule-desc"><code>any</code> / <code>interface{}</code> without written justification.</div></div>
+                    <div class="rule"><div class="rule-name">bodyclose</div><div class="rule-desc"><code>*http.Response.Body</code> left unclosed.</div></div>
+                    <div class="rule"><div class="rule-name">contextcheck</div><div class="rule-desc"><code>context.Background()</code> / <code>TODO()</code> inside a function that already has a <code>context.Context</code>.</div></div>
+                    <div class="rule"><div class="rule-name">goroutine</div><div class="rule-desc"><code>go f()</code> with no visible <code>errgroup</code>, <code>WaitGroup</code>, or <code>CancelFunc</code>.</div></div>
+                </div>
+                <div class="callout">
+                    <strong>The killer rule is <code>namedargs</code>.</strong> Two adjacent strings or ints at a user-defined call site force the caller to label them inline. It prevents <code>transfer(orderID, userID)</code> vs <code>transfer(userID, orderID)</code> — no compile error, no test failure, and the single most common silent-bug class in unsupervised AI-written Go.
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Opt-outs</div>
+                <h2 class="section-heading">Every rule has one annotation.</h2>
+                <p class="section-lead">Suppressions require a reason after the colon. Empty reasons are ignored — the reason <em>is</em> the documentation.</p>
+                <table class="annotations">
+                    <thead>
+                        <tr><th>Comment</th><th>Effect</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>// safe-ignore: &lt;why&gt;</td><td>Suppress <code>errcheck</code>, <code>forcetypeassert</code>, <code>bodyclose</code>, <code>contextcheck</code> on the same line.</td></tr>
+                        <tr><td>// global-ok: &lt;why&gt;</td><td>Allow a package-level <code>var</code> (<code>noglobals</code>).</td></tr>
+                        <tr><td>// any-ok: &lt;why&gt;</td><td>Allow <code>any</code> / <code>interface{}</code> (<code>banany</code>).</td></tr>
+                        <tr><td>// goroutine-ok: &lt;why&gt;</td><td>Allow a fire-and-forget <code>go</code> statement (<code>goroutine</code>).</td></tr>
+                        <tr><td>// exhaustive-ok: &lt;why&gt;</td><td>Accept <code>default:</code> as covering missing variants (<code>exhaustive</code>).</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="block" id="install">
+            <div class="container">
+                <div class="section-label">Install</div>
+                <h2 class="section-heading">One <code>go install</code> away.</h2>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">shell</span>
+                    </div>
+<pre class="terminal-body"><span class="prompt">$</span> go install github.com/mentasystems/gox/cmd/gox@latest
+
+<span class="comment"># analyze; exit 1 on any issue</span>
+<span class="prompt">$</span> gox check ./...
+
+<span class="comment"># list registered analyzers</span>
+<span class="prompt">$</span> gox list
+
+<span class="comment"># gox check &amp;&amp; go build / go test</span>
+<span class="prompt">$</span> gox build ./...
+<span class="prompt">$</span> gox test  ./...
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Claude Code</div>
+                <h2 class="section-heading">Wire it into your agent in one command.</h2>
+                <p class="section-lead"><code>gox install claude</code> drops a <code>PostToolUse</code> hook into <code>~/.claude/settings.json</code>. Whenever Claude edits a <code>.go</code> file, gox runs in that package's directory. If anything fails, the hook returns a <code>decision:block</code> JSON blob with the full output — Claude sees it on the next turn and has to fix or annotate before continuing.</p>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">shell</span>
+                    </div>
+<pre class="terminal-body"><span class="prompt">$</span> gox install claude
+<span class="ok">✓</span> wrote ~/.claude/gox-hook.sh
+<span class="ok">✓</span> registered PostToolUse hook (Edit|Write|MultiEdit, 30s)
+<span class="comment"># idempotent — re-run to refresh the script.</span>
+</pre>
+                </div>
+                <div class="callout">
+                    Claude Code only re-reads <code>settings.json</code> when the <code>/hooks</code> menu is opened or the app restarts — open <code>/hooks</code> once and the hook activates in the current session.
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Performance</div>
+                <h2 class="section-heading">Pure Go. No external linters.</h2>
+                <p class="section-lead">A pure-Go implementation on top of <code>go/ast</code>, <code>go/types</code>, and <code>go list -json</code>. Per-package cache keyed by file <code>mtime+size</code> and the analyzer-set hash.</p>
+                <div class="perf">
+                    <div class="perf-card">
+                        <div class="perf-num">~9.4<span class="unit">s</span></div>
+                        <div class="perf-label">Cold run · no cache</div>
+                    </div>
+                    <div class="perf-card">
+                        <div class="perf-num">~2.6<span class="unit">s</span></div>
+                        <div class="perf-label">Warm run · full cache</div>
+                    </div>
+                    <div class="perf-card">
+                        <div class="perf-num">442<span class="unit">pkg</span></div>
+                        <div class="perf-label">~1800 .go files</div>
+                    </div>
+                </div>
+                <p class="perf-foot">Cache lives under <code>$XDG_CACHE_HOME/gox/v2</code> (or <code>~/.cache/gox/v2</code>). Pass <code>--no-cache</code> to disable.</p>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Design notes</div>
+                <h2 class="section-heading">Three principles.</h2>
+                <div class="rules">
+                    <div class="rule">
+                        <div class="rule-name">zero deps</div>
+                        <div class="rule-desc">Go stdlib + <code>go list -json</code>. No <code>x/tools</code>, no third-party linter packages. When a new Go release lands, there's nothing to update.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">fail closed</div>
+                        <div class="rule-desc">Every rule defaults to error. Opt-outs require an explicit annotation with a written reason. The reason is the doc.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">tuned for LLMs</div>
+                        <div class="rule-desc">Heuristics catch high-frequency LLM bug classes without flooding human idioms — <code>shadow</code> exempts <code>ok</code> but flags <code>err</code> re-declaration, which is exactly the bug you want.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div>
+            <a href="https://github.com/mentasystems/gox" target="_blank" rel="noopener">GitHub</a>
+            <span aria-hidden="true">·</span>
+            <a href="index.html">Menta Systems</a>
+            <span aria-hidden="true">·</span>
+            <a href="aviso-legal.html">Aviso Legal</a>
+            <span aria-hidden="true">·</span>
+            <a href="politica-privacidad.html">Política de Privacidad</a>
+        </div>
+        <div style="margin-top: 0.75rem;">BSD 3-Clause · &copy; 2025 Menta Systems</div>
+    </footer>
+
+    <script>
+        (function () {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let width = 0, height = 0;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const particles = [];
+            const LINK_DIST = 110;
+            const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                width = rect.width;
+                height = rect.height;
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                seed();
+            }
+
+            function seed() {
+                particles.length = 0;
+                const count = Math.min(70, Math.max(20, Math.floor((width * height) / 18000)));
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.18,
+                        vy: (Math.random() - 0.5) * 0.18,
+                        r: Math.random() * 1.2 + 0.4,
+                        tw: Math.random() * Math.PI * 2,
+                    });
+                }
+            }
+
+            function step() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const a = particles[i];
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const b = particles[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < LINK_DIST_SQ) {
+                            const alpha = (1 - d2 / LINK_DIST_SQ) * 0.3;
+                            ctx.strokeStyle = `rgba(110, 190, 230, ${alpha})`;
+                            ctx.lineWidth = 0.55;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < -10) p.x = width + 10;
+                    else if (p.x > width + 10) p.x = -10;
+                    if (p.y < -10) p.y = height + 10;
+                    else if (p.y > height + 10) p.y = -10;
+
+                    p.tw += 0.018;
+                    const flicker = 0.6 + 0.4 * Math.sin(p.tw);
+                    const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+                    glow.addColorStop(0, `rgba(140, 210, 245, ${0.42 * flicker})`);
+                    glow.addColorStop(1, 'rgba(140, 210, 245, 0)');
+                    ctx.fillStyle = glow;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = `rgba(220, 240, 250, ${0.8 * flicker})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                if (!prefersReduced) requestAnimationFrame(step);
+            }
+
+            window.addEventListener('resize', resize, { passive: true });
+            resize();
+            if (prefersReduced) step();
+            else requestAnimationFrame(step);
+        })();
+    </script>
+</body>
+</html>
