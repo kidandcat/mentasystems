@@ -3,274 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menta Systems - Desarrollo de Software a Medida</title>
-    <meta name="description" content="Desarrollo de software a medida, aplicaciones web, móviles y soluciones con inteligencia artificial. Transformamos ideas en productos digitales.">
+    <title>Menta Systems</title>
+    <meta name="description" content="Menta Systems">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .stealth-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+        .stealth-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .stealth-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .stealth-brand-icon {
+            height: 1em;
+            width: auto;
+            border-radius: 8px;
+        }
+        .stealth-brand-accent {
+            font-weight: 300;
+            color: var(--text-secondary);
+        }
+        .stealth-tagline {
+            color: var(--text-muted);
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .stealth-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(13, 92, 132, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .stealth-footer {
+            border-top: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .stealth-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+        .stealth-footer a:hover {
+            color: var(--text-primary);
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">
-                <img src="icon.png" alt="Menta Systems" class="logo-icon-img">
-                <span class="logo-text">MENTA<span class="logo-accent"> systems</span></span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#servicios">Servicios</a></li>
-                <li><a href="#proceso">Proceso</a></li>
-                <li><a href="#tecnologias">Tecnologías</a></li>
-                <li><a href="#contacto" class="nav-cta">Contactar</a></li>
-            </ul>
-            <button class="mobile-menu-btn" aria-label="Menú">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-brand">
-                    <img src="icon.png" alt="" class="hero-brand-icon">
-                    MENTA<span class="hero-brand-accent"> systems</span>
-                </div>
-                <h1>Convertimos ideas en <span class="highlight">productos digitales</span></h1>
-                <p class="hero-subtitle">Desarrollo de software a medida para empresas que buscan soluciones únicas. Desde la concepción hasta el lanzamiento.</p>
-                <div class="hero-cta">
-                    <a href="#contacto" class="btn btn-primary">Hablemos de tu proyecto</a>
-                    <a href="#servicios" class="btn btn-secondary">Ver servicios</a>
-                </div>
+    <main class="stealth-main">
+        <div class="stealth-bg"></div>
+        <div class="stealth-content">
+            <div class="stealth-brand">
+                <img src="icon.png" alt="" class="stealth-brand-icon">
+                MENTA<span class="stealth-brand-accent"> systems</span>
             </div>
+            <p class="stealth-tagline">In progress</p>
         </div>
-        <div class="hero-bg"></div>
-    </header>
+    </main>
 
-    <section id="servicios" class="services">
-        <div class="container">
-            <h2 class="section-title">Nuestros servicios</h2>
-            <p class="section-subtitle">Soluciones tecnológicas adaptadas a las necesidades de tu negocio</p>
-
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3>Aplicaciones Web</h3>
-                    <p>Plataformas web modernas, escalables y seguras. Desde dashboards empresariales hasta SaaS completos.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Apps Móviles</h3>
-                    <p>Aplicaciones nativas e híbridas para iOS y Android. Experiencias fluidas en cualquier dispositivo.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-desktop"></i>
-                    </div>
-                    <h3>Software de Escritorio</h3>
-                    <p>Aplicaciones de escritorio multiplataforma. Rendimiento nativo en Windows, macOS y Linux.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3>Inteligencia Artificial</h3>
-                    <p>Integración de IA en tus procesos. Automatización inteligente, chatbots y análisis predictivo.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <h3>Automatización</h3>
-                    <p>Optimiza tus flujos de trabajo. Conectamos sistemas, eliminamos tareas repetitivas y aumentamos la productividad.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-cloud"></i>
-                    </div>
-                    <h3>Infraestructura Cloud</h3>
-                    <p>Arquitecturas cloud escalables y seguras. Despliegue, monitorización y mantenimiento continuo.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="proceso" class="process">
-        <div class="container">
-            <h2 class="section-title">Cómo trabajamos</h2>
-            <p class="section-subtitle">Un proceso transparente de principio a fin</p>
-
-            <div class="process-timeline">
-                <div class="process-step">
-                    <div class="step-number">01</div>
-                    <h3>Descubrimiento</h3>
-                    <p>Entendemos tu negocio, objetivos y necesidades. Definimos el alcance y requisitos del proyecto.</p>
-                </div>
-
-                <div class="process-step">
-                    <div class="step-number">02</div>
-                    <h3>Diseño</h3>
-                    <p>Creamos prototipos y definimos la arquitectura. Validamos la solución antes de desarrollar.</p>
-                </div>
-
-                <div class="process-step">
-                    <div class="step-number">03</div>
-                    <h3>Desarrollo</h3>
-                    <p>Construimos tu producto con metodologías ágiles. Entregas incrementales y feedback continuo.</p>
-                </div>
-
-                <div class="process-step">
-                    <div class="step-number">04</div>
-                    <h3>Lanzamiento</h3>
-                    <p>Desplegamos en producción y te acompañamos en el lanzamiento. Soporte y mantenimiento incluido.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="tecnologias" class="tech">
-        <div class="container">
-            <h2 class="section-title">Tecnologías</h2>
-            <p class="section-subtitle">Usamos las herramientas adecuadas para cada proyecto</p>
-
-            <div class="tech-grid">
-                <div class="tech-category">
-                    <h4>Frontend</h4>
-                    <div class="tech-tags">
-                        <span>React</span>
-                        <span>Vue</span>
-                        <span>Svelte</span>
-                        <span>TypeScript</span>
-                        <span>Tailwind</span>
-                    </div>
-                </div>
-
-                <div class="tech-category">
-                    <h4>Backend</h4>
-                    <div class="tech-tags">
-                        <span>Go</span>
-                        <span>Node.js</span>
-                        <span>Python</span>
-                        <span>PostgreSQL</span>
-                        <span>Redis</span>
-                    </div>
-                </div>
-
-                <div class="tech-category">
-                    <h4>Mobile</h4>
-                    <div class="tech-tags">
-                        <span>Flutter</span>
-                        <span>React Native</span>
-                        <span>Swift</span>
-                        <span>Kotlin</span>
-                    </div>
-                </div>
-
-                <div class="tech-category">
-                    <h4>Cloud & DevOps</h4>
-                    <div class="tech-tags">
-                        <span>Google Cloud</span>
-                        <span>AWS</span>
-                        <span>Docker</span>
-                        <span>Kubernetes</span>
-                        <span>Terraform</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contacto" class="contact">
-        <div class="container">
-            <div class="contact-content">
-                <h2 class="section-title">Hablemos de tu proyecto</h2>
-                <p class="section-subtitle">Cuéntanos tu idea y te ayudamos a hacerla realidad</p>
-
-                <div class="contact-methods">
-                    <a href="mailto:hola@mentasystems.es" class="contact-card">
-                        <i class="fas fa-envelope"></i>
-                        <span>hola@mentasystems.es</span>
-                    </a>
-                </div>
-
-                <p class="contact-note">Respondemos en menos de 24 horas</p>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <a href="index.html" class="logo">
-                        <img src="icon.png" alt="Menta Systems" class="logo-icon-img">
-                        <span class="logo-text">MENTA<span class="logo-accent"> systems</span></span>
-                    </a>
-                    <p>Desarrollo de software a medida</p>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="aviso-legal.html">Aviso Legal</a></li>
-                        <li><a href="politica-privacidad.html">Política de Privacidad</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4>Contacto</h4>
-                    <ul>
-                        <li><a href="mailto:hola@mentasystems.es">hola@mentasystems.es</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025 Menta Systems. Todos los derechos reservados.</p>
-            </div>
-        </div>
+    <footer class="stealth-footer">
+        <span>&copy; 2025 Menta Systems</span>
+        <span aria-hidden="true">·</span>
+        <a href="aviso-legal.html">Aviso Legal</a>
+        <span aria-hidden="true">·</span>
+        <a href="politica-privacidad.html">Política de Privacidad</a>
     </footer>
-
-    <script>
-        // Navbar scroll effect
-        const navbar = document.querySelector('.navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Mobile menu toggle
-        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        const navLinks = document.querySelector('.nav-links');
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    navLinks.classList.remove('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
