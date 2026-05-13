@@ -84,7 +84,7 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	`, form.Nombre, form.Email, empresa, form.Servicio, form.Mensaje)
 
 	email := ResendEmail{
-		From:    "Menta Systems <contacto@mentasystems.es>",
+		From:    "Menta Systems <contacto@mentasystems.com>",
 		To:      []string{"hola@mentasystems.es"},
 		Subject: fmt.Sprintf("Nueva solicitud: %s - %s", form.Servicio, form.Nombre),
 		Html:    htmlBody,
@@ -186,8 +186,8 @@ func handleIncomingEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var webhook IncomingEmailWebhook
-	if err := json.Unmarshal(body, &webhook); err != nil {
-		log.Printf("Error parsing webhook: %v", err)
+	if unmarshalErr := json.Unmarshal(body, &webhook); unmarshalErr != nil {
+		log.Printf("Error parsing webhook: %v", unmarshalErr)
 		http.Error(w, "Error parsing webhook", http.StatusBadRequest)
 		return
 	}
@@ -231,7 +231,7 @@ func handleIncomingEmail(w http.ResponseWriter, r *http.Request) {
 	`, webhook.Data.From, toAddresses, webhook.Data.CreatedAt, htmlBody)
 
 	email := ResendEmail{
-		From:    "Menta Systems <contacto@mentasystems.es>",
+		From:    "Menta Systems <contacto@mentasystems.com>",
 		To:      []string{"kidandcat@gmail.com"},
 		Subject: fmt.Sprintf("[Menta Systems] %s", webhook.Data.Subject),
 		Html:    forwardedHtml,
