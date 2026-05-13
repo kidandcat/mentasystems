@@ -284,6 +284,12 @@ func main() {
 	http.HandleFunc("/api/webhook/email", handleIncomingEmail)
 
 	fs := http.FileServer(http.Dir("."))
+	http.HandleFunc("/gox", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "gox.html")
+	})
+	http.HandleFunc("/gox.html", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/gox", http.StatusMovedPermanently)
+	})
 	http.Handle("/", fs)
 
 	log.Printf("Server starting on port %s", port)
