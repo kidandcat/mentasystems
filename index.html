@@ -27,7 +27,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
         .stealth-main {
             flex: 1;
@@ -90,6 +89,67 @@
             color: #8aa4b3;
             letter-spacing: 0.18em;
         }
+        .stealth-projects {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: stretch;
+            max-width: 32rem;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .stealth-projects-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: rgba(138, 164, 179, 0.7);
+            margin-bottom: 0.25rem;
+        }
+        .stealth-project {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.85rem 1.1rem;
+            border: 1px solid rgba(120, 200, 240, 0.12);
+            border-radius: 8px;
+            background: rgba(10, 22, 32, 0.35);
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+            text-align: left;
+        }
+        .stealth-project:hover {
+            border-color: rgba(120, 200, 240, 0.4);
+            background: rgba(14, 30, 42, 0.55);
+            transform: translateY(-1px);
+        }
+        .stealth-project-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            color: #e8f3fa;
+            text-transform: lowercase;
+        }
+        .stealth-project-tagline {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: rgba(207, 216, 220, 0.55);
+            letter-spacing: 0.01em;
+        }
+        @media (max-width: 480px) {
+            .stealth-project {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+        }
         .stealth-footer {
             position: relative;
             z-index: 2;
@@ -124,6 +184,17 @@
                 <img src="icon.png" alt="" class="stealth-brand-icon">
                 MENTA<span class="stealth-brand-accent">systems</span>
             </div>
+            <nav class="stealth-projects" aria-label="Proyectos">
+                <div class="stealth-projects-label">Proyectos</div>
+                <a class="stealth-project" href="/gox">
+                    <span class="stealth-project-name">gox</span>
+                    <span class="stealth-project-tagline">Strict static analyzer for Go</span>
+                </a>
+                <a class="stealth-project" href="/colmena">
+                    <span class="stealth-project-name">colmena</span>
+                    <span class="stealth-project-tagline">Distributed SQLite for Go</span>
+                </a>
+            </nav>
         </div>
     </main>
 
