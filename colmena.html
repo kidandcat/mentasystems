@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>colmena — distributed SQLite for Go</title>
+    <meta name="description" content="colmena is distributed SQLite as an embeddable Go library. Raft replication, pure Go, no CGo, no external processes. Just import and go.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-from: #060a0e;
+            --bg-to: #0a1620;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-strong: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(120, 200, 240, 0.25);
+            --text: #e8f3fa;
+            --text-muted: rgba(207, 216, 220, 0.65);
+            --text-dim: rgba(207, 216, 220, 0.4);
+            --accent: #6ebee6;
+            --accent-warm: #cdb478;
+            --danger: #d97870;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at 50% -20%, var(--bg-to) 0%, var(--bg-from) 70%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: #b6e1f5; }
+        code, pre {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        :not(pre) > code {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            padding: 0.1em 0.4em;
+            border-radius: 4px;
+            font-size: 0.88em;
+            color: #cfe7f3;
+        }
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            padding: 7rem 0 5rem;
+            overflow: hidden;
+        }
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .hero-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 35%, rgba(80, 170, 220, 0.18) 0%, transparent 45%);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
+        }
+        .hero-eyebrow .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-warm);
+            box-shadow: 0 0 8px var(--accent-warm);
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        h1.hero-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 6.5rem);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            line-height: 1;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 24px rgba(80, 170, 220, 0.35);
+        }
+        .hero-title .accent {
+            color: var(--accent);
+        }
+        .hero-sub {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 2.5rem;
+        }
+        .hero-cta {
+            display: inline-flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            color: var(--text);
+        }
+        .btn-primary {
+            background: linear-gradient(180deg, rgba(110, 190, 230, 0.18) 0%, rgba(110, 190, 230, 0.08) 100%);
+            border-color: rgba(110, 190, 230, 0.4);
+            color: #e8f3fa;
+        }
+        .btn-primary:hover {
+            border-color: rgba(110, 190, 230, 0.7);
+            box-shadow: 0 0 24px rgba(110, 190, 230, 0.25);
+        }
+
+        /* Sections */
+        section.block {
+            position: relative;
+            padding: 4rem 0;
+        }
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+        }
+        .section-heading {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.15;
+            margin-bottom: 1.25rem;
+        }
+        .section-lead {
+            color: var(--text-muted);
+            max-width: 640px;
+            font-size: 1.05rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Terminal */
+        .terminal {
+            background: #050a10;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+        }
+        .terminal-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+        .terminal-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .terminal-dot.r { background: #ff5f56; }
+        .terminal-dot.y { background: #ffbd2e; }
+        .terminal-dot.g { background: #27c93f; }
+        .terminal-title {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .terminal-body {
+            padding: 1.25rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: #cfe7f3;
+            overflow-x: auto;
+        }
+        .terminal-body .prompt { color: var(--accent); }
+        .terminal-body .comment { color: var(--text-dim); }
+        .terminal-body .kw { color: #c89bff; }
+        .terminal-body .str { color: var(--accent-warm); }
+        .terminal-body .fn { color: #7fc99f; }
+        .terminal-body .err { color: var(--danger); }
+        .terminal-body .ok { color: #7fc99f; }
+
+        /* Hero peer cards — live cluster topology. Two containers share the
+           same JS-populated cards: one floats around the title on desktop,
+           the other is a stacked list below the hero on narrow viewports. */
+        .hero-peers {
+            pointer-events: none;
+            z-index: 1;
+        }
+        .hero-peers.floating {
+            position: absolute;
+            inset: 0;
+        }
+        .hero-peers.stacked {
+            display: none;
+            pointer-events: auto;
+            padding: 0 24px 3rem;
+            flex-direction: column;
+            gap: 0.55rem;
+            max-width: 920px;
+            margin: 0 auto;
+        }
+        .hero-peer {
+            pointer-events: auto;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 0.55rem;
+            min-width: 200px;
+            padding: 0.55rem 0.7rem;
+            background: rgba(8, 16, 24, 0.72);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        .hero-peers.floating .hero-peer { position: absolute; }
+        .hero-peers.stacked .hero-peer { position: static; width: 100%; }
+        .hero-peer.is-leader { border-color: rgba(74, 222, 128, 0.45); }
+        .hero-peer.unreachable { opacity: 0.45; }
+        .hero-peer .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #6b7280;
+        }
+        .hero-peer.is-leader .dot { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.6); }
+        .hero-peer.unreachable .dot { background: var(--danger); }
+        .hero-peer .pid {
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hero-peer .role {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+        }
+        .hero-peer.is-leader .role { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+        .hero-peer.is-nonvoter .role { background: rgba(205, 180, 120, 0.15); color: var(--accent-warm); }
+        .hero-peer .restart {
+            grid-column: 1 / -1;
+            margin-top: 0.4rem;
+            padding-top: 0.4rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+        .hero-peer .restart button {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 22px; height: 22px;
+            padding: 0;
+            font-size: 11px;
+            line-height: 1;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .hero-peer .restart button:hover { color: var(--accent-warm); border-color: var(--accent-warm); }
+        .hero-peer .restart button:disabled { opacity: 0.4; cursor: wait; }
+
+        /* Four corners around the centered hero title. */
+        .hero-peer.slot-tl { top: 18%;  left: 4%; }
+        .hero-peer.slot-tr { top: 12%;  right: 4%; }
+        .hero-peer.slot-bl { bottom: 22%; left: 6%; }
+        .hero-peer.slot-br { bottom: 14%; right: 4%; }
+
+        @media (max-width: 900px) {
+            .hero-peers.floating .hero-peer { min-width: 0; font-size: 0.66rem; }
+            .hero-peers.floating .hero-peer.slot-tl { top: 8%;  left: 2%; }
+            .hero-peers.floating .hero-peer.slot-tr { top: 8%;  right: 2%; }
+            .hero-peers.floating .hero-peer.slot-bl { bottom: 8%; left: 2%; }
+            .hero-peers.floating .hero-peer.slot-br { bottom: 8%; right: 2%; }
+            .hero-peers.floating .hero-peer .restart { display: none; }
+        }
+        @media (max-width: 640px) {
+            /* Narrow viewport: hide the corner-floating cards and show the
+               same cluster as a stacked list immediately below the hero. */
+            .hero-peers.floating { display: none; }
+            .hero-peers.stacked { display: flex; }
+        }
+
+        /* Live demo (event log) */
+        .demo-stream-wrap {
+            margin-bottom: 2rem;
+        }
+        .demo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem 1.25rem 1rem;
+        }
+        .demo-card h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .demo-card h3 .count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            font-weight: 400;
+            text-transform: none;
+        }
+        .demo-peer {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border);
+            margin-bottom: 0.4rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+        }
+        .demo-peer.is-self { border-color: var(--border-strong); }
+        .demo-peer.unreachable { opacity: 0.45; }
+        .demo-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #6b7280;
+        }
+        .demo-peer.is-leader .demo-dot { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.6); }
+        .demo-peer.unreachable .demo-dot { background: var(--danger); }
+        .demo-peer .pid { color: var(--text); }
+        .demo-peer .pmeta { font-size: 0.7rem; color: var(--text-dim); text-align: right; }
+        .demo-badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-family: 'Inter', sans-serif;
+        }
+        .demo-badge.leader { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+        .demo-badge.voter { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
+        .demo-badge.nonvoter { background: rgba(205, 180, 120, 0.15); color: var(--accent-warm); }
+        .demo-badge.self { background: rgba(110, 190, 230, 0.15); color: var(--accent); margin-left: 6px; }
+        .demo-restart {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            width: 26px; height: 26px;
+            padding: 0;
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .demo-restart:hover { background: rgba(205, 180, 120, 0.1); color: var(--accent-warm); border-color: var(--accent-warm); }
+        .demo-restart:disabled { opacity: 0.4; cursor: wait; }
+        .demo-events {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+        .demo-event {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.55rem 0.75rem;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+        }
+        .demo-event .ts { color: var(--text-dim); font-size: 0.7rem; }
+        .demo-event .flow {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .demo-event .from,
+        .demo-event .to {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+        .demo-event .from .dot,
+        .demo-event .to .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent);
+        }
+        .demo-event .to .dot { background: #4ade80; box-shadow: 0 0 6px rgba(74, 222, 128, 0.5); }
+        .demo-event .to { color: #d8f1de; }
+        .demo-event .arrow { color: var(--text-dim); font-size: 0.85rem; }
+        .demo-event .nodelabel { color: var(--text-muted); }
+
+        /* Slide-in animation when a new event arrives at the top of the list. */
+        @keyframes demo-event-in {
+            0%   { opacity: 0; transform: translateY(-10px); border-color: var(--accent); background: rgba(110, 190, 230, 0.12); }
+            60%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 1; transform: translateY(0); border-color: var(--border); background: rgba(255, 255, 255, 0.025); }
+        }
+        .demo-event.is-new { animation: demo-event-in 600ms ease-out; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .demo-event.is-new { animation: none; }
+        }
+        .demo-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 1.5rem;
+        }
+        .demo-status b { color: var(--text-muted); font-weight: 500; }
+        .demo-status .pulse {
+            display: inline-block; width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
+            margin-right: 0.4rem;
+            vertical-align: middle;
+            animation: demo-pulse 2s ease-in-out infinite;
+        }
+        @keyframes demo-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .demo-error {
+            color: var(--danger);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            padding: 0.6rem 0.75rem;
+            background: rgba(217, 120, 112, 0.08);
+            border: 1px solid rgba(217, 120, 112, 0.25);
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            display: none;
+        }
+        .demo-error.show { display: block; }
+
+        /* Rules grid */
+        .rules {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.75rem;
+        }
+        .rule {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            transition: all 0.2s ease;
+        }
+        .rule:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            transform: translateY(-2px);
+        }
+        .rule-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .rule-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Consistency table */
+        .annotations {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .annotations th, .annotations td {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.92rem;
+        }
+        .annotations tr:last-child td { border-bottom: none; }
+        .annotations th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .annotations td:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-warm);
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .annotations td:last-child { color: var(--text-muted); }
+
+        /* Perf */
+        .perf {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .perf-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .perf-num {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.04em;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .perf-num .unit {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 0.15em;
+        }
+        .perf-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .perf-foot {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        /* Callout */
+        .callout {
+            border-left: 2px solid var(--accent);
+            background: var(--surface);
+            border-radius: 0 10px 10px 0;
+            padding: 1rem 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin: 1.5rem 0;
+        }
+        .callout strong { color: var(--text); }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .footer a {
+            color: var(--text-muted);
+            margin: 0 0.5rem;
+        }
+        .footer a:hover { color: var(--text); }
+
+        @media (max-width: 640px) {
+            section.block { padding: 3rem 0; }
+            .hero { padding: 5rem 0 3rem; }
+            .terminal-body { font-size: 0.78rem; padding: 1rem; }
+            .annotations th:first-child, .annotations td:first-child { padding-left: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <canvas id="particles-canvas" aria-hidden="true"></canvas>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-peers floating" id="hero-peers" aria-hidden="true"></div>
+        <div class="container hero-inner">
+            <span class="hero-eyebrow"><span class="dot"></span>Embeddable · Raft + SQLite · pure Go</span>
+            <h1 class="hero-title"><span class="accent">colmena</span></h1>
+            <p class="hero-sub">Distributed SQLite as an embeddable Go library. No CGo, no external processes, no broker. Just <code>import</code> and go — every node holds a full copy of the database and exposes a standard <code>database/sql</code> interface.</p>
+            <div class="hero-cta">
+                <a class="btn btn-primary" href="https://github.com/mentasystems/colmena" target="_blank" rel="noopener">View on GitHub →</a>
+                <a class="btn" href="#demo">See it running</a>
+                <a class="btn" href="#install">Install</a>
+            </div>
+        </div>
+    </header>
+    <div class="hero-peers stacked" id="hero-peers-mobile" aria-hidden="true"></div>
+
+    <main>
+        <section class="block" id="demo">
+            <div class="container">
+                <div class="section-label">Live demo</div>
+                <div class="demo-stream-wrap">
+                    <div class="demo-card">
+                        <h3>Replicated event log <span class="count" id="demo-event-count"></span></h3>
+                        <div class="demo-events" id="demo-events"></div>
+                    </div>
+                </div>
+                <h2 class="section-heading">Watch a 4-node cluster heal itself.</h2>
+                <p class="section-lead">A 4-machine Colmena cluster running right now on Fly.io. Every few seconds your browser fires a write at a random node — the row above shows which peer received it and which one applied the entry as leader, after Raft commits the replica. Restart any node with the <code>↻</code> button on its hero card; Fly brings it back in ~4&nbsp;s and the cluster catches it up automatically.</p>
+                <div id="demo-error" class="demo-error"></div>
+                <div class="demo-status">
+                    <span><span class="pulse"></span>polling every 2s from <strong id="demo-served-by">…</strong></span>
+                    <span><b>Leader:</b> <strong id="demo-leader-info">electing…</strong></span>
+                    <span><b>Source:</b> <a href="https://github.com/mentasystems/colmena/tree/main/examples/fly-ha" target="_blank" rel="noopener">examples/fly-ha</a></span>
+                    <span><b>API:</b> <a href="https://colmena-ha-demo-5a1181.fly.dev" target="_blank" rel="noopener">colmena-ha-demo-5a1181.fly.dev</a></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">In one import</div>
+                <h2 class="section-heading">A 3-node cluster in 20 lines.</h2>
+                <p class="section-lead">Construct a node, get a <code>*sql.DB</code>, write from anywhere. Writes are routed to the leader and replicated through Raft; reads hit local SQLite at native speed.</p>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">main.go</span>
+                    </div>
+<pre class="terminal-body"><span class="kw">import</span> <span class="str">"github.com/mentasystems/colmena"</span>
+
+node, _ := colmena.<span class="fn">New</span>(colmena.Config{
+    NodeID:    <span class="str">"node-1"</span>,
+    DataDir:   <span class="str">"./data/node1"</span>,
+    Bind:      <span class="str">"0.0.0.0:9000"</span>,
+    Bootstrap: <span class="kw">true</span>,
+})
+<span class="kw">defer</span> node.<span class="fn">Close</span>()
+
+db := node.<span class="fn">DB</span>() <span class="comment">// standard *sql.DB</span>
+db.<span class="fn">Exec</span>(<span class="str">"CREATE TABLE kv (key TEXT PRIMARY KEY, value TEXT)"</span>)
+db.<span class="fn">Exec</span>(<span class="str">"INSERT INTO kv (key, value) VALUES (?, ?)"</span>, <span class="str">"hello"</span>, <span class="str">"world"</span>)
+
+<span class="kw">var</span> value <span class="kw">string</span>
+db.<span class="fn">QueryRow</span>(<span class="str">"SELECT value FROM kv WHERE key = ?"</span>, <span class="str">"hello"</span>).<span class="fn">Scan</span>(&amp;value)
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">What you get</div>
+                <h2 class="section-heading">Replicated SQLite without the operations tax.</h2>
+                <p class="section-lead">Colmena combines <a href="https://github.com/hashicorp/raft" target="_blank" rel="noopener">hashicorp/raft</a> for consensus with <a href="https://pkg.go.dev/modernc.org/sqlite" target="_blank" rel="noopener">modernc.org/sqlite</a> for storage. No separate database process, no sidecar, no out-of-band replication agent.</p>
+                <div class="rules">
+                    <div class="rule"><div class="rule-name">pure Go</div><div class="rule-desc">No CGo, no C compiler. Cross-compiles cleanly to every <code>GOOS</code>/<code>GOARCH</code>.</div></div>
+                    <div class="rule"><div class="rule-name">database/sql</div><div class="rule-desc">Drop-in <code>*sql.DB</code>. Existing queries, drivers, and test helpers work unchanged.</div></div>
+                    <div class="rule"><div class="rule-name">leader forwarding</div><div class="rule-desc">Write from any node — colmena routes the call to the leader via RPC automatically.</div></div>
+                    <div class="rule"><div class="rule-name">write batching</div><div class="rule-desc">Concurrent writes coalesce into a single Raft entry. <strong>~60×</strong> throughput vs. unbatched.</div></div>
+                    <div class="rule"><div class="rule-name">buffered txns</div><div class="rule-desc"><code>db.Begin()</code> / <code>tx.Commit()</code> packs every statement into one atomic Raft round-trip.</div></div>
+                    <div class="rule"><div class="rule-name">continuous backup</div><div class="rule-desc">Litestream-style WAL streaming to filesystem or S3-compatible storage.</div></div>
+                    <div class="rule"><div class="rule-name">reactive hooks</div><div class="rule-desc"><code>OnApply</code> fires on every node after each replicated write — fan out to caches, events, search.</div></div>
+                    <div class="rule"><div class="rule-name">custom RPC</div><div class="rule-desc">Type-safe <code>Forward[Req, Resp]()</code> sends any request to the leader. Reuse the cluster's RPC plane.</div></div>
+                    <div class="rule"><div class="rule-name">background jobs</div><div class="rule-desc">Job queue in <code>colmena/jobs</code>: typed handlers, retries with backoff, cron, cluster-wide concurrency caps. No Redis.</div></div>
+                    <div class="rule"><div class="rule-name">zero-config LAN</div><div class="rule-desc"><code>colmena/lan</code>: flash one binary onto every machine. mDNS discovery, embedded mTLS CA, voter / non-voter failover.</div></div>
+                </div>
+                <div class="callout">
+                    <strong>One binary, one cluster.</strong> Ship a single Go binary with colmena embedded and you have a fault-tolerant database — no Postgres to run, no etcd to operate, no migration scripts at deploy time. The same process is the app and the data plane.
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Read consistency</div>
+                <h2 class="section-heading">Three levels. Pick per query.</h2>
+                <p class="section-lead">Every read carries a consistency level via <code>context.Context</code>. Default is <strong>Weak</strong>: always read from the node that processes writes, no quorum round-trip.</p>
+                <table class="annotations">
+                    <thead>
+                        <tr><th>Level</th><th>Where it reads</th><th>Latency</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>ConsistencyNone</td><td>Local SQLite on this node — may lag if the node is behind on replication.</td><td>~8µs</td></tr>
+                        <tr><td>ConsistencyWeak</td><td>Leader's local SQLite (forwarded via RPC if needed). Tiny staleness window during failover.</td><td>~90µs</td></tr>
+                        <tr><td>ConsistencyStrong</td><td>Leader after quorum re-confirms leadership. Linearizable — impossible to read stale data.</td><td>~100µs+</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout">
+                    Per-query override: <code>ctx := colmena.WithConsistency(ctx, colmena.ConsistencyStrong)</code>. Mix freely — read-heavy paths can use <code>None</code> on followers and scale horizontally at native SQLite speed (~6µs).
+                </div>
+            </div>
+        </section>
+
+        <section class="block" id="install">
+            <div class="container">
+                <div class="section-label">Install</div>
+                <h2 class="section-heading">One <code>go get</code> away.</h2>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">shell</span>
+                    </div>
+<pre class="terminal-body"><span class="prompt">$</span> go get github.com/mentasystems/colmena
+
+<span class="comment"># optional: zero-config LAN clustering (mDNS + embedded mTLS CA)</span>
+<span class="prompt">$</span> go get github.com/mentasystems/colmena/lan
+
+<span class="comment"># optional: S3-compatible continuous backup</span>
+<span class="prompt">$</span> go get github.com/mentasystems/colmena/backup/s3
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Benchmarks</div>
+                <h2 class="section-heading">Throughput scales with concurrency.</h2>
+                <p class="section-lead">The batcher coalesces concurrent writes into a single Raft entry, so throughput grows with the number of concurrent writers instead of being capped by Raft's per-entry fsync. Measured on Apple M1 Pro, 3-node cluster on localhost.</p>
+                <div class="perf">
+                    <div class="perf-card">
+                        <div class="perf-num">3,154<span class="unit">w/s</span></div>
+                        <div class="perf-label">128 writers · 2ms batch</div>
+                    </div>
+                    <div class="perf-card">
+                        <div class="perf-num">4,224<span class="unit">w/s</span></div>
+                        <div class="perf-label">128 writers · 5ms batch</div>
+                    </div>
+                    <div class="perf-card">
+                        <div class="perf-num">~11<span class="unit">µs</span></div>
+                        <div class="perf-label">P50 local follower read</div>
+                    </div>
+                </div>
+                <p class="perf-foot">Rule of thumb: a handful of concurrent writers gets you 1,000+ ops/sec; at 100+ writers you saturate SQLite on the leader, not Raft. Local reads from a follower match raw SQLite speed.</p>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Design notes</div>
+                <h2 class="section-heading">Three principles.</h2>
+                <div class="rules">
+                    <div class="rule">
+                        <div class="rule-name">embeddable</div>
+                        <div class="rule-desc">No separate database process. The cluster <em>is</em> your binary — distribute and run a single executable.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">safe by default</div>
+                        <div class="rule-desc">Non-deterministic SQL (<code>RANDOM()</code>, <code>datetime('now')</code>) is rejected at the write path before it can silently diverge replicas. Self-describing format envelopes refuse to misinterpret data from a future release.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">honest trade-offs</div>
+                        <div class="rule-desc">Single writer (inherent to Raft). 3-node minimum for fault tolerance. Statement-level replication. All documented up front — no surprises in production.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div>
+            <a href="https://github.com/mentasystems/colmena" target="_blank" rel="noopener">GitHub</a>
+            <span aria-hidden="true">·</span>
+            <a href="index.html">Menta Systems</a>
+            <span aria-hidden="true">·</span>
+            <a href="aviso-legal.html">Aviso Legal</a>
+            <span aria-hidden="true">·</span>
+            <a href="politica-privacidad.html">Política de Privacidad</a>
+        </div>
+        <div style="margin-top: 0.75rem;">BSD 3-Clause · &copy; 2025 Menta Systems</div>
+    </footer>
+
+    <script>
+        (function () {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let width = 0, height = 0;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const particles = [];
+            const LINK_DIST = 110;
+            const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                width = rect.width;
+                height = rect.height;
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                seed();
+            }
+
+            function seed() {
+                particles.length = 0;
+                const count = Math.min(70, Math.max(20, Math.floor((width * height) / 18000)));
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.18,
+                        vy: (Math.random() - 0.5) * 0.18,
+                        r: Math.random() * 1.2 + 0.4,
+                        tw: Math.random() * Math.PI * 2,
+                    });
+                }
+            }
+
+            function step() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const a = particles[i];
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const b = particles[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < LINK_DIST_SQ) {
+                            const alpha = (1 - d2 / LINK_DIST_SQ) * 0.3;
+                            ctx.strokeStyle = `rgba(110, 190, 230, ${alpha})`;
+                            ctx.lineWidth = 0.55;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < -10) p.x = width + 10;
+                    else if (p.x > width + 10) p.x = -10;
+                    if (p.y < -10) p.y = height + 10;
+                    else if (p.y > height + 10) p.y = -10;
+
+                    p.tw += 0.018;
+                    const flicker = 0.6 + 0.4 * Math.sin(p.tw);
+                    const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+                    glow.addColorStop(0, `rgba(140, 210, 245, ${0.42 * flicker})`);
+                    glow.addColorStop(1, 'rgba(140, 210, 245, 0)');
+                    ctx.fillStyle = glow;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = `rgba(220, 240, 250, ${0.8 * flicker})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                if (!prefersReduced) requestAnimationFrame(step);
+            }
+
+            window.addEventListener('resize', resize, { passive: true });
+            resize();
+            if (prefersReduced) step();
+            else requestAnimationFrame(step);
+        })();
+    </script>
+
+    <script>
+        // Live colmena cluster on Fly.io. Fetches /api/* directly from the
+        // mentasystems origin (the backend allows wildcard CORS — see
+        // examples/fly-ha/main.go corsMiddleware).
+        (function () {
+            const API = "https://colmena-ha-demo-5a1181.fly.dev";
+            const SLOTS = ["slot-tl", "slot-tr", "slot-bl", "slot-br"];
+            const EVENT_LIMIT = 5;
+            const POLL_MS = 2000;
+            const WRITE_MS = 2500;
+            const $peersDesktop = document.getElementById("hero-peers");
+            const $peersMobile  = document.getElementById("hero-peers-mobile");
+            const $events       = document.getElementById("demo-events");
+            const $leader       = document.getElementById("demo-leader-info");
+            const $count        = document.getElementById("demo-event-count");
+            const $servedBy     = document.getElementById("demo-served-by");
+            const $err          = document.getElementById("demo-error");
+
+            if (!$peersDesktop) return;
+
+            // Latest cluster view, refreshed by poll(). The auto-writer uses
+            // these to (a) pick a random peer to route the write through and
+            // (b) tag the message with the current leader id so each event
+            // row can show "origin → writer" without a schema change.
+            let livePeers = [];
+            let liveLeader = "";
+            // Event ids we've already rendered. Lets us slide-in only the
+            // newly arrived ones instead of re-animating the whole list on
+            // every poll.
+            const seen = new Set();
+            let firstRender = true;
+
+            function escapeHTML(s) {
+                return String(s).replace(/[&<>"']/g, c => ({
+                    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+                })[c]);
+            }
+            const short = (s) => (s || "").slice(0, 12);
+
+            function renderPeers(peers) {
+                // Lex-sort by machine id so each peer keeps its slot across
+                // polls (no card shuffle when the leader changes).
+                const sorted = peers.slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).slice(0, 4);
+                liveLeader = (sorted.find(p => p.is_leader) || {}).id || "";
+
+                for (const $container of [$peersDesktop, $peersMobile]) {
+                    $container.innerHTML = "";
+                    sorted.forEach((p, i) => {
+                        const cls = ["hero-peer"];
+                        if ($container === $peersDesktop) cls.push(SLOTS[i]);
+                        if (p.is_leader) cls.push("is-leader");
+                        if (p.suffrage === "Nonvoter") cls.push("is-nonvoter");
+                        if (!p.reachable) cls.push("unreachable");
+                        const role = p.is_leader ? "leader" : (p.suffrage === "Nonvoter" ? "non-voter" : "voter");
+                        const card = document.createElement("div");
+                        card.className = cls.join(" ");
+                        card.innerHTML = `
+                            <span class="dot"></span>
+                            <span class="pid" title="${escapeHTML(p.id)}">${escapeHTML(short(p.id))}</span>
+                            <span class="role">${role}</span>
+                            <span class="restart">
+                                <span>${p.is_self ? "this node" : ""}</span>
+                                <button class="demo-restart" data-id="${escapeHTML(p.id)}" title="Restart this machine — Fly brings it back automatically">↻</button>
+                            </span>
+                        `;
+                        $container.appendChild(card);
+                    });
+                }
+                $leader.textContent = liveLeader ? short(liveLeader) : "electing…";
+            }
+
+            function renderEvents(events) {
+                const visible = (events || []).slice(0, EVENT_LIMIT);
+                $events.innerHTML = "";
+                visible.forEach((ev) => {
+                    const isNew = !firstRender && !seen.has(ev.id);
+                    const d = new Date(ev.ts);
+                    const t = d.toTimeString().slice(0, 8);
+                    // The auto-writer encodes the leader-at-write-time in
+                    // the message body. Pre-existing rows from the manual
+                    // form may not follow that convention — fall back to
+                    // "n/a" so the row still renders consistently.
+                    const looksLikeId = /^[0-9a-f]{6,}$/.test(ev.message || "");
+                    const writerID = looksLikeId ? ev.message : "n/a";
+                    const row = document.createElement("div");
+                    row.className = "demo-event" + (isNew ? " is-new" : "");
+                    row.innerHTML = `
+                        <span class="ts">${t}</span>
+                        <span class="flow">
+                            <span class="from"><span class="dot"></span><span class="nodelabel">from</span> ${escapeHTML(short(ev.origin))}</span>
+                            <span class="arrow">→</span>
+                            <span class="to"><span class="dot"></span><span class="nodelabel">written by</span> ${escapeHTML(short(writerID))}</span>
+                        </span>
+                    `;
+                    $events.appendChild(row);
+                });
+                // Refresh the seen set to the visible window so a row that
+                // scrolls off and reappears (unlikely) animates again.
+                seen.clear();
+                visible.forEach((ev) => seen.add(ev.id));
+                firstRender = false;
+            }
+
+            async function poll() {
+                try {
+                    const [pr, er] = await Promise.all([
+                        fetch(API + "/api/peers"),
+                        fetch(API + "/api/events"),
+                    ]);
+                    if (!pr.ok || !er.ok) throw new Error("HTTP " + pr.status + "/" + er.status);
+                    const peers = await pr.json();
+                    const events = await er.json();
+                    $err.classList.remove("show");
+
+                    $servedBy.textContent = short(peers.self_machine_id || "?");
+                    $count.textContent = (events.total != null ? events.total : "?") + " rows on this node";
+
+                    livePeers = peers.peers || [];
+                    renderPeers(livePeers);
+                    renderEvents(events.events || []);
+                } catch (err) {
+                    $err.textContent = "live demo unreachable: " + err.message + " — the cluster may be cold-starting; retrying.";
+                    $err.classList.add("show");
+                }
+            }
+
+            // Auto-writer. Picks a reachable peer at random and fires a
+            // write through it, tagging the message body with the current
+            // leader id so the row can show "origin → writer". If the
+            // request fails (mid leader-election, peer restarting) we just
+            // wait for the next tick — colmena's retry path handles short
+            // gaps already.
+            async function autoWrite() {
+                if (!livePeers.length) return;
+                const candidates = livePeers.filter(p => p.reachable);
+                if (!candidates.length) return;
+                const target = candidates[Math.floor(Math.random() * candidates.length)];
+                try {
+                    await fetch(API + "/api/write", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "fly-force-instance-id": target.id,
+                        },
+                        body: JSON.stringify({ message: liveLeader || "unknown" }),
+                    });
+                } catch (_) { /* expected during failover; next tick retries */ }
+            }
+
+            // Lazy start: the cluster lives in Paris and the cold-start
+            // polling would burn requests on every visitor. Only begin
+            // when the demo section is near the viewport.
+            let started = false;
+            const start = () => {
+                if (started) return;
+                started = true;
+                poll();
+                setInterval(poll, POLL_MS);
+                // Give the first poll a moment so the writer has a peer
+                // list and a current leader before firing.
+                setTimeout(() => setInterval(autoWrite, WRITE_MS), 1200);
+            };
+
+            const obs = new IntersectionObserver((entries) => {
+                for (const e of entries) if (e.isIntersecting) { start(); obs.disconnect(); break; }
+            }, { rootMargin: "200px" });
+            obs.observe(document.getElementById("demo"));
+            // The hero is always above the demo section, so wire the
+            // floating cards immediately too (otherwise they'd stay empty
+            // until the user scrolls down to the live-demo section).
+            start();
+
+            // Restart buttons live in both the floating hero cards and the
+            // stacked mobile list — delegate at document level so we don't
+            // need two listeners.
+            document.addEventListener("click", async (e) => {
+                const btn = e.target.closest(".demo-restart");
+                if (!btn) return;
+                const id = btn.dataset.id;
+                btn.disabled = true;
+                btn.textContent = "…";
+                try {
+                    await fetch(API + "/api/restart", {
+                        method: "POST",
+                        headers: { "fly-force-instance-id": id },
+                    });
+                } catch (_) { /* expected — the machine drops its connection as it shuts down */ }
+                setTimeout(poll, 1500);
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -290,6 +290,12 @@ func main() {
 	http.HandleFunc("/gox.html", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/gox", http.StatusMovedPermanently)
 	})
+	http.HandleFunc("/colmena", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "colmena.html")
+	})
+	http.HandleFunc("/colmena.html", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/colmena", http.StatusMovedPermanently)
+	})
 	http.Handle("/", fs)
 
 	log.Printf("Server starting on port %s", port)
