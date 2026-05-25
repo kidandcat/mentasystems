@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type ContactForm struct {
@@ -33,12 +34,12 @@ type ResendEmail struct {
 type IncomingEmailWebhook struct {
 	Type string `json:"type"`
 	Data struct {
-		From       string   `json:"from"`
-		To         []string `json:"to"`
-		Subject    string   `json:"subject"`
-		Text       string   `json:"text"`
-		Html       string   `json:"html"`
-		CreatedAt  string   `json:"created_at"`
+		From      string   `json:"from"`
+		To        []string `json:"to"`
+		Subject   string   `json:"subject"`
+		Text      string   `json:"text"`
+		Html      string   `json:"html"`
+		CreatedAt string   `json:"created_at"`
 	} `json:"data"`
 }
 
@@ -107,7 +108,7 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
+	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("Error sending email: %v", err)
@@ -255,7 +256,7 @@ func handleIncomingEmail(w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
+	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("Error forwarding email: %v", err)
