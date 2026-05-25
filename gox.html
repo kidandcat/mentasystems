@@ -289,6 +289,37 @@
         }
         .annotations td:last-child { color: var(--text-muted); }
 
+        .compare {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .compare th, .compare td {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.92rem;
+            vertical-align: top;
+        }
+        .compare tr:last-child td { border-bottom: none; }
+        .compare th {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .compare th:first-child { width: 22%; }
+        .compare th:nth-child(2), .compare th:nth-child(3) { width: 39%; }
+        .compare td:first-child { color: var(--text-dim); font-weight: 500; }
+        .compare td:nth-child(2) { color: var(--text); }
+        .compare td:nth-child(3) { color: var(--text-muted); }
+
         /* Perf */
         .perf {
             display: grid;
@@ -400,7 +431,9 @@
     hint: <span class="ok">transfer(/* orderID */ a, /* userID */ b)</span>
 <span class="warn">pkg/parser/lex.go:201:8:</span> <span class="err">shadow</span>: declaration of "err" shadows outer variable
 <span class="warn">cmd/worker/main.go:67:2:</span> <span class="err">goroutine</span>: fire-and-forget <span class="ok">go run()</span> without errgroup / WaitGroup / cancel
-<span class="comment">gox: 4 issue(s)</span>
+<span class="warn">internal/probe/health.go:14:6:</span> <span class="err">httptimeout</span>: <span class="ok">http.Get</span> uses <span class="ok">http.DefaultClient</span> which has no timeout
+    hint: build an explicit <span class="ok">*http.Client</span> with a Timeout, or use <span class="ok">NewRequestWithContext</span>
+<span class="comment">gox: 5 issue(s)</span>
 </pre>
                 </div>
             </div>
@@ -408,7 +441,7 @@
 
         <section class="block">
             <div class="container">
-                <div class="section-label">10 rules</div>
+                <div class="section-label">12 rules</div>
                 <h2 class="section-heading">What it catches.</h2>
                 <p class="section-lead">Each rule targets a high-frequency LLM bug class — silent failures that compile clean and pass tests.</p>
                 <div class="rules">
@@ -422,6 +455,8 @@
                     <div class="rule"><div class="rule-name">bodyclose</div><div class="rule-desc"><code>*http.Response.Body</code> left unclosed.</div></div>
                     <div class="rule"><div class="rule-name">contextcheck</div><div class="rule-desc"><code>context.Background()</code> / <code>TODO()</code> inside a function that already has a <code>context.Context</code>.</div></div>
                     <div class="rule"><div class="rule-name">goroutine</div><div class="rule-desc"><code>go f()</code> with no visible <code>errgroup</code>, <code>WaitGroup</code>, or <code>CancelFunc</code>.</div></div>
+                    <div class="rule"><div class="rule-name">errorlint</div><div class="rule-desc"><code>errors.Is</code> / <code>errors.As</code> / <code>%w</code> instead of <code>==</code> / type-assert / <code>%s</code> on errors.</div></div>
+                    <div class="rule"><div class="rule-name">httptimeout</div><div class="rule-desc">HTTP clients and shortcut calls must set an explicit <code>Timeout</code>.</div></div>
                 </div>
                 <div class="callout">
                     <strong>The killer rule is <code>namedargs</code>.</strong> Two adjacent strings or ints at a user-defined call site force the caller to label them inline. It prevents <code>transfer(orderID, userID)</code> vs <code>transfer(userID, orderID)</code> — no compile error, no test failure, and the single most common silent-bug class in unsupervised AI-written Go.
@@ -444,6 +479,7 @@
                         <tr><td>// any-ok: &lt;why&gt;</td><td>Allow <code>any</code> / <code>interface{}</code> (<code>banany</code>).</td></tr>
                         <tr><td>// goroutine-ok: &lt;why&gt;</td><td>Allow a fire-and-forget <code>go</code> statement (<code>goroutine</code>).</td></tr>
                         <tr><td>// exhaustive-ok: &lt;why&gt;</td><td>Accept <code>default:</code> as covering missing variants (<code>exhaustive</code>).</td></tr>
+                        <tr><td>// timeout-ok: &lt;why&gt;</td><td>Allow an HTTP call or client constructed without an explicit Timeout (<code>httptimeout</code>).</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -468,6 +504,9 @@
 <span class="comment"># list registered analyzers</span>
 <span class="prompt">$</span> gox list
 
+<span class="comment"># explain a single rule (markdown to stdout, or --json envelope)</span>
+<span class="prompt">$</span> gox explain bodyclose
+
 <span class="comment"># gox check &amp;&amp; go build / go test</span>
 <span class="prompt">$</span> gox build ./...
 <span class="prompt">$</span> gox test  ./...
@@ -478,9 +517,37 @@
 
         <section class="block">
             <div class="container">
+                <div class="section-label">Adopt incrementally</div>
+                <h2 class="section-heading">Drop gox into a legacy codebase without 2000 errors on day 1.</h2>
+                <p class="section-lead"><code>gox baseline</code> captures the current state of issues into a <code>.gox-baseline.json</code> at the module root. From then on <code>gox check</code> reports only <em>new</em> violations — existing surface stays silent until someone touches it. Commit the file so the rest of the team gets the same view.</p>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">shell</span>
+                    </div>
+<pre class="terminal-body"><span class="prompt">$</span> gox baseline
+<span class="ok">captured 1742 issue(s) into .gox-baseline.json</span>
+<span class="comment">from now on, `gox check` will report only NEW issues.</span>
+
+<span class="prompt">$</span> gox check ./...
+<span class="comment">gox: 0 issue(s)</span>
+
+<span class="comment"># ... a new violation lands in a new commit ...</span>
+<span class="prompt">$</span> gox check ./...
+<span class="warn">internal/orders/new_handler.go:54:2:</span> <span class="err">errcheck</span>: error return from <span class="ok">tx.Commit()</span> dropped
+<span class="comment">gox: 1 issue(s)</span>
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
                 <div class="section-label">Claude Code</div>
                 <h2 class="section-heading">Wire it into your agent in one command.</h2>
-                <p class="section-lead"><code>gox install claude</code> drops a <code>PostToolUse</code> hook into <code>~/.claude/settings.json</code>. Whenever Claude edits a <code>.go</code> file, gox runs in that package's directory. If anything fails, the hook returns a <code>decision:block</code> JSON blob with the full output — Claude sees it on the next turn and has to fix or annotate before continuing.</p>
+                <p class="section-lead"><code>gox install claude</code> drops a <code>Stop</code> hook into <code>~/.claude/settings.json</code>. When Claude finishes a turn, gox runs once on every package whose <code>.go</code> files changed. If anything fails, the hook returns a <code>decision:block</code> JSON blob with the full output — Claude sees it on the next turn and has to fix or annotate before continuing.</p>
                 <div class="terminal">
                     <div class="terminal-bar">
                         <span class="terminal-dot r"></span>
@@ -490,12 +557,35 @@
                     </div>
 <pre class="terminal-body"><span class="prompt">$</span> gox install claude
 <span class="ok">✓</span> wrote ~/.claude/gox-hook.sh
-<span class="ok">✓</span> registered PostToolUse hook (Edit|Write|MultiEdit, 30s)
+<span class="ok">✓</span> registered Stop hook (30s)
 <span class="comment"># idempotent — re-run to refresh the script.</span>
 </pre>
                 </div>
                 <div class="callout">
-                    Claude Code only re-reads <code>settings.json</code> when the <code>/hooks</code> menu is opened or the app restarts — open <code>/hooks</code> once and the hook activates in the current session.
+                    Claude Code only re-reads <code>settings.json</code> when the <code>/hooks</code> menu is opened or the app restarts — open <code>/hooks</code> once and the hook activates in the current session. Earlier versions used a <code>PostToolUse</code> hook that fired on every edit; the <code>Stop</code> hook runs once per turn and is noticeably faster on large packages.
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Why a tool</div>
+                <h2 class="section-heading">A tool, not a new language.</h2>
+                <p class="section-lead">"Agent-native languages" are a tempting bet — reinvent the surface so the agent never has room to be wrong. The trade-off is heavy: new syntax the models don't know, a stdlib that has to be rebuilt, and design churn while the contract settles. gox takes the opposite path: leave Go alone and gate the silent bug classes at the door.</p>
+                <table class="compare">
+                    <thead>
+                        <tr><th></th><th>gox</th><th>a fresh agent language</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Ecosystem</td><td>every Go library, day 1</td><td>rebuild it</td></tr>
+                        <tr><td>Model fluency</td><td>frontier models already write Go</td><td>teach them, line by line</td></tr>
+                        <tr><td>Stability</td><td>Go 1.x compatibility promise</td><td>v0.x while the language settles</td></tr>
+                        <tr><td>Adoption</td><td><code>go install</code>, opt-in per repo</td><td>port the codebase</td></tr>
+                        <tr><td>Cost of being wrong</td><td>uninstall it</td><td>rewrite back</td></tr>
+                    </tbody>
+                </table>
+                <div class="callout">
+                    <strong>You don't need a new language to make agent-written Go safe.</strong> You need strict default-error rules at the exact bug classes that compile clean and pass tests. That's the whole job.
                 </div>
             </div>
         </section>
