@@ -38,12 +38,17 @@
             position: relative;
         }
         /* Site-wide warm radial wash. Pinned at the top so the hero feels
-           lit and it gradually fades into the page bg as you scroll. */
+           lit and it gradually fades into the page bg as you scroll —
+           two stacked radials: a softer page-wide brown wash plus a
+           tighter orange glow centered behind the title. Both are
+           fixed so there's no hard edge as content scrolls past. */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background: radial-gradient(ellipse at 50% 0%, var(--bg-to) 0%, var(--bg-from) 65%);
+            background:
+                radial-gradient(ellipse 60% 45% at 50% 12%, rgba(214, 144, 91, 0.10) 0%, transparent 75%),
+                radial-gradient(ellipse at 50% 0%, var(--bg-to) 0%, var(--bg-from) 70%);
             pointer-events: none;
             z-index: -2;
         }
@@ -86,12 +91,6 @@
             flex-direction: column;
             align-items: center;
             gap: 1.5rem;
-        }
-        .hero-glow {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 40%, rgba(214, 144, 91, 0.12) 0%, transparent 55%);
-            pointer-events: none;
         }
         .hero-inner {
             position: relative;
@@ -393,7 +392,6 @@
     <canvas id="particles-canvas" aria-hidden="true"></canvas>
 
     <header class="hero">
-        <div class="hero-glow" aria-hidden="true"></div>
         <div class="container hero-inner">
             <h1 class="hero-title"><span class="accent">Fragua</span></h1>
         </div>
