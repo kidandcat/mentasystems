@@ -30,11 +30,34 @@
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: radial-gradient(ellipse at 50% -20%, var(--bg-to) 0%, var(--bg-from) 70%);
+            background: var(--bg-from);
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        /* Site-wide warm radial wash. Pinned at the top so the hero feels
+           lit and it gradually fades into the page bg as you scroll. */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, var(--bg-to) 0%, var(--bg-from) 65%);
+            pointer-events: none;
+            z-index: -2;
+        }
+        /* Particle field lives fixed behind the whole document so the
+           hero blends smoothly into the rest of the page. */
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            pointer-events: none;
+            opacity: 0.55;
+            z-index: -1;
         }
         a { color: var(--accent); text-decoration: none; }
         a:hover { color: var(--accent-warm); }
@@ -58,26 +81,16 @@
         /* Hero */
         .hero {
             position: relative;
-            padding: 7rem 0 5rem;
-            overflow: hidden;
-            min-height: clamp(420px, 60vh, 620px);
+            padding: 5rem 0 3rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-        }
-        #particles-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            pointer-events: none;
-            opacity: 0.65;
+            gap: 1.5rem;
         }
         .hero-glow {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 50% 35%, rgba(214, 144, 91, 0.16) 0%, transparent 45%);
+            background: radial-gradient(circle at 50% 40%, rgba(214, 144, 91, 0.12) 0%, transparent 55%);
             pointer-events: none;
         }
         .hero-inner {
@@ -145,21 +158,20 @@
 
         /* Hero board diagram — a small live-animated PCB sketch that
            illustrates "agent designs the board" without needing a real
-           interactive demo. */
+           interactive demo. Sits below the title, not behind it. */
         .hero-board {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative;
             z-index: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
         }
         .hero-board svg {
-            width: 90%;
-            max-width: 760px;
+            width: 70%;
+            max-width: 460px;
             height: auto;
-            opacity: 0.45;
+            opacity: 0.85;
         }
 
         /* Sections */
@@ -370,16 +382,21 @@
 
         @media (max-width: 640px) {
             section.block { padding: 3rem 0; }
-            .hero { padding: 4rem 0 2.5rem; min-height: clamp(320px, 50vh, 460px); }
+            .hero { padding: 3.5rem 0 2rem; gap: 1rem; }
+            .hero-board svg { width: 85%; max-width: 360px; }
             .terminal-body { font-size: 0.78rem; padding: 1rem; }
             .annotations th:first-child, .annotations td:first-child { padding-left: 0.6rem; }
         }
     </style>
 </head>
 <body>
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
     <header class="hero">
-        <canvas id="particles-canvas" aria-hidden="true"></canvas>
         <div class="hero-glow" aria-hidden="true"></div>
+        <div class="container hero-inner">
+            <h1 class="hero-title"><span class="accent">Fragua</span></h1>
+        </div>
         <div class="hero-board" aria-hidden="true">
             <!-- Schematic-style decorative board: rounded outline, pads,
                  traces, a couple of vias. Pure CSS animation on the
@@ -436,9 +453,6 @@
                     <circle cx="380" cy="270" r="1.6" fill="#0a0806"/>
                 </g>
             </svg>
-        </div>
-        <div class="container hero-inner">
-            <h1 class="hero-title"><span class="accent">Fragua</span></h1>
         </div>
     </header>
 
