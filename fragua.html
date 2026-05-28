@@ -60,6 +60,10 @@
             position: relative;
             padding: 7rem 0 5rem;
             overflow: hidden;
+            min-height: clamp(420px, 60vh, 620px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #particles-canvas {
             position: absolute;
@@ -366,7 +370,7 @@
 
         @media (max-width: 640px) {
             section.block { padding: 3rem 0; }
-            .hero { padding: 5rem 0 3rem; }
+            .hero { padding: 4rem 0 2.5rem; min-height: clamp(320px, 50vh, 460px); }
             .terminal-body { font-size: 0.78rem; padding: 1rem; }
             .annotations th:first-child, .annotations td:first-child { padding-left: 0.6rem; }
         }
