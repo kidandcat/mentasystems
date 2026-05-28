@@ -297,6 +297,12 @@ func main() {
 	http.HandleFunc("/colmena.html", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/colmena", http.StatusMovedPermanently)
 	})
+	http.HandleFunc("/fragua", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "fragua.html")
+	})
+	http.HandleFunc("/fragua.html", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/fragua", http.StatusMovedPermanently)
+	})
 	http.Handle("/", fs)
 
 	log.Printf("Server starting on port %s", port)

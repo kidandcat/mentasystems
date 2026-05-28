@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fragua — AI-native PCB design</title>
+    <meta name="description" content="fragua is a desktop PCB design tool built for AI agents. The agent drives schematic, placement, routing, DRC and ships a fab-ready zip. Pure Rust, no external CAD binaries.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-from: #0a0806;
+            --bg-to: #1a130c;
+            --surface: rgba(255, 240, 220, 0.03);
+            --surface-strong: rgba(255, 240, 220, 0.06);
+            --border: rgba(255, 220, 180, 0.08);
+            --border-strong: rgba(214, 144, 91, 0.35);
+            --text: #f3ead9;
+            --text-muted: rgba(232, 217, 195, 0.7);
+            --text-dim: rgba(232, 217, 195, 0.42);
+            --accent: #d6905b;
+            --accent-warm: #f4cd92;
+            --accent-cool: #8fb88f;
+            --danger: #d97870;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at 50% -20%, var(--bg-to) 0%, var(--bg-from) 70%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: var(--accent-warm); }
+        code, pre {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        :not(pre) > code {
+            background: rgba(255, 240, 220, 0.06);
+            border: 1px solid var(--border);
+            padding: 0.1em 0.4em;
+            border-radius: 4px;
+            font-size: 0.88em;
+            color: var(--accent-warm);
+        }
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            padding: 7rem 0 5rem;
+            overflow: hidden;
+        }
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            opacity: 0.65;
+        }
+        .hero-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 35%, rgba(214, 144, 91, 0.16) 0%, transparent 45%);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
+        }
+        .hero-eyebrow .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        h1.hero-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 6.5rem);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            line-height: 1;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 24px rgba(214, 144, 91, 0.3);
+        }
+        .hero-title .accent {
+            color: var(--accent);
+        }
+        .hero-sub {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 2.5rem;
+        }
+        .hero-cta {
+            display: inline-flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            color: var(--text);
+        }
+        .btn-primary {
+            background: linear-gradient(180deg, rgba(214, 144, 91, 0.2) 0%, rgba(214, 144, 91, 0.08) 100%);
+            border-color: rgba(214, 144, 91, 0.45);
+            color: var(--text);
+        }
+        .btn-primary:hover {
+            border-color: rgba(214, 144, 91, 0.75);
+            box-shadow: 0 0 24px rgba(214, 144, 91, 0.25);
+        }
+
+        /* Hero board diagram — a small live-animated PCB sketch that
+           illustrates "agent designs the board" without needing a real
+           interactive demo. */
+        .hero-board {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        .hero-board svg {
+            width: 90%;
+            max-width: 760px;
+            height: auto;
+            opacity: 0.22;
+        }
+
+        /* Sections */
+        section.block {
+            position: relative;
+            padding: 4rem 0;
+        }
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+        }
+        .section-heading {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.15;
+            margin-bottom: 1.25rem;
+        }
+        .section-lead {
+            color: var(--text-muted);
+            max-width: 640px;
+            font-size: 1.05rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Terminal */
+        .terminal {
+            background: #08060a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        }
+        .terminal-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 240, 220, 0.03);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+        .terminal-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .terminal-dot.r { background: #ff5f56; }
+        .terminal-dot.y { background: #ffbd2e; }
+        .terminal-dot.g { background: #27c93f; }
+        .terminal-title {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .terminal-body {
+            padding: 1.25rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: #efe1cf;
+            overflow-x: auto;
+        }
+        .terminal-body .prompt { color: var(--accent); }
+        .terminal-body .comment { color: var(--text-dim); }
+        .terminal-body .kw { color: var(--accent-warm); }
+        .terminal-body .str { color: var(--accent-cool); }
+        .terminal-body .fn { color: #f7c785; }
+        .terminal-body .num { color: #c89bff; }
+        .terminal-body .err { color: var(--danger); }
+        .terminal-body .ok { color: var(--accent-cool); }
+
+        /* Pipeline (the 10-step agent loop) */
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 0.75rem;
+        }
+        .pipe-step {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.1rem 1.1rem;
+            transition: all 0.2s ease;
+        }
+        .pipe-step:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            transform: translateY(-2px);
+        }
+        .pipe-step .pipe-num {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        .pipe-step .pipe-name {
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--accent);
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            letter-spacing: 0.02em;
+        }
+        .pipe-step .pipe-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Feature rules grid */
+        .rules {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.75rem;
+        }
+        .rule {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            transition: all 0.2s ease;
+        }
+        .rule:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-strong);
+            transform: translateY(-2px);
+        }
+        .rule-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .rule-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Stack table */
+        .annotations {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .annotations th, .annotations td {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.92rem;
+        }
+        .annotations tr:last-child td { border-bottom: none; }
+        .annotations th {
+            background: rgba(255, 240, 220, 0.02);
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .annotations td:first-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-warm);
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .annotations td:last-child { color: var(--text-muted); }
+
+        /* Callout */
+        .callout {
+            border-left: 2px solid var(--accent);
+            background: var(--surface);
+            border-radius: 0 10px 10px 0;
+            padding: 1rem 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin: 1.5rem 0;
+        }
+        .callout strong { color: var(--text); }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .footer a {
+            color: var(--text-muted);
+            margin: 0 0.5rem;
+        }
+        .footer a:hover { color: var(--text); }
+
+        @media (max-width: 640px) {
+            section.block { padding: 3rem 0; }
+            .hero { padding: 5rem 0 3rem; }
+            .terminal-body { font-size: 0.78rem; padding: 1rem; }
+            .annotations th:first-child, .annotations td:first-child { padding-left: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <canvas id="particles-canvas" aria-hidden="true"></canvas>
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-board" aria-hidden="true">
+            <!-- Schematic-style decorative board: rounded outline, pads,
+                 traces, a couple of vias. Pure CSS animation on the
+                 trace dasharray gives the "still routing" feel. -->
+            <svg viewBox="0 0 760 380" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M20 0 L0 0 0 20" stroke="#d6905b" stroke-width="0.25" opacity="0.35"/>
+                    </pattern>
+                </defs>
+                <rect x="20" y="20" width="720" height="340" rx="14" fill="url(#grid)" stroke="#d6905b" stroke-width="1.5"/>
+                <!-- IC outline -->
+                <rect x="320" y="150" width="120" height="80" rx="3" fill="none" stroke="#f4cd92" stroke-width="1.2"/>
+                <!-- Pads on the IC -->
+                <g fill="#d6905b">
+                    <circle cx="320" cy="170" r="3"/>
+                    <circle cx="320" cy="190" r="3"/>
+                    <circle cx="320" cy="210" r="3"/>
+                    <circle cx="440" cy="170" r="3"/>
+                    <circle cx="440" cy="190" r="3"/>
+                    <circle cx="440" cy="210" r="3"/>
+                </g>
+                <!-- Discrete components around -->
+                <rect x="160" y="80" width="40" height="18" rx="2" fill="none" stroke="#f4cd92" stroke-width="1"/>
+                <rect x="560" y="80" width="40" height="18" rx="2" fill="none" stroke="#f4cd92" stroke-width="1"/>
+                <rect x="160" y="280" width="40" height="18" rx="2" fill="none" stroke="#f4cd92" stroke-width="1"/>
+                <rect x="560" y="280" width="40" height="18" rx="2" fill="none" stroke="#f4cd92" stroke-width="1"/>
+                <!-- Traces (dashed = "routing in progress") -->
+                <g stroke="#d6905b" stroke-width="2" fill="none">
+                    <path d="M 200 90 L 240 90 L 240 170 L 320 170" stroke-dasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2.4s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M 200 290 L 240 290 L 240 210 L 320 210" stroke-dasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="3.2s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M 440 170 L 520 170 L 520 90 L 560 90" stroke-dasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2.8s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M 440 210 L 520 210 L 520 290 L 560 290" stroke-dasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="3.6s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M 380 150 L 380 110" stroke-dasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2.6s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M 380 230 L 380 270" stroke-dasharray="6 4">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="3.0s" repeatCount="indefinite"/>
+                    </path>
+                </g>
+                <!-- Vias -->
+                <g>
+                    <circle cx="380" cy="110" r="4" fill="none" stroke="#f4cd92" stroke-width="1.2"/>
+                    <circle cx="380" cy="110" r="1.6" fill="#0a0806"/>
+                    <circle cx="380" cy="270" r="4" fill="none" stroke="#f4cd92" stroke-width="1.2"/>
+                    <circle cx="380" cy="270" r="1.6" fill="#0a0806"/>
+                </g>
+            </svg>
+        </div>
+        <div class="container hero-inner">
+            <span class="hero-eyebrow"><span class="dot"></span>Desktop · Tauri 2 · pure Rust · agent-driven</span>
+            <h1 class="hero-title"><span class="accent">fragua</span></h1>
+            <p class="hero-sub">An AI-native PCB design tool. The agent drives the schematic, the placement, the auto-router and the rule checks; you watch the board form on screen and steer when you need to. One desktop binary, no <code>kicad-cli</code>, no <code>freerouting.jar</code>.</p>
+            <div class="hero-cta">
+                <a class="btn btn-primary" href="https://github.com/mentasystems/fragua" target="_blank" rel="noopener">View on GitHub →</a>
+                <a class="btn" href="#how">Script API</a>
+                <a class="btn" href="#install">Install</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="block" id="how">
+            <div class="container">
+                <div class="section-label">In one prompt</div>
+                <h2 class="section-heading">The agent talks to a small, deterministic API.</h2>
+                <p class="section-lead">Fragua exposes a local HTTP endpoint on <code>127.0.0.1:7878</code>. The agent posts line-oriented commands; fragua mutates the project, runs the router and the rule checks, and streams the new state back to the UI in real time. The same in-memory project is what you see and what you can drag.</p>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">agent → POST /script</span>
+                    </div>
+<pre class="terminal-body"><span class="comment"># start a project, pull a library, drop symbols</span>
+<span class="kw">lib</span> std
+<span class="kw">sym</span> U1 std:ATmega328P
+<span class="kw">sym</span> Y1 std:Crystal_16MHz
+<span class="kw">sym</span> C1 std:Cap_0805 <span class="num">22pF</span>
+<span class="kw">sym</span> C2 std:Cap_0805 <span class="num">22pF</span>
+
+<span class="comment"># declare nets, attach a class so the router knows the rules</span>
+<span class="kw">class</span> power width=<span class="num">0.30</span> clearance=<span class="num">0.20</span>
+<span class="kw">net</span> VCC class=power
+<span class="kw">net</span> GND class=power
+<span class="kw">net</span> XTAL1 U1.XTAL1 Y1.<span class="num">1</span> C1.<span class="num">1</span>
+<span class="kw">net</span> XTAL2 U1.XTAL2 Y1.<span class="num">2</span> C2.<span class="num">1</span>
+
+<span class="comment"># let fragua place it, route it, check it, pack it</span>
+<span class="kw">auto-place</span>
+<span class="kw">route</span>
+<span class="kw">drc</span>           <span class="ok">→ 0 violations</span>
+<span class="kw">pack</span> fab=jlcpcb
+              <span class="ok">→ out/jlcpcb-rev1.zip  ready to upload</span>
+</pre>
+                </div>
+                <div class="callout">
+                    <strong>One loop, one binary.</strong> The script reference is printed at app launch and served at <code>GET /</code>. The agent reads it once and drives every step from there — no plugin system, no out-of-band tooling.
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">End-to-end</div>
+                <h2 class="section-heading">From a sentence to a fab-ready zip.</h2>
+                <p class="section-lead">The agent owns the workflow. You watch each step happen on the canvas and step in to redirect, mark up, or correct.</p>
+                <div class="pipeline">
+                    <div class="pipe-step"><span class="pipe-num">01</span><div class="pipe-name">intake</div><div class="pipe-desc">Natural-language prompt or code description in. The agent restates the requirements.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">02</span><div class="pipe-name">clarify</div><div class="pipe-desc">Missing decisions surface as questions — target voltage, connector, dimensions, mechanical constraints.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">03</span><div class="pipe-name">schematic</div><div class="pipe-desc">Symbols, nets, classes. ERC validates as it grows. Live on the canvas.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">04</span><div class="pipe-name">advise</div><div class="pipe-desc">Decoupling caps, ESD, pull-ups, test points — proposed; you accept or reject each.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">05</span><div class="pipe-name">size</div><div class="pipe-desc">Outline derived from footprints, connectors and mechanical constraints — or set explicitly.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">06</span><div class="pipe-name">place</div><div class="pipe-desc">Simulated annealing on movable parts. Drag any component; the agent re-plans around fixed positions.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">07</span><div class="pipe-name">route</div><div class="pipe-desc">A* on a 2-layer grid + rip-up-and-reroute + negotiated congestion. You watch the traces land.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">08</span><div class="pipe-name">check</div><div class="pipe-desc">DRC + manufacturing-DRC run continuously. Violations highlighted; agent proposes fixes; you approve.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">09</span><div class="pipe-name">pour</div><div class="pipe-desc">Ground / power pours on both layers with thermal reliefs. Auto-recomputed on every change.</div></div>
+                    <div class="pipe-step"><span class="pipe-num">10</span><div class="pipe-name">pack</div><div class="pipe-desc">Gerbers + drill + BOM + CPL + README in one zip, ready to upload to JLCPCB, PCBWay or generic.</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">What you get</div>
+                <h2 class="section-heading">Everything in one Rust process.</h2>
+                <p class="section-lead">No external CAD binaries. No <code>kicad-cli</code>, no <code>java -jar freerouting.jar</code>, no wrapper crates. Every file format is implemented from scratch so the agent loop never shells out and never blocks.</p>
+                <div class="rules">
+                    <div class="rule"><div class="rule-name">pcb-script</div><div class="rule-desc">Line-oriented agent DSL: <code>lib</code>, <code>sym</code>, <code>net</code>, <code>class</code>, <code>place</code>, <code>route</code>, <code>erc</code>, <code>drc</code>, <code>auto-pour</code>, <code>pack</code>. Reference served at <code>GET /</code>.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-router</div><div class="rule-desc">A* on a 2-layer grid + rip-up-and-reroute + negotiated congestion + Steiner-style multi-source. Per-net width and clearance from <code>NetClass</code>.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-placer</div><div class="rule-desc">Simulated annealing on HPWL + soft gap penalty + rasterised pad-bbox congestion proxy. Respects fixed positions.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-drc</div><div class="rule-desc">Pad/trace clearance, drill, edge clearance, narrow-trace and routing-efficiency checks. Per-net overrides supported.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-erc</div><div class="rule-desc">Floating pin, duplicate pin, orphan symbol, phantom net; role-based: multiple drivers, unpowered power net, undriven input.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-fab</div><div class="rule-desc"><code>Provider { Jlcpcb, Pcbway, Generic }</code> with manufacturing-DRC and per-provider BOM + CPL formats. <code>pack(...)</code> ships a ready-to-upload zip.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-gerber</div><div class="rule-desc">RS-274X writer (rounded outlines emit arcs), Excellon drills, BOM and pick-and-place CSV. From scratch.</div></div>
+                    <div class="rule"><div class="rule-name">pcb-render</div><div class="rule-desc">Board → SVG. Substrate with rounded corners, copper, silkscreen with Hershey strokes, DRC marker overlay.</div></div>
+                    <div class="rule"><div class="rule-name">tauri shell</div><div class="rule-desc">Local HTTP API on <code>127.0.0.1:7878</code>. Frontend pans, zooms and annotates the live SVG; surfaces the activity log.</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="block" id="install">
+            <div class="container">
+                <div class="section-label">Install</div>
+                <h2 class="section-heading">One curl, one binary.</h2>
+                <p class="section-lead">macOS arm64/x64 and Linux x64 are built and released on every tag. Windows users grab the zip from the releases page.</p>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <span class="terminal-dot r"></span>
+                        <span class="terminal-dot y"></span>
+                        <span class="terminal-dot g"></span>
+                        <span class="terminal-title">shell</span>
+                    </div>
+<pre class="terminal-body"><span class="prompt">$</span> curl -fsSL https://raw.githubusercontent.com/mentasystems/fragua/master/scripts/install.sh | sh
+<span class="comment"># drops fragua into /usr/local/bin (or ~/.local/bin)</span>
+
+<span class="prompt">$</span> fragua                          <span class="comment"># opens the window, starts the API on :7878</span>
+<span class="prompt">$</span> fragua path/to/project.fragua   <span class="comment"># or open an existing project</span>
+</pre>
+                </div>
+                <div class="callout">
+                    Then tell your AI to design the hardware. The window stays open, the script reference is served on <code>GET /</code>, and the agent drives the rest.
+                </div>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Stack</div>
+                <h2 class="section-heading">All Rust, all in-process.</h2>
+                <table class="annotations">
+                    <thead>
+                        <tr><th>Crate</th><th>What it owns</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>pcb-core</td><td>Project model (schematic, board, library, pours), nm fixed-point geometry, tokio broadcast event bus, JSON persistence (<code>.fragua</code> files).</td></tr>
+                        <tr><td>pcb-script</td><td>Line-oriented agent DSL: every command the agent can call, parsed and dispatched.</td></tr>
+                        <tr><td>pcb-router</td><td>A* with rip-up-and-reroute, negotiated congestion, Steiner multi-source. 2 copper layers.</td></tr>
+                        <tr><td>pcb-placer</td><td>Simulated annealing on HPWL + congestion proxy.</td></tr>
+                        <tr><td>pcb-drc / pcb-erc</td><td>Continuous design-rule and electrical-rule checks with per-net overrides.</td></tr>
+                        <tr><td>pcb-fab / pcb-gerber</td><td>Manufacturing-DRC, per-provider BOM/CPL, RS-274X Gerber, Excellon drills, packing.</td></tr>
+                        <tr><td>pcb-render</td><td>Board → SVG renderer for the live UI.</td></tr>
+                        <tr><td>src-tauri + frontend</td><td>Tauri 2 desktop shell, TypeScript + Vite frontend, SVG canvas, pen-tool annotations.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="block">
+            <div class="container">
+                <div class="section-label">Design notes</div>
+                <h2 class="section-heading">Four principles.</h2>
+                <div class="rules">
+                    <div class="rule">
+                        <div class="rule-name">agent-first</div>
+                        <div class="rule-desc">The script API is the primary surface. The UI is a rich observer on top of the same in-memory project that the script tools mutate.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">no shell-outs</div>
+                        <div class="rule-desc">No <code>kicad-cli</code>, no <code>freerouting.jar</code>, no wrapper crates. Every file format read or written is our own Rust code.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">the human is never blocked</div>
+                        <div class="rule-desc">Long-running operations stream progress and can be paused, redirected or cancelled at any time.</div>
+                    </div>
+                    <div class="rule">
+                        <div class="rule-name">deterministic outputs</div>
+                        <div class="rule-desc">Same project, same fab provider → byte-identical zip. Reproducible builds for hardware.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div>
+            <a href="https://github.com/mentasystems/fragua" target="_blank" rel="noopener">GitHub</a>
+            <span aria-hidden="true">·</span>
+            <a href="index.html">Menta Systems</a>
+            <span aria-hidden="true">·</span>
+            <a href="aviso-legal.html">Aviso Legal</a>
+            <span aria-hidden="true">·</span>
+            <a href="politica-privacidad.html">Política de Privacidad</a>
+        </div>
+        <div style="margin-top: 0.75rem;">MIT · &copy; 2025 Menta Systems</div>
+    </footer>
+
+    <script>
+        (function () {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let width = 0, height = 0;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const particles = [];
+            const LINK_DIST = 110;
+            const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
+
+            function resize() {
+                const rect = canvas.getBoundingClientRect();
+                width = rect.width;
+                height = rect.height;
+                canvas.width = Math.floor(width * dpr);
+                canvas.height = Math.floor(height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                seed();
+            }
+
+            function seed() {
+                particles.length = 0;
+                const count = Math.min(70, Math.max(20, Math.floor((width * height) / 18000)));
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.18,
+                        vy: (Math.random() - 0.5) * 0.18,
+                        r: Math.random() * 1.2 + 0.4,
+                        tw: Math.random() * Math.PI * 2,
+                    });
+                }
+            }
+
+            function step() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const a = particles[i];
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const b = particles[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const d2 = dx * dx + dy * dy;
+                        if (d2 < LINK_DIST_SQ) {
+                            const alpha = (1 - d2 / LINK_DIST_SQ) * 0.28;
+                            ctx.strokeStyle = `rgba(214, 144, 91, ${alpha})`;
+                            ctx.lineWidth = 0.55;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < -10) p.x = width + 10;
+                    else if (p.x > width + 10) p.x = -10;
+                    if (p.y < -10) p.y = height + 10;
+                    else if (p.y > height + 10) p.y = -10;
+
+                    p.tw += 0.018;
+                    const flicker = 0.6 + 0.4 * Math.sin(p.tw);
+                    const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+                    glow.addColorStop(0, `rgba(244, 205, 146, ${0.42 * flicker})`);
+                    glow.addColorStop(1, 'rgba(244, 205, 146, 0)');
+                    ctx.fillStyle = glow;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = `rgba(248, 232, 208, ${0.82 * flicker})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                if (!prefersReduced) requestAnimationFrame(step);
+            }
+
+            window.addEventListener('resize', resize, { passive: true });
+            resize();
+            if (prefersReduced) step();
+            else requestAnimationFrame(step);
+        })();
+    </script>
+</body>
+</html>
