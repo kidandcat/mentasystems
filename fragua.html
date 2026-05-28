@@ -114,11 +114,16 @@
         .hero-title .accent {
             color: var(--accent);
         }
+        .hero-intro {
+            position: relative;
+            padding: 3rem 0 1rem;
+            text-align: center;
+        }
         .hero-sub {
             font-size: 1.2rem;
             color: var(--text-muted);
             max-width: 620px;
-            margin: 0 auto 2.5rem;
+            margin: 0 auto 2rem;
         }
         .hero-cta {
             display: inline-flex;
@@ -171,7 +176,7 @@
             width: 90%;
             max-width: 760px;
             height: auto;
-            opacity: 0.22;
+            opacity: 0.45;
         }
 
         /* Sections */
@@ -450,8 +455,12 @@
             </svg>
         </div>
         <div class="container hero-inner">
-            <span class="hero-eyebrow"><span class="dot"></span>Desktop · Tauri 2 · pure Rust · agent-driven</span>
-            <h1 class="hero-title"><span class="accent">fragua</span></h1>
+            <h1 class="hero-title"><span class="accent">Fragua</span></h1>
+        </div>
+    </header>
+
+    <section class="hero-intro">
+        <div class="container">
             <p class="hero-sub">An AI-native PCB design tool. The agent drives the schematic, the placement, the auto-router and the rule checks; you watch the board form on screen and steer when you need to. One desktop binary, no <code>kicad-cli</code>, no <code>freerouting.jar</code>.</p>
             <div class="hero-cta">
                 <a class="btn btn-primary" href="https://github.com/mentasystems/fragua" target="_blank" rel="noopener">View on GitHub →</a>
@@ -459,7 +468,7 @@
                 <a class="btn" href="#install">Install</a>
             </div>
         </div>
-    </header>
+    </section>
 
     <main>
         <section class="block" id="how">
@@ -566,52 +575,6 @@
             </div>
         </section>
 
-        <section class="block">
-            <div class="container">
-                <div class="section-label">Stack</div>
-                <h2 class="section-heading">All Rust, all in-process.</h2>
-                <table class="annotations">
-                    <thead>
-                        <tr><th>Crate</th><th>What it owns</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>pcb-core</td><td>Project model (schematic, board, library, pours), nm fixed-point geometry, tokio broadcast event bus, JSON persistence (<code>.fragua</code> files).</td></tr>
-                        <tr><td>pcb-script</td><td>Line-oriented agent DSL: every command the agent can call, parsed and dispatched.</td></tr>
-                        <tr><td>pcb-router</td><td>A* with rip-up-and-reroute, negotiated congestion, Steiner multi-source. 2 copper layers.</td></tr>
-                        <tr><td>pcb-placer</td><td>Simulated annealing on HPWL + congestion proxy.</td></tr>
-                        <tr><td>pcb-drc / pcb-erc</td><td>Continuous design-rule and electrical-rule checks with per-net overrides.</td></tr>
-                        <tr><td>pcb-fab / pcb-gerber</td><td>Manufacturing-DRC, per-provider BOM/CPL, RS-274X Gerber, Excellon drills, packing.</td></tr>
-                        <tr><td>pcb-render</td><td>Board → SVG renderer for the live UI.</td></tr>
-                        <tr><td>src-tauri + frontend</td><td>Tauri 2 desktop shell, TypeScript + Vite frontend, SVG canvas, pen-tool annotations.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="block">
-            <div class="container">
-                <div class="section-label">Design notes</div>
-                <h2 class="section-heading">Four principles.</h2>
-                <div class="rules">
-                    <div class="rule">
-                        <div class="rule-name">agent-first</div>
-                        <div class="rule-desc">The script API is the primary surface. The UI is a rich observer on top of the same in-memory project that the script tools mutate.</div>
-                    </div>
-                    <div class="rule">
-                        <div class="rule-name">no shell-outs</div>
-                        <div class="rule-desc">No <code>kicad-cli</code>, no <code>freerouting.jar</code>, no wrapper crates. Every file format read or written is our own Rust code.</div>
-                    </div>
-                    <div class="rule">
-                        <div class="rule-name">the human is never blocked</div>
-                        <div class="rule-desc">Long-running operations stream progress and can be paused, redirected or cancelled at any time.</div>
-                    </div>
-                    <div class="rule">
-                        <div class="rule-name">deterministic outputs</div>
-                        <div class="rule-desc">Same project, same fab provider → byte-identical zip. Reproducible builds for hardware.</div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <footer class="footer">
