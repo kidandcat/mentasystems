@@ -16,11 +16,11 @@ import (
 )
 
 type ContactForm struct {
-	Nombre   string `json:"nombre"`
-	Email    string `json:"email"`
-	Empresa  string `json:"empresa"`
-	Servicio string `json:"servicio"`
-	Mensaje  string `json:"mensaje"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Company string `json:"company"`
+	Service string `json:"service"`
+	Message string `json:"message"`
 }
 
 type ResendEmail struct {
@@ -55,11 +55,11 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := ContactForm{
-		Nombre:   r.FormValue("nombre"),
-		Email:    r.FormValue("email"),
-		Empresa:  r.FormValue("empresa"),
-		Servicio: r.FormValue("servicio"),
-		Mensaje:  r.FormValue("mensaje"),
+		Name:    r.FormValue("name"),
+		Email:   r.FormValue("email"),
+		Company: r.FormValue("company"),
+		Service: r.FormValue("service"),
+		Message: r.FormValue("message"),
 	}
 
 	apiKey := os.Getenv("RESEND_API_KEY")
@@ -69,25 +69,25 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	empresa := form.Empresa
-	if empresa == "" {
-		empresa = "No especificada"
+	company := form.Company
+	if company == "" {
+		company = "Not specified"
 	}
 
 	htmlBody := fmt.Sprintf(`
-		<h2>Nueva solicitud de presupuesto</h2>
-		<p><strong>Nombre:</strong> %s</p>
+		<h2>New quote request</h2>
+		<p><strong>Name:</strong> %s</p>
 		<p><strong>Email:</strong> %s</p>
-		<p><strong>Empresa:</strong> %s</p>
-		<p><strong>Tipo de proyecto:</strong> %s</p>
-		<p><strong>Mensaje:</strong></p>
+		<p><strong>Company:</strong> %s</p>
+		<p><strong>Project type:</strong> %s</p>
+		<p><strong>Message:</strong></p>
 		<p>%s</p>
-	`, form.Nombre, form.Email, empresa, form.Servicio, form.Mensaje)
+	`, form.Name, form.Email, company, form.Service, form.Message)
 
 	email := ResendEmail{
-		From:    "Menta Systems <contacto@mentasystems.com>",
-		To:      []string{"hola@mentasystems.es"},
-		Subject: fmt.Sprintf("Nueva solicitud: %s - %s", form.Servicio, form.Nombre),
+		From:    "Menta Systems <contact@mentasystems.com>",
+		To:      []string{"hello@mentasystems.com"},
+		Subject: fmt.Sprintf("New request: %s - %s", form.Service, form.Name),
 		Html:    htmlBody,
 	}
 
@@ -124,7 +124,7 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect back to the page with success
-	http.Redirect(w, r, "/?enviado=1#contacto", http.StatusSeeOther)
+	http.Redirect(w, r, "/?sent=1#contact", http.StatusSeeOther)
 }
 
 func verifyWebhookSignature(body []byte, msgId, signature, timestamp, secret string) bool {
@@ -222,17 +222,17 @@ func handleIncomingEmail(w http.ResponseWriter, r *http.Request) {
 
 	forwardedHtml := fmt.Sprintf(`
 		<div style="background: #f5f5f5; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-			<p><strong>Email reenviado desde Menta Systems</strong></p>
-			<p><strong>De:</strong> %s</p>
-			<p><strong>Para:</strong> %s</p>
-			<p><strong>Fecha:</strong> %s</p>
+			<p><strong>Email forwarded from Menta Systems</strong></p>
+			<p><strong>From:</strong> %s</p>
+			<p><strong>To:</strong> %s</p>
+			<p><strong>Date:</strong> %s</p>
 		</div>
 		<hr>
 		%s
 	`, webhook.Data.From, toAddresses, webhook.Data.CreatedAt, htmlBody)
 
 	email := ResendEmail{
-		From:    "Menta Systems <contacto@mentasystems.com>",
+		From:    "Menta Systems <contact@mentasystems.com>",
 		To:      []string{"kidandcat@gmail.com"},
 		Subject: fmt.Sprintf("[Menta Systems] %s", webhook.Data.Subject),
 		Html:    forwardedHtml,

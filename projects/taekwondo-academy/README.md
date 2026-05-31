@@ -1,33 +1,33 @@
 # Taekwondo Academy Website
 
-Landing page profesional con CMS para academia de artes marciales.
+Professional landing page with CMS for a martial arts academy.
 
 ## Features
 
-### Pagina Publica
-- [ ] Hero con info de la academia
-- [ ] Horarios de clases
-- [ ] Informacion de niveles/cinturones
-- [ ] Galeria de fotos/videos
-- [ ] Noticias y eventos
-- [ ] Equipo de instructores
-- [ ] Precios y matriculacion
-- [ ] Formulario de contacto/inscripcion
-- [ ] Ubicacion y mapa
+### Public Site
+- [ ] Hero with academy info
+- [ ] Class schedules
+- [ ] Belt/level information
+- [ ] Photo/video gallery
+- [ ] News and events
+- [ ] Instructor team
+- [ ] Pricing and enrollment
+- [ ] Contact/registration form
+- [ ] Location and map
 
-### CMS (Panel Admin)
-- [ ] Editar contenido de paginas
-- [ ] Gestionar horarios
-- [ ] Publicar noticias
-- [ ] Subir fotos a galeria
-- [ ] Gestionar formularios recibidos
-- [ ] SEO basico
+### CMS (Admin Panel)
+- [ ] Edit page content
+- [ ] Manage schedules
+- [ ] Publish news
+- [ ] Upload gallery photos
+- [ ] Manage received forms
+- [ ] Basic SEO
 
 ### Extras
-- [ ] Responsive (movil, tablet, desktop)
-- [ ] Optimizado para SEO local
-- [ ] Velocidad de carga optimizada
-- [ ] SSL incluido
+- [ ] Responsive (mobile, tablet, desktop)
+- [ ] Optimized for local SEO
+- [ ] Optimized loading speed
+- [ ] SSL included
 
 ## Tech Stack
 - Frontend: Next.js (static generation)
@@ -35,5 +35,5 @@ Landing page profesional con CMS para academia de artes marciales.
 - Hosting: Fly.io / Vercel
 - Forms: FormSubmit / custom
 
-## Precio orientativo
-€2.000 - €3.500
+## Estimated price
+€2,000 - €3,500

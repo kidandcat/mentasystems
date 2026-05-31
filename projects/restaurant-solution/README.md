@@ -1,26 +1,26 @@
 # Restaurant Solution
 
-Solucion integral para gestion de restaurantes.
+Full-stack solution for restaurant management.
 
 ## Features
 
 ### Web App (Admin/Staff)
-- [ ] Dashboard con metricas
-- [ ] Gestion de reservas
-- [ ] Gestion de mesas
-- [ ] Sistema de pedidos
-- [ ] Pantalla de cocina (KDS)
-- [ ] Gestion de carta/menu
-- [ ] Gestion de empleados
-- [ ] Reportes y estadisticas
+- [ ] Dashboard with metrics
+- [ ] Reservation management
+- [ ] Table management
+- [ ] Order system
+- [ ] Kitchen display (KDS)
+- [ ] Menu management
+- [ ] Employee management
+- [ ] Reports and statistics
 
-### Mobile App (Clientes)
-- [ ] Carta digital
-- [ ] Pedidos desde mesa (QR)
-- [ ] Reservas online
-- [ ] Programa de fidelizacion
-- [ ] Notificaciones push
-- [ ] Historial de pedidos
+### Mobile App (Customers)
+- [ ] Digital menu
+- [ ] Table ordering (QR)
+- [ ] Online reservations
+- [ ] Loyalty program
+- [ ] Push notifications
+- [ ] Order history
 
 ## Tech Stack
 - Frontend: React / Next.js
@@ -29,5 +29,5 @@ Solucion integral para gestion de restaurantes.
 - Database: PostgreSQL
 - Real-time: WebSockets
 
-## Precio orientativo
-€18.000 - €25.000
+## Estimated price
+€18,000 - €25,000
