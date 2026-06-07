@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        // Set language before paint to avoid flash. Separate key from the public page (which only has es/en).
+        (function () {
+            var s = null;
+            try { s = localStorage.getItem('menta-lang-int'); } catch (e) {}
+            var n = (navigator.language || 'es').slice(0, 2).toLowerCase();
+            var l = s || (n === 'ru' ? 'ru' : (n === 'es' ? 'es' : 'en'));
+            document.documentElement.setAttribute('data-lang', l);
+            document.documentElement.setAttribute('lang', l);
+        })();
+    </script>
     <style>
         :root {
             --bg: #0a0e12;
@@ -32,11 +43,23 @@
         .wrap { max-width: 1180px; margin: 0 auto; padding: 0 1rem; }
         code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.86em; }
 
+        /* language visibility */
+        html[data-lang="es"] .only-en, html[data-lang="es"] .only-ru,
+        html[data-lang="en"] .only-es, html[data-lang="en"] .only-ru,
+        html[data-lang="ru"] .only-es, html[data-lang="ru"] .only-en { display: none !important; }
+
         .topbar { position: sticky; top: 0; z-index: 20; background: rgba(10,14,18,0.95); border-bottom: 1px solid var(--line); backdrop-filter: blur(6px); }
         .topbar .wrap { display: flex; align-items: center; gap: 1rem; padding: 0.55rem 1rem; flex-wrap: wrap; }
         .topbar .brand { font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.04em; color: var(--head); font-size: 1.05rem; }
         .topbar .brand span { color: #8aa4b3; font-weight: 500; }
         .badge { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.68rem; letter-spacing: 0.16em; color: var(--gold); border: 1px solid rgba(230,196,110,0.4); padding: 0.15rem 0.5rem; border-radius: 4px; }
+        .lang-switch { display: inline-flex; border: 1px solid var(--line-2); border-radius: 6px; overflow: hidden; }
+        .lang-switch button { appearance: none; border: none; background: transparent; cursor: pointer; color: var(--dim); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.74rem; letter-spacing: 0.06em; padding: 0.25rem 0.55rem; border-right: 1px solid var(--line-2); }
+        .lang-switch button:last-child { border-right: none; }
+        .lang-switch button:hover { color: var(--text); }
+        html[data-lang="es"] .lang-switch button[data-l="es"],
+        html[data-lang="en"] .lang-switch button[data-l="en"],
+        html[data-lang="ru"] .lang-switch button[data-l="ru"] { background: var(--accent); color: var(--bg); }
         .topnav { margin-left: auto; display: flex; gap: 0.9rem; flex-wrap: wrap; font-size: 0.8rem; }
         .topnav a { color: var(--dim); }
         .topnav a:hover { color: var(--accent); text-decoration: none; }
@@ -89,9 +112,17 @@
     </style>
 </head>
 <body>
+
+<!-- ===================== SPANISH ===================== -->
+<div class="only-es">
     <div class="topbar"><div class="wrap">
         <span class="brand">MENTA<span>systems</span> · domótica</span>
         <span class="badge">INTERNO · USO INTERNO</span>
+        <div class="lang-switch">
+            <button type="button" data-l="es" onclick="setLang('es')">ES</button>
+            <button type="button" data-l="en" onclick="setLang('en')">EN</button>
+            <button type="button" data-l="ru" onclick="setLang('ru')">RU</button>
+        </div>
         <nav class="topnav">
             <a href="#tiers">Kits</a>
             <a href="#sourcing">Sourcing</a>
@@ -338,5 +369,533 @@
             Menta Systems — documento interno. No enlazado, noindex. Versión pública: <a href="/home">/home</a>.
         </footer>
     </div>
+</div>
+
+<!-- ===================== ENGLISH ===================== -->
+<div class="only-en">
+    <div class="topbar"><div class="wrap">
+        <span class="brand">MENTA<span>systems</span> · domótica</span>
+        <span class="badge">INTERNAL · INTERNAL USE</span>
+        <div class="lang-switch">
+            <button type="button" data-l="es" onclick="setLang('es')">ES</button>
+            <button type="button" data-l="en" onclick="setLang('en')">EN</button>
+            <button type="button" data-l="ru" onclick="setLang('ru')">RU</button>
+        </div>
+        <nav class="topnav">
+            <a href="#tiers-en">Kits</a>
+            <a href="#sourcing-en">Sourcing</a>
+            <a href="#catalogo-en">Catalog</a>
+            <a href="#obra-en">Install guide</a>
+            <a href="#caveats-en">Caveats</a>
+            <a href="#pendiente-en">Pending</a>
+            <a href="/home">→ public version</a>
+        </nav>
+    </div></div>
+
+    <div class="wrap">
+        <h1 class="doc">Local-first home automation — internal document</h1>
+        <p class="doc-sub">Kit specification, catalog with sourcing and install guide for the building site. Foundation: local Home Assistant, all Zigbee except cameras (PoE) and energy. Indicative prices excl. VAT, Jun-2026. <b>The electrical certificate is signed by a certified electrician.</b></p>
+
+        <!-- PRINCIPLE -->
+        <section>
+            <h2><span class="num">0</span> Principle</h2>
+            <ul class="tight">
+                <li><span class="pill p-local">Zigbee ✓</span> &nbsp;Every device paired to <b>our</b> coordinator (ZBT-2 + Zigbee2MQTT/ZHA) = 100% local, no cloud. Works without internet.</li>
+                <li><span class="pill p-cloud">WiFi-cloud ✗</span> &nbsp;Nothing that depends on the manufacturer's cloud (Tuya WiFi, etc.). Out of the catalog.</li>
+                <li>Cameras = local PoE + Frigate. Energy = inverter with local API. Access/support = Tailscale.</li>
+            </ul>
+        </section>
+
+        <!-- SOURCING -->
+        <section id="sourcing-en">
+            <h2><span class="num">1</span> Sourcing: AliExpress vs certified</h2>
+            <p class="note-lead">First customers / validation → AliExpress (Zigbee). Scaling → certified brand for reliability, support and RMA. The architecture and the local promise don't change.</p>
+            <div class="box ok">
+                <b>Golden rule:</b> on AliExpress ALWAYS buy the <b>Zigbee</b> variant, never the WiFi one. The same Tuya/Moes module in Zigbee is local (same chip as the expensive rebranded brand); in WiFi it depends on Tuya's cloud. <span class="pill p-warn">Check the listing: explicit "Zigbee", not "WiFi/Tuya Smart app".</span>
+            </div>
+            <div class="box warn">
+                <b>AliExpress risks to accept during validation:</b> batches with variable firmware (input "detached" behavior, shutter calibration, minimum brightness on dimmers), no real RMA, 1-3 week shipping. To scale with a service fee → certified. Order 1-2 test units and validate in Z2M BEFORE buying a batch.
+            </div>
+        </section>
+
+        <!-- TIERS MATRIX -->
+        <section id="tiers-en">
+            <h2><span class="num">2</span> Kit matrix</h2>
+            <p class="note-lead">Identical brain in all three. Quantities = average home (~90 m², 3 bedrooms); adjust per project. Price = certified material only, excl. VAT, no labor or config.</p>
+            <table>
+                <thead><tr><th>Element</th><th>Basic</th><th>Premium</th><th>Super Premium</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Hub + radio (ZBT-2)</td><td>✓ 1</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Frigate mini-PC</td><td>—</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Light modules</td><td>8-12</td><td>8-12</td><td>8-12</td></tr>
+                    <tr><td class="k">Shutter modules</td><td>4-6</td><td>4-6</td><td>4-6</td></tr>
+                    <tr><td class="k">Door/window sensors</td><td>6-10</td><td>6-10</td><td>6-10</td></tr>
+                    <tr><td class="k">Motion / Temp+Hum</td><td>3 / 3</td><td>3 / 3</td><td>3 / 3</td></tr>
+                    <tr><td class="k">Smoke (EN14604) / water leak</td><td>2-3 / 2</td><td>2-3 / 2</td><td>2-3 / 2</td></tr>
+                    <tr><td class="k">UPS brain+network</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td class="k">PoE cameras</td><td>—</td><td>2-4</td><td>2-4</td></tr>
+                    <tr><td class="k">Lock</td><td>—</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Battery + solar</td><td>—</td><td>—</td><td>✓ (partner)</td></tr>
+                    <tr><td class="k" style="color:var(--gold)">Approx. material</td><td class="price">1.000-1.300 €</td><td class="price">2.000-2.800 €</td><td class="price">8.000-16.000 €</td></tr>
+                    <tr><td class="k" style="color:var(--gold)">via AliExpress</td><td class="price">~450-600 €</td><td class="price">~1.300-1.800 €</td><td class="price">+battery</td></tr>
+                    <tr><td class="k" style="color:var(--accent)">Target fee/month</td><td>~15 €</td><td>~25 €</td><td>~40 €</td></tr>
+                </tbody>
+            </table>
+            <p class="note-lead">The Super Premium battery/solar is quoted and executed by the partner installer; it dominates the cost (~6.500-13.000 € for the energy part).</p>
+        </section>
+
+        <!-- CATALOG -->
+        <section id="catalogo-en">
+            <h2><span class="num">3</span> Catalog with specs and sourcing</h2>
+
+            <h3>3.1 Brain: hub + radio + NVR</h3>
+            <table>
+                <thead><tr><th>Part</th><th>Model</th><th>Key specs</th><th>Local</th><th>Price</th><th>AliExpress / note</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Hub</td><td class="k">HA Green</td><td>Quad-core, 4GB, eMMC. No built-in radio.<span class="sub">Higher-power alt.: Intel N100 mini-PC, 8-16GB.</span></td><td><span class="pill p-local">local</span></td><td class="price">~110 €</td><td>Buy official (Nabu Casa / Seeed). No clones.</td></tr>
+                    <tr><td class="k">Radio</td><td class="k">HA Connect ZBT-2</td><td>Zigbee 3.0 <i>or</i> Thread (one at a time). USB.<span class="sub">2nd unit if you need Zigbee + Thread at the same time.</span></td><td><span class="pill p-local">local</span></td><td class="price">~45 €</td><td><span class="pill p-warn">USB extension cable mandatory + away from USB-3.0/SSD (2.4 GHz noise).</span></td></tr>
+                    <tr><td class="k">NVR mini-PC</td><td class="k">Beelink EQ13</td><td>Intel N100, 2× 2.5G NIC, 16GB. OpenVINO iGPU.<span class="sub">Hailo-8L M.2 (~65 €) if &gt;6 cameras.</span></td><td><span class="pill p-local">local</span></td><td class="price">~160-200 €</td><td>Standalone Frigate (Docker), NOT the hub add-on. 2nd NIC = camera VLAN.</td></tr>
+                    <tr><td class="k">Recording SSD</td><td class="k">Dedicated SSD/HDD</td><td>Frigate buffer. Size: retention × bitrate.<span class="sub">~1-2 TB for 4 cameras / 14 days at 1080p.</span></td><td>—</td><td class="price">~60-120 €</td><td>OS+Frigate on NVMe; recordings on a separate disk.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.2 Lights — Zigbee module behind the mechanism (requires neutral)</h3>
+            <table>
+                <thead><tr><th>Option</th><th>Model</th><th>Specs</th><th>Price</th><th>AliExpress (term)</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">certified</span></td><td class="k">NodOn SIN-4-1-20</td><td>16 A relay, multifunction, acts as a mesh router. Pushbutton/toggle input, detached mode.</td><td class="price">~40-55 €</td><td class="ali">EU brand, no reliable Ali equivalent</td></tr>
+                    <tr><td><span class="pill p-warn">alt.</span></td><td class="k">Aqara Single Switch T1 (N)</td><td>Version with neutral. Local in Z2M/ZHA without Aqara hub.</td><td class="price">~20-30 €</td><td class="ali">"Aqara T1 switch module neutral"</td></tr>
+                    <tr><td><span class="pill p-warn">dimmer</span></td><td class="k">Shelly Dimmer Gen4</td><td>Multiprotocol. Use in <b>WiFi</b> (mature local integration) or Zigbee (greener). 0-10V/triac.</td><td class="price">~40-50 €</td><td class="ali">official Shelly store</td></tr>
+                    <tr><td><span class="pill p-warn">budget</span></td><td class="k">Tuya/Moes Zigbee module</td><td>1 or 2 channels, with/without neutral. Same chip as the brand.</td><td class="price">~8-12 €</td><td class="ali">"Tuya Zigbee switch module" (Zigbee, not WiFi!)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 Shutters — Zigbee roller shutter module (requires neutral)</h3>
+            <table>
+                <thead><tr><th>Option</th><th>Model</th><th>Specs</th><th>Price</th><th>AliExpress (term)</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">certified</span></td><td class="k">NodOn SIN-4-RS-20</td><td>Up/down/stop + position + auto-calibration. Interlocks the motor (doesn't energize both relays). Mesh router.</td><td class="price">~45-55 €</td><td class="ali">EU brand</td></tr>
+                    <tr><td><span class="pill p-warn">budget</span></td><td class="k">Tuya TS130F (MS-108ZR)</td><td>Up/down/stop + position. Manual calibration. Router.</td><td class="price">~12-20 €</td><td class="ali">"Zigbee roller shutter module TS130F"</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Shutter motor:</b> the module does NOT replace the motor's limit switch. The motor must be a standard 230 V shutter motor with its own limit switches; the module only switches direction. <b>Never</b> energize up and down at the same time (the modules above already interlock it, but confirm it).</div>
+
+            <h3>3.4 Sensors (Zigbee, direct to the coordinator, no manufacturer hub)</h3>
+            <table>
+                <thead><tr><th>Type</th><th>Certified</th><th>Budget</th><th>Specs</th><th>Price</th><th>AliExpress</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Door/window</td><td class="k">Aqara P2</td><td>Sonoff SNZB-04</td><td>Magnetic contact, CR2032/CR1632 battery, 2+ years.</td><td class="price">~7-18 €</td><td class="ali">"Aqara P2 door" / "SNZB-04"</td></tr>
+                    <tr><td class="k">Motion</td><td class="k">Aqara Motion P1</td><td>Sonoff SNZB-03P</td><td>PIR, adjustable interval, lux. Angle ~170°.</td><td class="price">~12-25 €</td><td class="ali">"Aqara motion P1"</td></tr>
+                    <tr><td class="k">Temp/humidity</td><td class="k">Aqara T&H</td><td>Sonoff SNZB-02P</td><td>±0.3°C. For climate/comfort and frost alarms.</td><td class="price">~12-18 €</td><td class="ali">"Aqara temperature humidity"</td></tr>
+                    <tr><td class="k">Water leak</td><td class="k">Frient Water Leak</td><td>Aqara Water Leak</td><td>Floor probe. Frient "Works with HA".</td><td class="price">~18-30 €</td><td class="ali">"Aqara water leak sensor"</td></tr>
+                    <tr><td class="k">Smoke</td><td class="k">Heiman HS1SA-E</td><td>Frient Smoke</td><td><b>EN14604</b>. Standalone siren even if the hub goes down. 10-year battery.</td><td class="price">~35-55 €</td><td class="ali">certified (no reliable budget option)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.5 Cameras + recording (PoE, local, Frigate)</h3>
+            <table>
+                <thead><tr><th>Part</th><th>Model</th><th>Specs</th><th>Price</th><th>Frigate note</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Standard</td><td class="k">Reolink RLC-810A / 820A</td><td>4K/8MP, PoE, RTSP+ONVIF, microSD, IR. Bullet/dome.</td><td class="price">~85-110 €</td><td>Detection on <b>1080p/5fps substream</b>; 4K main for recording only.</td></tr>
+                    <tr><td class="k">Wide angle</td><td class="k">Reolink Duo 3 PoE</td><td>16MP, 180°, dual lens. 3V = IK10 vandal-proof.</td><td class="price">~150-210 €</td><td>One covers facade/entrance (= 2 cameras).</td></tr>
+                    <tr><td class="k">PoE switch</td><td class="k">5-8 port PoE switch</td><td>802.3af, W budget ≥ Σ cameras. In the rack.</td><td class="price">~40-70 €</td><td>Cameras on an isolated VLAN (mini-PC's 2nd NIC).</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Frigate:</b> Frigate "owns" the RTSP streams; HA receives events via MQTT, not a second native pull (Reolink drops connections under a heavy double pull). Some models prefer HTTP-FLV on the high stream — see the "camera specific" doc when fixing the SKU.</div>
+
+            <h3>3.6 Locks — the category with a catch</h3>
+            <table>
+                <thead><tr><th>Option</th><th>Model</th><th>Local in HA</th><th>Type</th><th>Price</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">default</span></td><td class="k">Nuki Smart Lock Pro + MQTT</td><td><b>Full</b>: lock/unlock, unlatch, battery, codes. Native local MQTT (Pro/Ultra/Go).</td><td>Retrofit over the existing cylinder (doesn't touch the cylinder).</td><td class="price">~229-279 €</td></tr>
+                    <tr><td><span class="pill p-warn">alt.</span></td><td class="k">Aqara U200</td><td><b>Only lock/unlock</b> in HA (Matter). Battery/unlatch only in the Aqara app.</td><td>European cylinder (measure backset/length).</td><td class="price">~160 € + cyl.</td></tr>
+                    <tr><td><span class="pill p-warn">purist</span></td><td class="k">Danalock V4 Z-Wave</td><td>Local by protocol (lock/unlock + battery). Requires a Z-Wave stick.</td><td>Thumb-turn retrofit. Inconsistent reliability.</td><td class="price">~150-200 €</td></tr>
+                </tbody>
+            </table>
+            <div class="box danger"><b>Treat as CLOUD (don't use as "local"):</b> Yale Linus / Linus L2 (BT + cloud bridge, unless Matter confirmed on the unit), Tedee (Matter only via recent firmware, verify), any generic wifi/Tuya/BT one. <b>100% local Nuki fallback:</b> Nuki Hub (ESP32, open source) over BT → MQTT, no cloud or Nuki bridge.</div>
+
+            <h3>3.7 Energy and backup</h3>
+            <table>
+                <thead><tr><th>Part</th><th>Model</th><th>Specs</th><th>Price</th><th>Note</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">UPS brain+network</td><td class="k">Salicru SPS 700 ONE</td><td>700 VA / 360 W, 2× Schuko + USB. Line-interactive.</td><td class="price">~65-70 €</td><td>HA reads it via <b>NUT</b> (USB to the host): outage, battery %, safe shutdown, shedding.</td></tr>
+                    <tr><td class="k">Inverter/battery</td><td class="k">Victron (Cerbo GX)</td><td><b>Official local</b> HA integration (victron_gx, MQTT). ESS control: setpoint, min SoC, charging.</td><td class="price">installer quote</td><td>Outage backup = native (MultiPlus/Quattro). Alt: Huawei LUNA2000, Sungrow SHxRT.</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Avoid SolarEdge</b> as the main one: official cloud integration and limited (300 calls/day), battery settings locked by the installer. Local Modbus exists but with friction. <b>Backup ≠ HA:</b> surviving the outage is inverter hardware + wiring (delivered by the installer), HA only observes/optimizes. IDAE/Next-Gen subsidies ~140-490 €/kWh (varies by region, limited availability) — confirm per quote.</div>
+        </section>
+
+        <!-- OBRA -->
+        <section id="obra-en">
+            <h2><span class="num">4</span> Building-site guide for the mason</h2>
+            <p class="note-lead">What the building work must leave in place so the home-automation install is clean and expandable. Key idea: <b>over-prepare</b> (neutral everywhere, conduit and Cat6 even if unused today) costs little with the wall open and avoids re-cutting tomorrow. The electrical work is executed/signed by an electrician; here goes the "what to leave where".</p>
+
+            <h3>4.1 Back boxes and boxes (the most important thing)</h3>
+            <ul class="tight">
+                <li><b>Neutral at ALL</b> light and shutter points (not just live + return). Zigbee modules are powered at 230 V and need a permanent N. Without neutral there is no reliable module.</li>
+                <li><b>Deep back box</b> behind each switch/shutter that will carry a module: flush-mount box <b>≥ 50 mm deep</b> (better a universal/“octagonal” or double box) — the module goes behind the mechanism and doesn't fit comfortably in a standard 40 mm box.</li>
+                <li>One accessible <b>junction box</b> per room/zone to concentrate branch connections; makes it easier to fit multi-channel modules at a single point if desired.</li>
+                <li>Switches: can be regular (pushbutton or toggle); the module respects the physical one. If a minimalist look is wanted, provide for a pushbutton.</li>
+            </ul>
+            <div class="box"><b>Typical light module diagram</b> (confirm with the electrician and the module manual):
+            <div class="wire"><span class="l">L</span>  permanent live       → module IN (L)
+<span class="n">N</span>  permanent neutral    → module IN (N)
+   lamp output          ← module OUT
+   wall switch          → module S1 (and S2 if two-way)</div></div>
+
+            <h3>4.2 Shutters</h3>
+            <ul class="tight">
+                <li>Shutter motor <b>230 V with its own limit switches</b> (standard). The module only switches up/down.</li>
+                <li>Leave a <b>corrugated conduit</b> from the shutter box (where the motor comes out) to the switch back box, with wires: up, down, neutral, live, earth.</li>
+                <li>Shutter switch back box also <b>deep</b> (it carries a module).</li>
+            </ul>
+
+            <h3>4.3 Network and "rack" (heart of the install)</h3>
+            <ul class="tight">
+                <li>Define the <b>cabinet/rack</b> location: ventilated, dry, with <b>2-3 outlets</b> and near the fiber/router entry point. Houses: HA hub, Frigate mini-PC, PoE switch, UPS, ONT/router.</li>
+                <li><b>Cat6 (or better Cat6A) from the rack to:</b> each camera (PoE), 1-2 <b>WiFi AP</b> points (central ceiling/wall), TV/living room, and 1 spare per floor. All to patch panels/strips in the rack.</li>
+                <li><b>Ø25 mm minimum</b> conduit in the data runs to be able to pull more cable in the future. Separate from power ≥ 10-15 cm to avoid interference.</li>
+                <li>Leave a <b>pull cord</b> in the empty spare conduits.</li>
+            </ul>
+            <div class="box ok"><b>Cheap rule:</b> with the wall open, run Cat6 to the corners where a camera <i>could</i> go even if today's kit is Basic. Upgrading to Premium later = plug in, no re-cutting.</div>
+
+            <h3>4.4 Cameras (PoE)</h3>
+            <ul class="tight">
+                <li>Typical positions: <b>entrance/door</b>, facade/vehicle access, rear perimeter. Height <b>~2.5-3 m</b>, out of reach but not “looking at the sky”.</li>
+                <li><b>1 Cat6 cable per camera</b> to the rack (PoE carries data + power, no outlet at the camera).</li>
+                <li>Outdoors: a <b>weatherproof IP65</b> junction box behind the camera; leave a cable service loop.</li>
+                <li>Avoid pointing at public roads/neighbors (GDPR) — frame only your own property.</li>
+            </ul>
+
+            <h3>4.5 Lock</h3>
+            <ul class="tight">
+                <li><b>Nuki (recommended)</b>: retrofit from the inside over the existing cylinder, <b>no building work</b>. Only requires the cylinder to have a compatible interior thumb-turn/key (button or adapter). Needs nothing from the mason except… nothing.</li>
+                <li><b>Aqara U200</b>: replaces the cylinder → <b>measure the European cylinder</b> (exterior/interior length, backset) before ordering. This one does touch the door.</li>
+                <li>If there's a video intercom/door opener, plan a data conduit to the rack.</li>
+            </ul>
+
+            <h3>4.6 Sensors and detectors</h3>
+            <ul class="tight">
+                <li><b>Door/window, motion, temp/hum, leak</b>: battery-powered, <b>no building work</b> (adhesive). Leak: leave the floor under the washer/dishwasher/boiler accessible.</li>
+                <li><b>Smoke (EN14604)</b>: on the <b>ceiling</b>, centered in the room, <b>≥ 0.5 m from walls/corners</b> and away from ventilation grilles, kitchen and bathroom (steam = false alarms). One per bedroom/hallway per regulation; confirm location with code/installer.</li>
+                <li>They don't need wiring, but it's worth <b>deciding positions during the build</b> for aesthetics (centered, aligned).</li>
+            </ul>
+
+            <h3>4.7 Energy (Super Premium)</h3>
+            <ul class="tight">
+                <li><b>UPS</b>: only needs one outlet next to the rack (Menta installs it).</li>
+                <li><b>Battery + solar</b>: defined and executed by the <b>partner installer</b>. The building work must plan for: a <b>technical room</b> with space + ventilation, suitable supply/panel, cable run to the roof for panels, and provision for a <b>backup panel</b> (essential loads separated). Coordinate with them before closing up the electrical panel.</li>
+            </ul>
+
+            <h3>4.8 Responsibility boundary</h3>
+            <table>
+                <thead><tr><th>Mason + electrician</th><th>Menta Systems</th></tr></thead>
+                <tbody>
+                    <tr><td>Deep back boxes, neutral everywhere, conduits, Cat6, rack, positions. Physical mounting of mechanisms and modules per the diagram. Signed electrical certificate.</td><td>Certified supply, HA config, Zigbee pairing, Frigate, lock, onboarding into monitoring/Tailscale, backups, support and fee.</td></tr>
+                </tbody>
+            </table>
+            <div class="box"><b>Minimum building-site checklist:</b> neutral at all points · ≥50 mm back boxes at lights/shutters · shutter conduit box→switch · ventilated rack with outlets · Cat6 to cameras+APs+spares · Ø25 conduits with pull cord · outdoor weatherproof boxes · cylinder measured (if Aqara) · technical room planned (if battery).</div>
+        </section>
+
+        <!-- CAVEATS -->
+        <section id="caveats-en">
+            <h2><span class="num">5</span> Technical caveats</h2>
+            <ul class="tight">
+                <li><b>ZBT-2</b>: Zigbee OR Thread, not both. USB extension cable + away from USB-3.0/SSD or range degrades.</li>
+                <li><b>Shelly Gen4 in Zigbee</b>: works but green firmware (input detached, reliability). If you want Shelly, its <b>local WiFi</b> mode is more mature — but it breaks the “Zigbee only” purity. Decide per project.</li>
+                <li><b>Matter locks</b>: deliberately minimal integration (lock/unlock only). For battery/unlatch/codes in HA → Nuki MQTT.</li>
+                <li><b>CO</b>: no reliable, certifiable local EN50291 Zigbee detector today → use a certified standalone one, HA visibility secondary.</li>
+                <li><b>Frigate</b>: detection on the substream, not on 4K. Coral = legacy, use iGPU/Hailo.</li>
+                <li><b>Fleet</b>: Tailscale grants access to the customer's ENTIRE LAN → strict ACLs (operator → only HA's host:port). Fleet monitoring (HA Fleet Manager) still young: pilot it, don't bet blindly. Updates: canary + phased, never mass.</li>
+            </ul>
+        </section>
+
+        <!-- PENDING -->
+        <section id="pendiente-en">
+            <h2><span class="num">6</span> Pending validation before certifying</h2>
+            <ul class="tight">
+                <li>Specific SKU for a local EN50291 <b>CO detector</b> (or accept standalone).</li>
+                <li>Firmware maturity of <b>Shelly Gen4 Zigbee</b> if used in Zigbee.</li>
+                <li>Test batch of <b>AliExpress modules</b> (light + shutter) in Z2M before buying in quantity.</li>
+                <li>Confirm <b>local Matter</b> on the specific unit if Yale L2 / Tedee is considered.</li>
+                <li>Lock in the battery/solar <b>partner installer</b> (preference for Victron for local integration).</li>
+                <li>Pin down the real <b>fee</b> (monitoring + support + fault-replacement margin) per tier.</li>
+            </ul>
+        </section>
+
+        <footer>
+            Menta Systems — internal document. Unlinked, noindex. Public version: <a href="/home">/home</a>.
+        </footer>
+    </div>
+</div>
+
+<!-- ===================== RUSSIAN ===================== -->
+<div class="only-ru">
+    <div class="topbar"><div class="wrap">
+        <span class="brand">MENTA<span>systems</span> · domótica</span>
+        <span class="badge">ВНУТРЕННИЙ · СЛУЖЕБНЫЙ</span>
+        <div class="lang-switch">
+            <button type="button" data-l="es" onclick="setLang('es')">ES</button>
+            <button type="button" data-l="en" onclick="setLang('en')">EN</button>
+            <button type="button" data-l="ru" onclick="setLang('ru')">RU</button>
+        </div>
+        <nav class="topnav">
+            <a href="#tiers-ru">Комплекты</a>
+            <a href="#sourcing-ru">Закупки</a>
+            <a href="#catalogo-ru">Каталог</a>
+            <a href="#obra-ru">Монтаж</a>
+            <a href="#caveats-ru">Оговорки</a>
+            <a href="#pendiente-ru">To-do</a>
+            <a href="/home">→ публичная версия</a>
+        </nav>
+    </div></div>
+
+    <div class="wrap">
+        <h1 class="doc">Локальная домашняя автоматизация (local-first) — внутренний документ</h1>
+        <p class="doc-sub">Спецификация комплектов, каталог с информацией о закупках и руководство по монтажу для стройки. Основа: локальный Home Assistant, всё по Zigbee, кроме камер (PoE) и энергоснабжения. Цены ориентировочные, без НДС, июнь 2026. <b>Электротехнический акт (boletín) подписывает сертифицированный электрик.</b></p>
+
+        <!-- PRINCIPLE -->
+        <section>
+            <h2><span class="num">0</span> Принцип</h2>
+            <ul class="tight">
+                <li><span class="pill p-local">Zigbee ✓</span> &nbsp;Любое устройство сопряжено с <b>нашим</b> координатором (ZBT-2 + Zigbee2MQTT/ZHA) = 100% локально, без облака. Работает без интернета.</li>
+                <li><span class="pill p-cloud">WiFi-облако ✗</span> &nbsp;Ничего, что зависит от облака производителя (Tuya WiFi и т. п.). Вне каталога.</li>
+                <li>Камеры = локальный PoE + Frigate. Энергоснабжение = инвертор с локальным API. Доступ/поддержка = Tailscale.</li>
+            </ul>
+        </section>
+
+        <!-- SOURCING -->
+        <section id="sourcing-ru">
+            <h2><span class="num">1</span> Закупки: AliExpress против сертифицированного оборудования</h2>
+            <p class="note-lead">Первые клиенты / валидация → AliExpress (Zigbee). Масштабирование → сертифицированный бренд ради надёжности, поддержки и RMA. Архитектура и обещание локальности не меняются.</p>
+            <div class="box ok">
+                <b>Золотое правило:</b> на AliExpress ВСЕГДА покупать вариант <b>Zigbee</b>, никогда не WiFi. Тот же модуль Tuya/Moes в версии Zigbee локален (тот же чип, что и у дорогого перемаркированного бренда); в версии WiFi он зависит от облака Tuya. <span class="pill p-warn">Проверять в карточке товара: явно «Zigbee», а не «WiFi/Tuya Smart app».</span>
+            </div>
+            <div class="box warn">
+                <b>Риски AliExpress, принимаемые на этапе валидации:</b> партии с непредсказуемой прошивкой (поведение входа в режиме «detached», калибровка рольставней, минимальная яркость у диммеров), отсутствие реального RMA, доставка 1–3 нед. Для масштабирования с сервисной абонплатой → сертифицированное оборудование. Заказать 1–2 шт. на пробу и проверить в Z2M ПРЕЖДЕ чем покупать партию.
+            </div>
+        </section>
+
+        <!-- TIERS MATRIX -->
+        <section id="tiers-ru">
+            <h2><span class="num">2</span> Матрица комплектов</h2>
+            <p class="note-lead">«Мозг» одинаков во всех трёх. Количества = средняя квартира (~90 m², 3 спальни); корректировать под проект. Цена = только сертифицированный материал, без НДС, без работ и настройки.</p>
+            <table>
+                <thead><tr><th>Элемент</th><th>Базовый</th><th>Premium</th><th>Super Premium</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Хаб + радио (ZBT-2)</td><td>✓ 1</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Мини-ПК Frigate</td><td>—</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Модули освещения</td><td>8-12</td><td>8-12</td><td>8-12</td></tr>
+                    <tr><td class="k">Модули рольставней</td><td>4-6</td><td>4-6</td><td>4-6</td></tr>
+                    <tr><td class="k">Датчики двери/окна</td><td>6-10</td><td>6-10</td><td>6-10</td></tr>
+                    <tr><td class="k">Движение / Темп.+Влаж.</td><td>3 / 3</td><td>3 / 3</td><td>3 / 3</td></tr>
+                    <tr><td class="k">Дым (EN14604) / протечка воды</td><td>2-3 / 2</td><td>2-3 / 2</td><td>2-3 / 2</td></tr>
+                    <tr><td class="k">ИБП мозг+сеть</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td class="k">Камеры PoE</td><td>—</td><td>2-4</td><td>2-4</td></tr>
+                    <tr><td class="k">Замок</td><td>—</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Батарея + солнечные панели</td><td>—</td><td>—</td><td>✓ (партнёр)</td></tr>
+                    <tr><td class="k" style="color:var(--gold)">Материал ориентировочно</td><td class="price">1.000-1.300 €</td><td class="price">2.000-2.800 €</td><td class="price">8.000-16.000 €</td></tr>
+                    <tr><td class="k" style="color:var(--gold)">через AliExpress</td><td class="price">~450-600 €</td><td class="price">~1.300-1.800 €</td><td class="price">+батарея</td></tr>
+                    <tr><td class="k" style="color:var(--accent)">Целевая абонплата/мес</td><td>~15 €</td><td>~25 €</td><td>~40 €</td></tr>
+                </tbody>
+            </table>
+            <p class="note-lead">Батарею/солнечные панели Super Premium сметит и монтирует партнёрская монтажная компания; они доминируют в стоимости (~6.500-13.000 € энергетическая часть).</p>
+        </section>
+
+        <!-- CATALOG -->
+        <section id="catalogo-ru">
+            <h2><span class="num">3</span> Каталог со спецификациями и закупками</h2>
+
+            <h3>3.1 Мозг: хаб + радио + NVR</h3>
+            <table>
+                <thead><tr><th>Компонент</th><th>Модель</th><th>Ключевые характеристики</th><th>Локально</th><th>Цена</th><th>AliExpress / примечание</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Хаб</td><td class="k">HA Green</td><td>Quad-core, 4GB, eMMC. Без встроенного радио.<span class="sub">Альт. помощнее: мини-ПК Intel N100, 8-16GB.</span></td><td><span class="pill p-local">локально</span></td><td class="price">~110 €</td><td>Покупать официально (Nabu Casa / Seeed). Не клоны.</td></tr>
+                    <tr><td class="k">Радио</td><td class="k">HA Connect ZBT-2</td><td>Zigbee 3.0 <i>или</i> Thread (по одному за раз). USB.<span class="sub">2-я шт., если нужны Zigbee + Thread одновременно.</span></td><td><span class="pill p-local">локально</span></td><td class="price">~45 €</td><td><span class="pill p-warn">Обязателен USB-удлинитель + подальше от USB-3.0/SSD (помехи 2.4 GHz).</span></td></tr>
+                    <tr><td class="k">Мини-ПК NVR</td><td class="k">Beelink EQ13</td><td>Intel N100, 2× NIC 2.5G, 16GB. iGPU OpenVINO.<span class="sub">Hailo-8L M.2 (~65 €) при &gt;6 камер.</span></td><td><span class="pill p-local">локально</span></td><td class="price">~160-200 €</td><td>Frigate автономно (Docker), НЕ add-on хаба. 2-я NIC = VLAN камер.</td></tr>
+                    <tr><td class="k">SSD для записи</td><td class="k">Выделенный SSD/HDD</td><td>Буфер Frigate. Расчёт: хранение × битрейт.<span class="sub">~1-2 TB для 4 камер / 14 дней в 1080p.</span></td><td>—</td><td class="price">~60-120 €</td><td>ОС+Frigate на NVMe; записи на отдельном диске.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.2 Освещение — модуль Zigbee за механизмом (требуется ноль)</h3>
+            <table>
+                <thead><tr><th>Вариант</th><th>Модель</th><th>Характеристики</th><th>Цена</th><th>AliExpress (запрос)</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">сертиф.</span></td><td class="k">NodOn SIN-4-1-20</td><td>Реле 16 A, многофункциональный, работает как маршрутизатор сети. Вход кнопка/переключатель, режим detached.</td><td class="price">~40-55 €</td><td class="ali">бренд ЕС, без надёжного аналога на Ali</td></tr>
+                    <tr><td><span class="pill p-warn">альт.</span></td><td class="k">Aqara Single Switch T1 (N)</td><td>Версия с нулём. Локально в Z2M/ZHA без хаба Aqara.</td><td class="price">~20-30 €</td><td class="ali">"Aqara T1 switch module neutral"</td></tr>
+                    <tr><td><span class="pill p-warn">диммер</span></td><td class="k">Shelly Dimmer Gen4</td><td>Мультипротокол. Использовать в <b>WiFi</b> (зрелая локальная интеграция) или Zigbee (более «сырой»). 0-10V/triac.</td><td class="price">~40-50 €</td><td class="ali">официальный магазин Shelly</td></tr>
+                    <tr><td><span class="pill p-warn">бюджетный</span></td><td class="k">Tuya/Moes Zigbee модуль</td><td>1 или 2 канала, с нулём/без. Тот же чип, что и у бренда.</td><td class="price">~8-12 €</td><td class="ali">"Tuya Zigbee switch module" (Zigbee, не WiFi!)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 Рольставни — модуль Zigbee roller shutter (требуется ноль)</h3>
+            <table>
+                <thead><tr><th>Вариант</th><th>Модель</th><th>Характеристики</th><th>Цена</th><th>AliExpress (запрос)</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">сертиф.</span></td><td class="k">NodOn SIN-4-RS-20</td><td>Поднять/опустить/стоп + позиция + автокалибровка. Блокирует мотор (не включает оба реле). Маршрутизатор сети.</td><td class="price">~45-55 €</td><td class="ali">бренд ЕС</td></tr>
+                    <tr><td><span class="pill p-warn">бюджетный</span></td><td class="k">Tuya TS130F (MS-108ZR)</td><td>Up/down/stop + позиция. Ручная калибровка. Маршрутизатор.</td><td class="price">~12-20 €</td><td class="ali">"Zigbee roller shutter module TS130F"</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Мотор рольставней:</b> модуль НЕ заменяет концевики мотора. Мотор должен быть стандартным мотором рольставней 230 V с собственными концевыми выключателями; модуль лишь переключает направление. <b>Никогда</b> не подавать напряжение на подъём и опускание одновременно (модули выше уже это блокируют, но подтвердить).</div>
+
+            <h3>3.4 Датчики (Zigbee, напрямую к координатору, без хаба производителя)</h3>
+            <table>
+                <thead><tr><th>Тип</th><th>Сертифицированный</th><th>Бюджетный</th><th>Характеристики</th><th>Цена</th><th>AliExpress</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Дверь/окно</td><td class="k">Aqara P2</td><td>Sonoff SNZB-04</td><td>Магнитный контакт, батарея CR2032/CR1632, 2+ года.</td><td class="price">~7-18 €</td><td class="ali">"Aqara P2 door" / "SNZB-04"</td></tr>
+                    <tr><td class="k">Движение</td><td class="k">Aqara Motion P1</td><td>Sonoff SNZB-03P</td><td>PIR, настраиваемый интервал, lux. Угол ~170°.</td><td class="price">~12-25 €</td><td class="ali">"Aqara motion P1"</td></tr>
+                    <tr><td class="k">Темп./влажность</td><td class="k">Aqara T&H</td><td>Sonoff SNZB-02P</td><td>±0.3°C. Для климата/комфорта и оповещений о заморозках.</td><td class="price">~12-18 €</td><td class="ali">"Aqara temperature humidity"</td></tr>
+                    <tr><td class="k">Протечка воды</td><td class="k">Frient Water Leak</td><td>Aqara Water Leak</td><td>Напольный зонд. Frient «Works with HA».</td><td class="price">~18-30 €</td><td class="ali">"Aqara water leak sensor"</td></tr>
+                    <tr><td class="k">Дым</td><td class="k">Heiman HS1SA-E</td><td>Frient Smoke</td><td><b>EN14604</b>. Автономная сирена, даже если хаб упал. Батарея на 10 лет.</td><td class="price">~35-55 €</td><td class="ali">сертифицированный (нет надёжного бюджетного)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.5 Камеры + запись (PoE, локально, Frigate)</h3>
+            <table>
+                <thead><tr><th>Компонент</th><th>Модель</th><th>Характеристики</th><th>Цена</th><th>Примечание Frigate</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Стандарт</td><td class="k">Reolink RLC-810A / 820A</td><td>4K/8MP, PoE, RTSP+ONVIF, microSD, ИК. Bullet/купол.</td><td class="price">~85-110 €</td><td>Детекция по <b>substream 1080p/5fps</b>; main 4K только для записи.</td></tr>
+                    <tr><td class="k">Широкоугольная</td><td class="k">Reolink Duo 3 PoE</td><td>16MP, 180°, двойной объектив. 3V = IK10 антивандальная.</td><td class="price">~150-210 €</td><td>Одна покрывает фасад/вход (= 2 камеры).</td></tr>
+                    <tr><td class="k">PoE-коммутатор</td><td class="k">PoE-коммутатор 5-8 портов</td><td>802.3af, бюджет W ≥ Σ камер. В стойке.</td><td class="price">~40-70 €</td><td>Камеры в изолированной VLAN (2-я NIC мини-ПК).</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Frigate:</b> Frigate — «владелец» RTSP-потоков; HA получает события через MQTT, без второго нативного pull (Reolink рвёт соединения при двойном тяжёлом pull). Некоторые модели предпочитают HTTP-FLV в высоком качестве — см. документ «camera specific» при выборе SKU.</div>
+
+            <h3>3.6 Замки — категория с подвохом</h3>
+            <table>
+                <thead><tr><th>Вариант</th><th>Модель</th><th>Локально в HA</th><th>Тип</th><th>Цена</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">по умолч.</span></td><td class="k">Nuki Smart Lock Pro + MQTT</td><td><b>Полностью</b>: lock/unlock, защёлка, батарея, коды. Нативный локальный MQTT (Pro/Ultra/Go).</td><td>Накладной на существующий цилиндр (не трогает цилиндр).</td><td class="price">~229-279 €</td></tr>
+                    <tr><td><span class="pill p-warn">альт.</span></td><td class="k">Aqara U200</td><td><b>Только lock/unlock</b> в HA (Matter). Батарея/защёлка только в приложении Aqara.</td><td>Европейский цилиндр (измерить backset/длину).</td><td class="price">~160 € + цил.</td></tr>
+                    <tr><td><span class="pill p-warn">пуристский</span></td><td class="k">Danalock V4 Z-Wave</td><td>Локально по протоколу (lock/unlock + батарея). Требует стик Z-Wave.</td><td>Накладной на барашек. Нестабильная надёжность.</td><td class="price">~150-200 €</td></tr>
+                </tbody>
+            </table>
+            <div class="box danger"><b>Считать ОБЛАЧНЫМИ (не использовать как «локальные»):</b> Yale Linus / Linus L2 (BT + облачный мост, кроме подтверждённого Matter в самом устройстве), Tedee (Matter только в недавней прошивке, проверять), любые wifi/Tuya/BT универсальные. <b>Полностью локальный fallback для Nuki:</b> Nuki Hub (ESP32, open source) поверх BT → MQTT, без облака и моста Nuki.</div>
+
+            <h3>3.7 Энергоснабжение и резервирование</h3>
+            <table>
+                <thead><tr><th>Компонент</th><th>Модель</th><th>Характеристики</th><th>Цена</th><th>Примечание</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">ИБП мозг+сеть</td><td class="k">Salicru SPS 700 ONE</td><td>700 VA / 360 W, 2× Schuko + USB. Линейно-интерактивный.</td><td class="price">~65-70 €</td><td>HA читает его по <b>NUT</b> (USB к хосту): отключение, % батареи, безопасное выключение, shedding.</td></tr>
+                    <tr><td class="k">Инвертор/батарея</td><td class="k">Victron (Cerbo GX)</td><td>Интеграция HA <b>официальная локальная</b> (victron_gx, MQTT). Управление ESS: setpoint, мин. SoC, заряд.</td><td class="price">монтаж. компания</td><td>Резервирование при отключении = нативное (MultiPlus/Quattro). Альт.: Huawei LUNA2000, Sungrow SHxRT.</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Избегать SolarEdge</b> как основной: интеграция официальная, облачная и ограниченная (300 вызовов/день), настройки батареи заблокированы монтажником. Локальный Modbus существует, но с трением. <b>Резервирование ≠ HA:</b> переживание отключения — это аппаратура инвертора + проводка (поставляет монтажная компания), HA только наблюдает/оптимизирует. Субсидии IDAE/Next-Gen ~140-490 €/kWh (в зависимости от региона, ограничены) — уточнять по смете.</div>
+        </section>
+
+        <!-- OBRA -->
+        <section id="obra-ru">
+            <h2><span class="num">4</span> Руководство по стройке для каменщика</h2>
+            <p class="note-lead">Что должна оставить стройка, чтобы монтаж домашней автоматизации был чистым и расширяемым. Ключевая идея: <b>заложить с запасом</b> (ноль везде, гофра и Cat6, даже если сегодня не используются) стоит немного при открытой стене и избавляет от штробления завтра. Электрику выполняет/подписывает электрик; здесь — «что и где оставить».</p>
+
+            <h3>4.1 Монтажные коробки и подрозетники (самое важное)</h3>
+            <ul class="tight">
+                <li><b>Ноль во ВСЕХ точках</b> освещения и рольставней (не только фаза + возврат). Модули Zigbee питаются от 230 V и нуждаются в постоянном N. Без нуля надёжного модуля нет.</li>
+                <li><b>Глубокий подрозетник</b> за каждым выключателем/рольставнями, куда пойдёт модуль: монтажная коробка <b>глубиной ≥ 50 mm</b> (лучше универсальная/«восьмиугольная» или двойная) — модуль идёт за механизмом и не помещается с запасом в стандартный подрозетник 40 mm.</li>
+                <li>Одна доступная <b>распаячная коробка</b> на комнату/зону, где сводить ответвления; упрощает размещение многоканальных модулей в одной точке при необходимости.</li>
+                <li>Выключатели: могут быть обычными (кнопка или переключатель); модуль уважает физику. Если нужен минималистичный вид — заложить кнопку.</li>
+            </ul>
+            <div class="box"><b>Типовая схема модуля освещения</b> (подтвердить с электриком и инструкцией модуля):
+            <div class="wire"><span class="l">L</span>  постоянная фаза      → модуль IN (L)
+<span class="n">N</span>  постоянный ноль      → модуль IN (N)
+   выход на лампу       ← модуль OUT
+   настенный выключатель → модуль S1 (и S2, если проходной)</div></div>
+
+            <h3>4.2 Рольставни</h3>
+            <ul class="tight">
+                <li>Мотор рольставней <b>230 V с собственными концевиками</b> (стандарт). Модуль только переключает подъём/опускание.</li>
+                <li>Заложить <b>гофру</b> от короба рольставней (откуда выходит мотор) до подрозетника кнопки, с проводами: подъём, опускание, ноль, фаза, земля.</li>
+                <li>Подрозетник кнопки рольставней тоже <b>глубокий</b> (несёт модуль).</li>
+            </ul>
+
+            <h3>4.3 Сеть и «стойка» (сердце установки)</h3>
+            <ul class="tight">
+                <li>Определить расположение <b>шкафа/стойки</b>: проветриваемое, сухое, с <b>2-3 розетками</b> и рядом с вводом оптики/роутером. Размещает: хаб HA, мини-ПК Frigate, PoE-коммутатор, ИБП, ONT/роутер.</li>
+                <li><b>Cat6 (или лучше Cat6A) от стойки к:</b> каждой камере (PoE), 1-2 точкам <b>WiFi AP</b> (потолок/центральная стена), ТВ/гостиной и 1 резерв на этаж. Всё на плинты/патч в стойке.</li>
+                <li>Гофра <b>Ø25 mm минимум</b> в каналах для данных, чтобы можно было протянуть больше кабеля в будущем. Отделять от силовой ≥ 10-15 см во избежание помех.</li>
+                <li>Оставить <b>протяжку</b> в пустых резервных гофрах.</li>
+            </ul>
+            <div class="box ok"><b>Дешёвое правило:</b> при открытой стене протянуть Cat6 в углы, где <i>могла бы</i> стоять камера, даже если комплект сегодня Базовый. Перейти на Premium потом = воткнуть, а не штробить.</div>
+
+            <h3>4.4 Камеры (PoE)</h3>
+            <ul class="tight">
+                <li>Типовые позиции: <b>вход/дверь</b>, фасад/въезд авто, задний периметр. Высота <b>~2,5-3 m</b>, вне досягаемости, но без «взгляда в небо».</li>
+                <li><b>1 кабель Cat6 на камеру</b> до стойки (PoE несёт данные + питание, без розетки у камеры).</li>
+                <li>Снаружи: <b>герметичная коробка IP65</b> за камерой; оставить петлю запаса кабеля.</li>
+                <li>Не направлять на улицу/соседей (GDPR/РГПД) — кадр только на собственный участок.</li>
+            </ul>
+
+            <h3>4.5 Замок</h3>
+            <ul class="tight">
+                <li><b>Nuki (рекомендуется)</b>: накладной изнутри на существующий цилиндр, <b>без строительных работ</b>. Требует лишь, чтобы цилиндр имел совместимый внутренний барашек/ключ (кнопка или адаптер). От каменщика не нужно… ничего.</li>
+                <li><b>Aqara U200</b>: заменяет цилиндр → <b>измерить европейский цилиндр</b> (наружная/внутренняя длина, backset) перед заказом. Это уже затрагивает дверь.</li>
+                <li>Если есть видеодомофон/электрозамок, предусмотреть гофру для данных до стойки.</li>
+            </ul>
+
+            <h3>4.6 Датчики и детекторы</h3>
+            <ul class="tight">
+                <li><b>Дверь/окно, движение, темп./влаж., протечка</b>: на батарейках, <b>без строительных работ</b> (на клей). Протечка: оставить доступным пол под стиральной/посудомоечной машиной/котлом.</li>
+                <li><b>Дым (EN14604)</b>: на <b>потолке</b>, по центру комнаты, <b>≥ 0,5 m от стен/углов</b> и подальше от вентрешёток, кухни и ванной (пар = ложные срабатывания). По одному на спальню/коридор согласно норме; подтвердить расположение с нормативами/монтажником.</li>
+                <li>Проводка не требуется, но стоит <b>определить позиции на стройке</b> для эстетики (по центру, выровненно).</li>
+            </ul>
+
+            <h3>4.7 Энергоснабжение (Super Premium)</h3>
+            <ul class="tight">
+                <li><b>ИБП</b>: нужна только розетка рядом со стойкой (устанавливает Menta).</li>
+                <li><b>Батарея + солнечные панели</b>: определяет и монтирует <b>партнёрская монтажная компания</b>. Стройка должна предусмотреть: <b>техпомещение</b> с местом + вентиляцией, подходящий ввод/щит, проход кабеля на кровлю для панелей и предусмотреть <b>резервный щит</b> (отдельные критичные нагрузки). Согласовать с ними до закрытия электрощита.</li>
+            </ul>
+
+            <h3>4.8 Граница ответственности</h3>
+            <table>
+                <thead><tr><th>Каменщик + электрик</th><th>Menta Systems</th></tr></thead>
+                <tbody>
+                    <tr><td>Глубокие подрозетники, ноль везде, гофры, Cat6, стойка, позиции. Физический монтаж механизмов и модулей по схеме. Подписанный электротехнический акт.</td><td>Поставка сертифицированного оборудования, настройка HA, сопряжение Zigbee, Frigate, замок, подключение к мониторингу/Tailscale, бэкапы, поддержка и абонплата.</td></tr>
+                </tbody>
+            </table>
+            <div class="box"><b>Минимальный чек-лист по стройке:</b> ноль во всех точках · подрозетники ≥50 mm для освещения/рольставней · гофра рольставней короб→кнопка · проветриваемая стойка с розетками · Cat6 к камерам+AP+резервы · гофры Ø25 с протяжкой · герметичные коробки снаружи · измеренный цилиндр (если Aqara) · предусмотренное техпомещение (если батарея).</div>
+        </section>
+
+        <!-- CAVEATS -->
+        <section id="caveats-ru">
+            <h2><span class="num">5</span> Технические оговорки</h2>
+            <ul class="tight">
+                <li><b>ZBT-2</b>: Zigbee ИЛИ Thread, не оба. USB-удлинитель + подальше от USB-3.0/SSD, иначе деградирует дальность.</li>
+                <li><b>Shelly Gen4 в Zigbee</b>: работает, но прошивка «сырая» (input detached, надёжность). Если нужен Shelly, его режим <b>локального WiFi</b> зрелее — но ломает чистоту «только Zigbee». Решать по проекту.</li>
+                <li><b>Замки Matter</b>: интеграция намеренно минимальна (только lock/unlock). Для батареи/защёлки/кодов в HA → Nuki MQTT.</li>
+                <li><b>CO</b>: надёжного локального сертифицируемого Zigbee-детектора EN50291 сегодня нет → ставить автономный сертифицированный, видимость в HA вторична.</li>
+                <li><b>Frigate</b>: детекция в substream, не в 4K. Coral = legacy, использовать iGPU/Hailo.</li>
+                <li><b>Fleet</b>: Tailscale даёт доступ ко ВСЕЙ LAN клиента → строгие ACL (оператор → только host:port HA). Мониторинг флота (HA Fleet Manager) ещё молод: пилотировать, не ставить вслепую. Обновления: canary + по фазам, никогда массово.</li>
+            </ul>
+        </section>
+
+        <!-- PENDING -->
+        <section id="pendiente-ru">
+            <h2><span class="num">6</span> К валидации перед сертификацией</h2>
+            <ul class="tight">
+                <li>Конкретный SKU <b>детектора CO</b> локального EN50291 (или принять автономный).</li>
+                <li>Зрелость прошивки <b>Shelly Gen4 Zigbee</b>, если используется в Zigbee.</li>
+                <li>Пробная партия <b>модулей AliExpress</b> (освещение + рольставни) в Z2M перед закупкой количества.</li>
+                <li>Подтвердить <b>локальный Matter</b> в конкретном устройстве, если рассматривается Yale L2 / Tedee.</li>
+                <li>Закрыть <b>партнёрскую монтажную компанию</b> по батарее/солнечным панелям (предпочтение Victron за локальную интеграцию).</li>
+                <li>Уточнить реальную <b>абонплату</b> (маржа мониторинг + поддержка + замена при поломках) по каждому тиру.</li>
+            </ul>
+        </section>
+
+        <footer>
+            Menta Systems — внутренний документ. Без ссылок, noindex. Публичная версия: <a href="/home">/home</a>.
+        </footer>
+    </div>
+</div>
+
+<script>
+    function setLang(l) {
+        document.documentElement.setAttribute('data-lang', l);
+        document.documentElement.setAttribute('lang', l);
+        try { localStorage.setItem('menta-lang-int', l); } catch (e) {}
+        var t = { es: 'Menta Systems · Domótica — INTERNO', en: 'Menta Systems · Home Automation — INTERNAL', ru: 'Menta Systems · Умный дом — ВНУТРЕННИЙ' };
+        document.title = t[l] || t.es;
+    }
+    setLang(document.documentElement.getAttribute('data-lang') || 'es');
+</script>
 </body>
 </html>
