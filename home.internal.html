@@ -210,6 +210,7 @@
     </style>
 </head>
 <body>
+    <div style="position:fixed;top:1rem;left:1rem;z-index:50;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:0.18em;color:#e6c46e;border:1px solid rgba(230,196,110,0.4);background:rgba(6,10,14,0.7);backdrop-filter:blur(8px);padding:0.35rem 0.7rem;border-radius:999px;">INTERNAL · USO INTERNO</div>
     <div class="lang-switch" role="group" aria-label="Language">
         <button type="button" data-l="es" onclick="setLang('es')">ES</button>
         <button type="button" data-l="en" onclick="setLang('en')">EN</button>
@@ -264,7 +265,7 @@
                         </ul>
                         <div class="price-block">
                             <div class="price-label">Material orientativo</div>
-                            <div class="price">desde ~1.200&nbsp;€</div>
+                            <div class="price">500 – 1.200&nbsp;€ <small>según sourcing</small></div>
                             <div class="fee">Cuota desde ~15 €/mes</div>
                         </div>
                     </div>
@@ -306,9 +307,22 @@
 
         <section>
             <div class="wrap">
-                <div class="section-label">Catálogo</div>
+                <div class="section-label">Sourcing</div>
+                <h2 class="sec">Dos vías de compra, misma arquitectura</h2>
+                <p class="sec-intro">Para arrancar y validar con los primeros clientes podemos abaratar el material comprando en AliExpress; cuando escalemos, pasamos a marcas homologadas por fiabilidad y soporte. La promesa "funciona sin internet" <strong>no cambia</strong> en ningún caso.</p>
+                <div class="callout local">
+                    <h3>La regla de oro con AliExpress</h3>
+                    <p><span class="pill local">Zigbee&nbsp;✓</span> Un módulo Zigbee barato (Tuya, Moes, Girier, Sonoff…) emparejado a <em>nuestro</em> coordinador funciona <strong>100% local</strong>, sin tocar jamás la nube de Tuya. Es el mismo hardware que reetiquetan las marcas "premium", a una fracción del precio.<br>
+                    <span class="pill cloud">WiFi&nbsp;✗</span> El mismo fabricante en <strong>wifi</strong> depende de su nube. Ese no entra. La diferencia barato/premium pasa a ser acabado, fiabilidad y soporte — no "local vs nube".</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="wrap">
+                <div class="section-label">Catálogo homologado</div>
                 <h2 class="sec">Dispositivos, validados uno a uno</h2>
-                <p class="sec-intro">Pocos modelos, todos con <strong>control local real</strong> verificado y disponibles en España/UE. Cada categoría con su opción recomendada y, donde tiene sentido, una alternativa.</p>
+                <p class="sec-intro">Pocos modelos, todos con <strong>control local real</strong> verificado y disponibles en España/UE. Cada categoría con su opción homologada (fiable, para escalar) y su alternativa económica (AliExpress, para validar).</p>
 
                 <details class="cat" open>
                     <summary><span>🧠 El cerebro: hub + radio</span><span class="chev">›</span></summary>
@@ -364,6 +378,13 @@
                                     <td data-label="Precio" class="price-cell">~20-30 €</td>
                                     <td data-label="Notas"><span class="note">Local vía Zigbee2MQTT, sin hub Aqara. Regulación de luz: Shelly Dimmer Gen4 (~40-50 €).</span></td>
                                 </tr>
+                                <tr>
+                                    <td data-label="Opción"><span class="pill ali">Económico</span></td>
+                                    <td data-label="Modelo"><span class="m">Tuya/Moes Zigbee Switch Module</span></td>
+                                    <td data-label="Protocolo"><span class="pill local">Zigbee</span></td>
+                                    <td data-label="Precio" class="price-cell">~8-12 €</td>
+                                    <td data-label="Notas"><span class="note">AliExpress: buscar <em>"Tuya Zigbee switch module no neutral required"</em> en versión <strong>Zigbee</strong> (no wifi). Mismo chip que los de marca.</span></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -383,6 +404,13 @@
                                     <td data-label="Precio" class="price-cell">~45-55 €</td>
                                     <td data-label="Notas"><span class="note">Específico de persiana, autocalibración, posición por slider. El "just works" de los kits.</span></td>
                                 </tr>
+                                <tr>
+                                    <td data-label="Opción"><span class="pill ali">Económico</span></td>
+                                    <td data-label="Modelo"><span class="m">Tuya TS130F (MS-108ZR)</span></td>
+                                    <td data-label="Protocolo"><span class="pill local">Zigbee</span></td>
+                                    <td data-label="Precio" class="price-cell">~12-20 €</td>
+                                    <td data-label="Notas"><span class="note">AliExpress: <em>"Zigbee roller shutter module TS130F"</em>. Posición/calibración algo más manual.</span></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -391,15 +419,15 @@
                 <details class="cat">
                     <summary><span>📡 Sensores</span><span class="chev">›</span></summary>
                     <div class="body">
-                        <p class="lead">Todos emparejados directamente al coordinador, sin hub ni nube del fabricante. Línea cotidiana (Aqara) + grado seguridad (Frient/Heiman).</p>
+                        <p class="lead">Todos emparejados directamente al coordinador, sin hub ni nube del fabricante. Línea cotidiana (Aqara) + grado seguridad (Frient/Heiman), con alternativa económica Sonoff.</p>
                         <table>
-                            <thead><tr><th>Tipo</th><th>Recomendado</th><th>Precio</th><th>Notas</th></tr></thead>
+                            <thead><tr><th>Tipo</th><th>Recomendado</th><th>Económico</th><th>Precio</th><th>Notas</th></tr></thead>
                             <tbody>
-                                <tr><td data-label="Tipo">Puerta / ventana</td><td data-label="Recomendado"><span class="m">Aqara P2</span></td><td data-label="Precio" class="price-cell">~7-18 €</td><td data-label="Notas"><span class="note">Pila de 2+ años.</span></td></tr>
-                                <tr><td data-label="Tipo">Movimiento (PIR)</td><td data-label="Recomendado"><span class="m">Aqara Motion P1</span></td><td data-label="Precio" class="price-cell">~12-25 €</td><td data-label="Notas"><span class="note">Intervalo de detección ajustable.</span></td></tr>
-                                <tr><td data-label="Tipo">Temp. / humedad</td><td data-label="Recomendado"><span class="m">Aqara T&H</span></td><td data-label="Precio" class="price-cell">~12-18 €</td><td data-label="Notas"><span class="note">Para clima y confort.</span></td></tr>
-                                <tr><td data-label="Tipo">Fuga de agua</td><td data-label="Recomendado"><span class="m">Frient Water Leak</span></td><td data-label="Precio" class="price-cell">~18-30 €</td><td data-label="Notas"><span class="note">Bajo lavadora / caldera. Frient certificado "Works with HA".</span></td></tr>
-                                <tr><td data-label="Tipo">Humo</td><td data-label="Recomendado"><span class="m">Heiman HS1SA-E</span></td><td data-label="Precio" class="price-cell">~35-55 €</td><td data-label="Notas"><span class="note">Certificado <strong>EN14604</strong>. La sirena suena sola aunque el hub esté caído.</span></td></tr>
+                                <tr><td data-label="Tipo">Puerta / ventana</td><td data-label="Recomendado"><span class="m">Aqara P2</span></td><td data-label="Económico">Sonoff SNZB-04</td><td data-label="Precio" class="price-cell">~7-18 €</td><td data-label="Notas"><span class="note">Pila de 2+ años.</span></td></tr>
+                                <tr><td data-label="Tipo">Movimiento (PIR)</td><td data-label="Recomendado"><span class="m">Aqara Motion P1</span></td><td data-label="Económico">Sonoff SNZB-03P</td><td data-label="Precio" class="price-cell">~12-25 €</td><td data-label="Notas"><span class="note">Intervalo de detección ajustable.</span></td></tr>
+                                <tr><td data-label="Tipo">Temp. / humedad</td><td data-label="Recomendado"><span class="m">Aqara T&H</span></td><td data-label="Económico">Sonoff SNZB-02P</td><td data-label="Precio" class="price-cell">~12-18 €</td><td data-label="Notas"><span class="note">Para clima y confort.</span></td></tr>
+                                <tr><td data-label="Tipo">Fuga de agua</td><td data-label="Recomendado"><span class="m">Frient Water Leak</span></td><td data-label="Económico">Aqara Water Leak</td><td data-label="Precio" class="price-cell">~18-30 €</td><td data-label="Notas"><span class="note">Bajo lavadora / caldera. Frient certificado "Works with HA".</span></td></tr>
+                                <tr><td data-label="Tipo">Humo</td><td data-label="Recomendado"><span class="m">Heiman HS1SA-E</span></td><td data-label="Económico">Frient Smoke Alarm</td><td data-label="Precio" class="price-cell">~35-55 €</td><td data-label="Notas"><span class="note">Certificado <strong>EN14604</strong>. La sirena suena sola aunque el hub esté caído.</span></td></tr>
                             </tbody>
                         </table>
                         <div class="callout warn">
@@ -526,7 +554,7 @@
                         </ul>
                         <div class="price-block">
                             <div class="price-label">Indicative hardware</div>
-                            <div class="price">from ~€1,200</div>
+                            <div class="price">€500 – 1,200 <small>by sourcing</small></div>
                             <div class="fee">Plan from ~€15/mo</div>
                         </div>
                     </div>
@@ -568,9 +596,22 @@
 
         <section>
             <div class="wrap">
-                <div class="section-label">Catalog</div>
+                <div class="section-label">Sourcing</div>
+                <h2 class="sec">Two buying tracks, same architecture</h2>
+                <p class="sec-intro">To get started and validate with the first clients we can cut hardware cost by buying on AliExpress; as we scale, we move to homologated brands for reliability and support. The "works without internet" promise <strong>never changes</strong>.</p>
+                <div class="callout local">
+                    <h3>The golden rule with AliExpress</h3>
+                    <p><span class="pill local">Zigbee&nbsp;✓</span> A cheap Zigbee module (Tuya, Moes, Girier, Sonoff…) paired to <em>our</em> coordinator runs <strong>100% locally</strong>, never touching the Tuya cloud. It's the same hardware the "premium" brands rebadge, at a fraction of the price.<br>
+                    <span class="pill cloud">WiFi&nbsp;✗</span> The same maker over <strong>wifi</strong> depends on its cloud. That one's out. The cheap/premium difference becomes finish, reliability and support — not "local vs cloud".</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="wrap">
+                <div class="section-label">Homologated catalog</div>
                 <h2 class="sec">Devices, validated one by one</h2>
-                <p class="sec-intro">Few models, every one with verified <strong>real local control</strong> and available in Spain/EU. Each category has its recommended option and, where it makes sense, an alternative.</p>
+                <p class="sec-intro">Few models, every one with verified <strong>real local control</strong> and available in Spain/EU. Each category has its homologated option (reliable, to scale) and its budget alternative (AliExpress, to validate).</p>
 
                 <details class="cat" open>
                     <summary><span>🧠 The brain: hub + radio</span><span class="chev">›</span></summary>
@@ -626,6 +667,13 @@
                                     <td data-label="Price" class="price-cell">~€20-30</td>
                                     <td data-label="Notes"><span class="note">Local via Zigbee2MQTT, no Aqara hub. Dimming: Shelly Dimmer Gen4 (~€40-50).</span></td>
                                 </tr>
+                                <tr>
+                                    <td data-label="Option"><span class="pill ali">Budget</span></td>
+                                    <td data-label="Model"><span class="m">Tuya/Moes Zigbee Switch Module</span></td>
+                                    <td data-label="Protocol"><span class="pill local">Zigbee</span></td>
+                                    <td data-label="Price" class="price-cell">~€8-12</td>
+                                    <td data-label="Notes"><span class="note">AliExpress: search <em>"Tuya Zigbee switch module no neutral required"</em> in the <strong>Zigbee</strong> version (not wifi). Same chip as the branded ones.</span></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -645,6 +693,13 @@
                                     <td data-label="Price" class="price-cell">~€45-55</td>
                                     <td data-label="Notes"><span class="note">Purpose-built shutter module, auto-calibration, position slider. The "just works" pick.</span></td>
                                 </tr>
+                                <tr>
+                                    <td data-label="Option"><span class="pill ali">Budget</span></td>
+                                    <td data-label="Model"><span class="m">Tuya TS130F (MS-108ZR)</span></td>
+                                    <td data-label="Protocol"><span class="pill local">Zigbee</span></td>
+                                    <td data-label="Price" class="price-cell">~€12-20</td>
+                                    <td data-label="Notes"><span class="note">AliExpress: <em>"Zigbee roller shutter module TS130F"</em>. Position/calibration a bit more manual.</span></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -653,15 +708,15 @@
                 <details class="cat">
                     <summary><span>📡 Sensors</span><span class="chev">›</span></summary>
                     <div class="body">
-                        <p class="lead">All paired directly to the coordinator, no manufacturer hub or cloud. Everyday line (Aqara) + safety grade (Frient/Heiman).</p>
+                        <p class="lead">All paired directly to the coordinator, no manufacturer hub or cloud. Everyday line (Aqara) + safety grade (Frient/Heiman), with a budget Sonoff alternative.</p>
                         <table>
-                            <thead><tr><th>Type</th><th>Recommended</th><th>Price</th><th>Notes</th></tr></thead>
+                            <thead><tr><th>Type</th><th>Recommended</th><th>Budget</th><th>Price</th><th>Notes</th></tr></thead>
                             <tbody>
-                                <tr><td data-label="Type">Door / window</td><td data-label="Recommended"><span class="m">Aqara P2</span></td><td data-label="Price" class="price-cell">~€7-18</td><td data-label="Notes"><span class="note">2+ year battery.</span></td></tr>
-                                <tr><td data-label="Type">Motion (PIR)</td><td data-label="Recommended"><span class="m">Aqara Motion P1</span></td><td data-label="Price" class="price-cell">~€12-25</td><td data-label="Notes"><span class="note">Adjustable detection interval.</span></td></tr>
-                                <tr><td data-label="Type">Temp. / humidity</td><td data-label="Recommended"><span class="m">Aqara T&H</span></td><td data-label="Price" class="price-cell">~€12-18</td><td data-label="Notes"><span class="note">For climate and comfort.</span></td></tr>
-                                <tr><td data-label="Type">Water leak</td><td data-label="Recommended"><span class="m">Frient Water Leak</span></td><td data-label="Price" class="price-cell">~€18-30</td><td data-label="Notes"><span class="note">Under washer / boiler. Frient is "Works with HA" certified.</span></td></tr>
-                                <tr><td data-label="Type">Smoke</td><td data-label="Recommended"><span class="m">Heiman HS1SA-E</span></td><td data-label="Price" class="price-cell">~€35-55</td><td data-label="Notes"><span class="note"><strong>EN14604</strong> certified. The siren sounds on its own even if the hub is down.</span></td></tr>
+                                <tr><td data-label="Type">Door / window</td><td data-label="Recommended"><span class="m">Aqara P2</span></td><td data-label="Budget">Sonoff SNZB-04</td><td data-label="Price" class="price-cell">~€7-18</td><td data-label="Notes"><span class="note">2+ year battery.</span></td></tr>
+                                <tr><td data-label="Type">Motion (PIR)</td><td data-label="Recommended"><span class="m">Aqara Motion P1</span></td><td data-label="Budget">Sonoff SNZB-03P</td><td data-label="Price" class="price-cell">~€12-25</td><td data-label="Notes"><span class="note">Adjustable detection interval.</span></td></tr>
+                                <tr><td data-label="Type">Temp. / humidity</td><td data-label="Recommended"><span class="m">Aqara T&H</span></td><td data-label="Budget">Sonoff SNZB-02P</td><td data-label="Price" class="price-cell">~€12-18</td><td data-label="Notes"><span class="note">For climate and comfort.</span></td></tr>
+                                <tr><td data-label="Type">Water leak</td><td data-label="Recommended"><span class="m">Frient Water Leak</span></td><td data-label="Budget">Aqara Water Leak</td><td data-label="Price" class="price-cell">~€18-30</td><td data-label="Notes"><span class="note">Under washer / boiler. Frient is "Works with HA" certified.</span></td></tr>
+                                <tr><td data-label="Type">Smoke</td><td data-label="Recommended"><span class="m">Heiman HS1SA-E</span></td><td data-label="Budget">Frient Smoke Alarm</td><td data-label="Price" class="price-cell">~€35-55</td><td data-label="Notes"><span class="note"><strong>EN14604</strong> certified. The siren sounds on its own even if the hub is down.</span></td></tr>
                             </tbody>
                         </table>
                         <div class="callout warn">

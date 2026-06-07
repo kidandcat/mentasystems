@@ -304,11 +304,19 @@ func main() {
 		http.Redirect(w, r, "/fragua", http.StatusMovedPermanently)
 	})
 	// Home automation catalog — intentionally not linked from the root index.
+	// Public-facing version:
 	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "home.html")
 	})
 	http.HandleFunc("/home.html", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home", http.StatusMovedPermanently)
+	})
+	// Internal version with sourcing/budget strategy — also unlisted.
+	http.HandleFunc("/home.internal", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "home.internal.html")
+	})
+	http.HandleFunc("/home.internal.html", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/home.internal", http.StatusMovedPermanently)
 	})
 	http.Handle("/", fs)
 
