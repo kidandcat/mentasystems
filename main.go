@@ -303,6 +303,13 @@ func main() {
 	http.HandleFunc("/fragua.html", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/fragua", http.StatusMovedPermanently)
 	})
+	// Home automation catalog — intentionally not linked from the root index.
+	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "home.html")
+	})
+	http.HandleFunc("/home.html", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/home", http.StatusMovedPermanently)
+	})
 	http.Handle("/", fs)
 
 	log.Printf("Server starting on port %s", port)
