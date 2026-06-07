@@ -740,14 +740,18 @@
     </div>
 
     <script>
-        function setLang(l) {
+        function applyLang(l) {
             document.documentElement.setAttribute('data-lang', l);
             document.documentElement.setAttribute('lang', l);
-            try { localStorage.setItem('menta-lang', l); } catch (e) {}
             document.title = l === 'en' ? 'Menta Systems · Home Automation' : 'Menta Systems · Domótica';
         }
-        // Sync title with the language chosen before paint.
-        setLang(document.documentElement.getAttribute('data-lang') || 'es');
+        // Persist ONLY on explicit user choice (buttons call setLang). Init uses applyLang, no write.
+        function setLang(l) {
+            applyLang(l);
+            try { localStorage.setItem('menta-lang', l); } catch (e) {}
+        }
+        // Sync title with the language detected before paint (no persistence on load).
+        applyLang(document.documentElement.getAttribute('data-lang') || 'es');
     </script>
 </body>
 </html>

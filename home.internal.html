@@ -888,14 +888,18 @@
 </div>
 
 <script>
-    function setLang(l) {
+    function applyLang(l) {
         document.documentElement.setAttribute('data-lang', l);
         document.documentElement.setAttribute('lang', l);
-        try { localStorage.setItem('menta-lang-int', l); } catch (e) {}
         var t = { es: 'Menta Systems · Domótica — INTERNO', en: 'Menta Systems · Home Automation — INTERNAL', ru: 'Menta Systems · Умный дом — ВНУТРЕННИЙ' };
         document.title = t[l] || t.es;
     }
-    setLang(document.documentElement.getAttribute('data-lang') || 'es');
+    // Persist ONLY on explicit user choice (buttons call setLang). Init uses applyLang, no write.
+    function setLang(l) {
+        applyLang(l);
+        try { localStorage.setItem('menta-lang-int', l); } catch (e) {}
+    }
+    applyLang(document.documentElement.getAttribute('data-lang') || 'es');
 </script>
 </body>
 </html>
