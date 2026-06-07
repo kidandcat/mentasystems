@@ -1,808 +1,342 @@
 <!DOCTYPE html>
-<html lang="es" data-lang="es">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menta Systems · Domótica</title>
-    <meta name="description" content="Domótica local-first para casas: Home Assistant que funciona sin internet.">
+    <title>Menta Systems · Domótica — INTERNO</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        // Set language before paint to avoid flash of the wrong language.
-        (function () {
-            var saved = null;
-            try { saved = localStorage.getItem('menta-lang'); } catch (e) {}
-            var nav = (navigator.language || 'es').slice(0, 2).toLowerCase();
-            var lang = saved || (nav === 'es' ? 'es' : 'en');
-            document.documentElement.setAttribute('data-lang', lang);
-            document.documentElement.setAttribute('lang', lang);
-        })();
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-from: #060a0e;
-            --bg-to: #0a1620;
-            --panel: rgba(10, 22, 32, 0.55);
-            --panel-2: rgba(14, 30, 42, 0.5);
-            --line: rgba(120, 200, 240, 0.14);
-            --line-strong: rgba(120, 200, 240, 0.4);
+            --bg: #0a0e12;
+            --panel: #11181f;
+            --panel-2: #0d141a;
+            --line: #1e2a34;
+            --line-2: #283742;
             --accent: #6ec6e6;
-            --accent-soft: rgba(110, 198, 230, 0.5);
-            --text: #cfd8dc;
-            --text-dim: rgba(207, 216, 220, 0.6);
-            --text-faint: rgba(207, 216, 220, 0.42);
+            --text: #c4ced4;
+            --dim: #7f8e98;
+            --faint: #5a6670;
             --head: #e8f3fa;
             --gold: #e6c46e;
             --green: #7ee6a8;
+            --red: #e88a8a;
         }
         * { box-sizing: border-box; }
-        html, body {
-            margin: 0;
-            padding: 0;
-            background: radial-gradient(ellipse at 50% 0%, var(--bg-to) 0%, var(--bg-from) 60%);
-            background-attachment: fixed;
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
-        }
+        html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5; }
         a { color: var(--accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
-        .wrap { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
+        .wrap { max-width: 1180px; margin: 0 auto; padding: 0 1rem; }
+        code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.86em; }
 
-        /* ---- language switch ---- */
-        .lang-switch {
-            position: fixed; top: 1rem; right: 1rem; z-index: 50;
-            display: inline-flex; border: 1px solid var(--line); border-radius: 999px;
-            overflow: hidden; background: rgba(6, 10, 14, 0.7); backdrop-filter: blur(8px);
-            font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.08em;
-        }
-        .lang-switch button {
-            appearance: none; border: none; background: transparent; cursor: pointer;
-            color: var(--text-faint); padding: 0.4rem 0.8rem; transition: color 0.2s, background 0.2s;
-        }
-        .lang-switch button:hover { color: var(--text); }
-        html[data-lang="es"] .lang-switch button[data-l="es"],
-        html[data-lang="en"] .lang-switch button[data-l="en"] {
-            color: var(--bg-from); background: var(--accent);
-        }
+        .topbar { position: sticky; top: 0; z-index: 20; background: rgba(10,14,18,0.95); border-bottom: 1px solid var(--line); backdrop-filter: blur(6px); }
+        .topbar .wrap { display: flex; align-items: center; gap: 1rem; padding: 0.55rem 1rem; flex-wrap: wrap; }
+        .topbar .brand { font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.04em; color: var(--head); font-size: 1.05rem; }
+        .topbar .brand span { color: #8aa4b3; font-weight: 500; }
+        .badge { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.68rem; letter-spacing: 0.16em; color: var(--gold); border: 1px solid rgba(230,196,110,0.4); padding: 0.15rem 0.5rem; border-radius: 4px; }
+        .topnav { margin-left: auto; display: flex; gap: 0.9rem; flex-wrap: wrap; font-size: 0.8rem; }
+        .topnav a { color: var(--dim); }
+        .topnav a:hover { color: var(--accent); text-decoration: none; }
 
-        /* ---- language visibility ---- */
-        html[data-lang="es"] .only-en { display: none !important; }
-        html[data-lang="en"] .only-es { display: none !important; }
+        h1.doc { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--head); font-size: 1.5rem; margin: 1.4rem 0 0.2rem; }
+        .doc-sub { color: var(--dim); font-size: 0.86rem; margin-bottom: 0.4rem; }
 
-        /* ---- header ---- */
-        header.top { padding: 4.5rem 0 2.5rem; text-align: center; position: relative; }
-        .brand {
-            display: inline-flex; align-items: center; gap: 0.7rem;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: clamp(2rem, 6vw, 3.4rem);
-            font-weight: 700; letter-spacing: 0.06em; color: var(--head);
-            text-shadow: 0 0 18px rgba(80,170,220,0.4), 0 0 60px rgba(80,170,220,0.18);
-        }
-        .brand img { height: 1em; border-radius: 8px; filter: drop-shadow(0 0 12px rgba(80,170,220,0.5)); }
-        .brand .accent { font-weight: 300; color: #8aa4b3; letter-spacing: 0.16em; }
-        .kicker {
-            font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; font-weight: 600;
-            letter-spacing: 0.34em; text-transform: uppercase; color: var(--accent); margin-top: 1.4rem;
-        }
-        header.top h1 {
-            font-family: 'Rajdhani', sans-serif; font-weight: 600;
-            font-size: clamp(1.6rem, 4.5vw, 2.6rem); color: var(--head);
-            margin: 0.4rem auto 0.8rem; max-width: 22ch; line-height: 1.2;
-        }
-        header.top p.sub { max-width: 56ch; margin: 0 auto; color: var(--text-dim); font-size: 1.02rem; }
+        section { padding: 1.4rem 0; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+        h2 { font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--head); font-size: 1.18rem; margin: 0 0 0.2rem; display: flex; align-items: baseline; gap: 0.6rem; }
+        h2 .num { color: var(--accent); font-size: 0.85rem; }
+        h3 { font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--accent); font-size: 0.98rem; letter-spacing: 0.02em; margin: 1.1rem 0 0.4rem; }
+        p.note-lead { color: var(--dim); font-size: 0.86rem; margin: 0.1rem 0 0.7rem; max-width: 90ch; }
 
-        /* ---- sections ---- */
-        section { padding: 2.4rem 0; }
-        .section-label {
-            font-family: 'Rajdhani', sans-serif; font-size: 0.72rem; font-weight: 600;
-            letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-soft); margin-bottom: 0.4rem;
-        }
-        h2.sec {
-            font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--head);
-            font-size: clamp(1.4rem, 3.5vw, 2rem); margin: 0 0 0.5rem;
-        }
-        .sec-intro { color: var(--text-dim); max-width: 68ch; margin: 0 0 1.6rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.3rem 0 0.6rem; }
+        th { text-align: left; font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--accent); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.4rem 0.55rem; border-bottom: 1px solid var(--line-2); background: var(--panel-2); position: sticky; }
+        td { padding: 0.45rem 0.55rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+        tr:hover td { background: rgba(110,198,230,0.03); }
+        td.k { color: var(--head); font-weight: 600; white-space: nowrap; }
+        td .sub { color: var(--faint); font-size: 0.92em; display: block; }
+        .price { font-family: 'JetBrains Mono', monospace; white-space: nowrap; color: var(--text); }
+        .ali { font-family: 'JetBrains Mono', monospace; color: var(--gold); font-size: 0.92em; }
+        .pill { display: inline-block; font-size: 0.68rem; font-weight: 600; padding: 0.05rem 0.4rem; border-radius: 3px; white-space: nowrap; }
+        .p-local { background: rgba(126,230,168,0.12); color: var(--green); border: 1px solid rgba(126,230,168,0.25); }
+        .p-cloud { background: rgba(232,138,138,0.12); color: var(--red); border: 1px solid rgba(232,138,138,0.25); }
+        .p-warn { background: rgba(230,196,110,0.12); color: var(--gold); border: 1px solid rgba(230,196,110,0.25); }
 
-        /* ---- principle band ---- */
-        .principle {
-            background: linear-gradient(135deg, rgba(14,30,42,0.6), rgba(10,22,32,0.35));
-            border: 1px solid var(--line); border-radius: 14px; padding: 1.6rem 1.7rem;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem;
-        }
-        .principle .p-item h3 {
-            font-family: 'Rajdhani', sans-serif; color: var(--head); font-size: 1.1rem;
-            margin: 0 0 0.3rem; letter-spacing: 0.02em;
-        }
-        .principle .p-item p { margin: 0; color: var(--text-dim); font-size: 0.94rem; }
-        .pill {
-            display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
-            padding: 0.15rem 0.55rem; border-radius: 999px; margin-right: 0.3rem; white-space: nowrap;
-        }
-        .pill.local { background: rgba(126,230,168,0.13); color: var(--green); border: 1px solid rgba(126,230,168,0.3); }
-        .pill.cloud { background: rgba(230,120,120,0.12); color: #e68a8a; border: 1px solid rgba(230,120,120,0.3); }
-        .pill.ali { background: rgba(230,196,110,0.12); color: var(--gold); border: 1px solid rgba(230,196,110,0.3); }
-        .pill.homo { background: rgba(110,198,230,0.12); color: var(--accent); border: 1px solid rgba(110,198,230,0.3); }
+        .box { border: 1px solid var(--line-2); border-radius: 6px; padding: 0.7rem 0.9rem; margin: 0.6rem 0; background: var(--panel); font-size: 0.85rem; }
+        .box.warn { border-left: 3px solid var(--gold); }
+        .box.danger { border-left: 3px solid var(--red); }
+        .box.ok { border-left: 3px solid var(--green); }
+        .box b { color: var(--head); }
+        ul.tight { margin: 0.3rem 0; padding-left: 1.1rem; }
+        ul.tight li { margin: 0.18rem 0; color: var(--text); }
+        ul.tight li b { color: var(--head); }
+        .kv { display: grid; grid-template-columns: max-content 1fr; gap: 0.1rem 0.8rem; font-size: 0.84rem; margin: 0.3rem 0; }
+        .kv dt { color: var(--dim); }
+        .kv dd { margin: 0; color: var(--text); }
 
-        /* ---- tier cards ---- */
-        .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
-        .tier {
-            border: 1px solid var(--line); border-radius: 14px; padding: 1.5rem 1.4rem;
-            background: var(--panel); display: flex; flex-direction: column;
-            transition: border-color 0.2s, transform 0.2s;
-        }
-        .tier:hover { border-color: var(--line-strong); transform: translateY(-2px); }
-        .tier.featured { border-color: var(--accent-soft); box-shadow: 0 0 0 1px rgba(110,198,230,0.15), 0 8px 40px rgba(0,0,0,0.3); }
-        .tier .tname { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--head); letter-spacing: 0.03em; }
-        .tier .tfor { font-size: 0.82rem; color: var(--text-faint); margin-bottom: 1rem; min-height: 2.4em; }
-        .tier ul { list-style: none; margin: 0 0 1.1rem; padding: 0; flex: 1; }
-        .tier ul li { font-size: 0.9rem; color: var(--text-dim); padding: 0.32rem 0 0.32rem 1.3rem; position: relative; }
-        .tier ul li::before { content: "›"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
-        .tier ul li.add { color: var(--head); }
-        .tier ul li.add::before { content: "+"; color: var(--green); }
-        .tier .price-block { border-top: 1px solid var(--line); padding-top: 1rem; }
-        .tier .price-label { font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); }
-        .tier .price { font-family: 'Rajdhani', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--head); }
-        .tier .price small { font-size: 0.78rem; color: var(--text-dim); font-weight: 400; }
-        .tier .fee { font-size: 0.86rem; color: var(--accent); margin-top: 0.35rem; }
+        .wire { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 0.6rem 0.8rem; white-space: pre-wrap; color: var(--text); margin: 0.4rem 0; line-height: 1.7; }
+        .wire .c { color: var(--accent); }
+        .wire .n { color: #8aa4b3; }
+        .wire .l { color: var(--red); }
 
-        /* ---- catalog tables ---- */
-        .cat { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 1.1rem; background: var(--panel-2); }
-        .cat > summary {
-            cursor: pointer; list-style: none; padding: 1rem 1.2rem;
-            display: flex; align-items: center; gap: 0.7rem; justify-content: space-between;
-            font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1.15rem; color: var(--head);
-        }
-        .cat > summary::-webkit-details-marker { display: none; }
-        .cat > summary:hover { background: rgba(120,200,240,0.04); }
-        .cat > summary .chev { color: var(--accent); transition: transform 0.2s; font-size: 0.9rem; }
-        .cat[open] > summary .chev { transform: rotate(90deg); }
-        .cat .body { padding: 0 1.2rem 1.2rem; }
-        .cat .lead { color: var(--text-dim); font-size: 0.92rem; margin: 0.2rem 0 1rem; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-        thead th {
-            text-align: left; font-family: 'Rajdhani', sans-serif; font-weight: 600;
-            color: var(--accent); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
-            padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--line);
-        }
-        tbody td { padding: 0.65rem 0.7rem; border-bottom: 1px solid rgba(120,200,240,0.07); vertical-align: top; color: var(--text-dim); }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody td .m { color: var(--head); font-weight: 600; display: block; }
-        tbody td .note { font-size: 0.82rem; color: var(--text-faint); }
-        .price-cell { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text); }
-
-        /* ---- callouts ---- */
-        .callout {
-            border-left: 3px solid var(--gold); background: rgba(230,196,110,0.06);
-            border-radius: 0 10px 10px 0; padding: 1rem 1.2rem; margin: 1.2rem 0; font-size: 0.92rem;
-        }
-        .callout.local { border-left-color: var(--green); background: rgba(126,230,168,0.06); }
-        .callout.warn { border-left-color: #e68a8a; background: rgba(230,120,120,0.06); }
-        .callout strong { color: var(--head); }
-        .callout h3 { font-family: 'Rajdhani', sans-serif; margin: 0 0 0.4rem; color: var(--head); font-size: 1.05rem; }
-
-        /* ---- service layer ---- */
-        .svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-        .svc { border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.2rem; background: var(--panel); }
-        .svc h3 { font-family: 'Rajdhani', sans-serif; color: var(--head); margin: 0 0 0.3rem; font-size: 1.05rem; }
-        .svc p { margin: 0; color: var(--text-dim); font-size: 0.9rem; }
-
-        footer {
-            border-top: 1px solid rgba(255,255,255,0.06); margin-top: 2rem; padding: 1.6rem 0;
-            text-align: center; color: var(--text-faint); font-size: 0.82rem; background: rgba(6,10,14,0.4);
-        }
-        .disclaimer { font-size: 0.82rem; color: var(--text-faint); margin-top: 1.5rem; font-style: italic; }
-
-        @media (max-width: 820px) {
-            .tiers { grid-template-columns: 1fr; }
-            .principle { grid-template-columns: 1fr; }
-            .svc-grid { grid-template-columns: 1fr; }
-            table, thead, tbody, th, td, tr { display: block; }
-            thead { display: none; }
-            tbody tr { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 0.7rem; padding: 0.4rem 0.6rem; }
-            tbody td { border: none; padding: 0.35rem 0.2rem; }
-            tbody td::before { content: attr(data-label); display: block; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-soft); margin-bottom: 0.1rem; }
+        footer { border-top: 1px solid var(--line); padding: 1.2rem 0 2rem; color: var(--faint); font-size: 0.78rem; }
+        @media (max-width: 760px) {
+            table { font-size: 0.78rem; }
+            th, td { padding: 0.35rem 0.4rem; }
         }
     </style>
 </head>
 <body>
-    <div style="position:fixed;top:1rem;left:1rem;z-index:50;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:0.18em;color:#e6c46e;border:1px solid rgba(230,196,110,0.4);background:rgba(6,10,14,0.7);backdrop-filter:blur(8px);padding:0.35rem 0.7rem;border-radius:999px;">INTERNAL · USO INTERNO</div>
-    <div class="lang-switch" role="group" aria-label="Language">
-        <button type="button" data-l="es" onclick="setLang('es')">ES</button>
-        <button type="button" data-l="en" onclick="setLang('en')">EN</button>
-    </div>
+    <div class="topbar"><div class="wrap">
+        <span class="brand">MENTA<span>systems</span> · domótica</span>
+        <span class="badge">INTERNO · USO INTERNO</span>
+        <nav class="topnav">
+            <a href="#tiers">Kits</a>
+            <a href="#sourcing">Sourcing</a>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#obra">Guía obra</a>
+            <a href="#caveats">Caveats</a>
+            <a href="#pendiente">Pendiente</a>
+            <a href="/home">→ versión pública</a>
+        </nav>
+    </div></div>
 
-    <!-- ===================== SPANISH ===================== -->
-    <div class="only-es">
-        <header class="top">
-            <div class="wrap">
-                <div class="brand"><img src="icon.png" alt="">MENTA<span class="accent">systems</span></div>
-                <div class="kicker">Domótica · Home Assistant</div>
-                <h1>Tu casa, automatizada — y funciona aunque se caiga internet</h1>
-                <p class="sub">Instalamos un cerebro <strong>local</strong> en tu casa que controla luces, persianas, sensores, cámaras y energía. Sin depender de la nube de nadie: si se va internet, todo sigue funcionando.</p>
-            </div>
-        </header>
+    <div class="wrap">
+        <h1 class="doc">Domótica local-first — documento interno</h1>
+        <p class="doc-sub">Especificación de kits, catálogo con sourcing y guía de instalación para obra. Base: Home Assistant local, todo Zigbee salvo cámaras (PoE) y energía. Precios orientativos s/IVA, jun-2026. <b>El boletín eléctrico lo firma electricista certificado.</b></p>
 
+        <!-- PRINCIPLE -->
         <section>
-            <div class="wrap">
-                <div class="section-label">El principio</div>
-                <h2 class="sec">Local-first, de verdad</h2>
-                <p class="sec-intro">El sistema vive dentro de tu casa (Home Assistant), no en un servidor remoto. Esto es lo que separa una instalación seria de un puñado de enchufes "inteligentes" que se quedan tontos en cuanto falla el wifi del barrio.</p>
-                <div class="principle">
-                    <div class="p-item">
-                        <h3><span class="pill local">Zigbee&nbsp;✓</span> Control local</h3>
-                        <p>Dispositivos por radio Zigbee (y Thread/Matter) emparejados a tu propio coordinador. Hablan directamente con el cerebro de casa, sin pasar por internet.</p>
-                    </div>
-                    <div class="p-item">
-                        <h3><span class="pill cloud">WiFi-nube&nbsp;✗</span> Lo que evitamos</h3>
-                        <p>Dispositivos wifi que dependen del servidor del fabricante (Tuya cloud y similares): si cae internet o el fabricante apaga su nube, dejan de funcionar. Fuera del catálogo.</p>
-                    </div>
-                </div>
+            <h2><span class="num">0</span> Principio</h2>
+            <ul class="tight">
+                <li><span class="pill p-local">Zigbee ✓</span> &nbsp;Todo dispositivo emparejado a <b>nuestro</b> coordinador (ZBT-2 + Zigbee2MQTT/ZHA) = 100% local, sin nube. Funciona sin internet.</li>
+                <li><span class="pill p-cloud">WiFi-nube ✗</span> &nbsp;Nada que dependa del cloud del fabricante (Tuya WiFi, etc.). Fuera del catálogo.</li>
+                <li>Cámaras = PoE local + Frigate. Energía = inversor con API local. Acceso/soporte = Tailscale.</li>
+            </ul>
+        </section>
+
+        <!-- SOURCING -->
+        <section id="sourcing">
+            <h2><span class="num">1</span> Sourcing: AliExpress vs homologado</h2>
+            <p class="note-lead">Primeros clientes / validación → AliExpress (Zigbee). Escalado → marca homologada por fiabilidad, soporte y RMA. La arquitectura y la promesa local no cambian.</p>
+            <div class="box ok">
+                <b>Regla de oro:</b> en AliExpress comprar SIEMPRE la variante <b>Zigbee</b>, nunca la WiFi. El mismo módulo Tuya/Moes en Zigbee es local (mismo chip que la marca cara reetiquetada); en WiFi depende de la nube de Tuya. <span class="pill p-warn">Verificar en la ficha: "Zigbee" explícito, no "WiFi/Tuya Smart app".</span>
+            </div>
+            <div class="box warn">
+                <b>Riesgos AliExpress a asumir en validación:</b> lotes con firmware variable (comportamiento del input "detached", calibración de persiana, brillo mínimo en dimmers), sin RMA real, envíos 1-3 sem. Para escalar con cuota de servicio → homologado. Pedir 1-2 uds de prueba y validar en Z2M ANTES de comprar lote.
             </div>
         </section>
 
-        <section>
-            <div class="wrap">
-                <div class="section-label">Los kits</div>
-                <h2 class="sec">Tres niveles, una misma base</h2>
-                <p class="sec-intro">El "cerebro" (Home Assistant + radio + acceso remoto seguro + backups) es idéntico en los tres. Lo que cambia es qué dispositivos lleva. Así el básico de hoy se amplía mañana <strong>sin volver a picar pared</strong> — sobre todo si dejamos el cable de red puesto durante la obra.</p>
-                <div class="tiers">
-                    <div class="tier">
-                        <div class="tname">Básico</div>
-                        <div class="tfor">Confort, ahorro y tranquilidad. Lo esencial, bien hecho.</div>
-                        <ul>
-                            <li>Cerebro local + acceso remoto seguro</li>
-                            <li>Luces (módulos tras el interruptor)</li>
-                            <li>Persianas motorizadas</li>
-                            <li>Sensores de puertas y ventanas</li>
-                            <li>Movimiento, temperatura, humedad</li>
-                            <li>Detección de humo y fuga de agua</li>
-                            <li>SAI para que el cerebro aguante microcortes</li>
-                        </ul>
-                        <div class="price-block">
-                            <div class="price-label">Material orientativo</div>
-                            <div class="price">500 – 1.200&nbsp;€ <small>según sourcing</small></div>
-                            <div class="fee">Cuota desde ~15 €/mes</div>
-                        </div>
-                    </div>
-                    <div class="tier featured">
-                        <div class="tname">Premium</div>
-                        <div class="tfor">Todo lo del Básico, más seguridad y acceso.</div>
-                        <ul>
-                            <li>Todo lo del Básico</li>
-                            <li class="add">Cámaras PoE con grabación local</li>
-                            <li class="add">Detección de personas sin nube (Frigate)</li>
-                            <li class="add">Cerradura inteligente integrada</li>
-                            <li class="add">Videoportero / clima (opcional)</li>
-                        </ul>
-                        <div class="price-block">
-                            <div class="price-label">Material orientativo</div>
-                            <div class="price">1.500 – 2.800&nbsp;€</div>
-                            <div class="fee">Cuota desde ~25 €/mes</div>
-                        </div>
-                    </div>
-                    <div class="tier">
-                        <div class="tname">Super Premium</div>
-                        <div class="tfor">Independencia energética: funciona incluso sin luz.</div>
-                        <ul>
-                            <li>Todo lo del Premium</li>
-                            <li class="add">Baterías + (opcional) paneles solares</li>
-                            <li class="add">La casa entera sigue con corte de luz</li>
-                            <li class="add">Gestión de energía: tarifa y excedente solar</li>
-                        </ul>
-                        <div class="price-block">
-                            <div class="price-label">Material orientativo</div>
-                            <div class="price">desde ~8.000&nbsp;€ <small>incl. batería/solar</small></div>
-                            <div class="fee">Cuota desde ~40 €/mes</div>
-                        </div>
-                    </div>
-                </div>
-                <p class="disclaimer">Cifras orientativas de material para una vivienda media (solo dispositivos, sin IVA ni mano de obra). La obra eléctrica/albañilería y la configuración se presupuestan aparte. La batería/solar del Super Premium la ejecuta una instaladora partner.</p>
-            </div>
+        <!-- TIERS MATRIX -->
+        <section id="tiers">
+            <h2><span class="num">2</span> Matriz de kits</h2>
+            <p class="note-lead">Cerebro idéntico en los tres. Cantidades = vivienda media (~90 m², 3 dorm); ajustar por proyecto. Precio = solo material homologado, s/IVA, sin mano de obra ni config.</p>
+            <table>
+                <thead><tr><th>Elemento</th><th>Básico</th><th>Premium</th><th>Super Premium</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Hub + radio (ZBT-2)</td><td>✓ 1</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Mini-PC Frigate</td><td>—</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Módulos luz</td><td>8-12</td><td>8-12</td><td>8-12</td></tr>
+                    <tr><td class="k">Módulos persiana</td><td>4-6</td><td>4-6</td><td>4-6</td></tr>
+                    <tr><td class="k">Sensores puerta/ventana</td><td>6-10</td><td>6-10</td><td>6-10</td></tr>
+                    <tr><td class="k">Movimiento / Temp+Hum</td><td>3 / 3</td><td>3 / 3</td><td>3 / 3</td></tr>
+                    <tr><td class="k">Humo (EN14604) / fuga agua</td><td>2-3 / 2</td><td>2-3 / 2</td><td>2-3 / 2</td></tr>
+                    <tr><td class="k">SAI cerebro+red</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td class="k">Cámaras PoE</td><td>—</td><td>2-4</td><td>2-4</td></tr>
+                    <tr><td class="k">Cerradura</td><td>—</td><td>✓ 1</td><td>✓ 1</td></tr>
+                    <tr><td class="k">Batería + solar</td><td>—</td><td>—</td><td>✓ (partner)</td></tr>
+                    <tr><td class="k" style="color:var(--gold)">Material aprox.</td><td class="price">1.000-1.300 €</td><td class="price">2.000-2.800 €</td><td class="price">8.000-16.000 €</td></tr>
+                    <tr><td class="k" style="color:var(--gold)">vía AliExpress</td><td class="price">~450-600 €</td><td class="price">~1.300-1.800 €</td><td class="price">+batería</td></tr>
+                    <tr><td class="k" style="color:var(--accent)">Cuota/mes objetivo</td><td>~15 €</td><td>~25 €</td><td>~40 €</td></tr>
+                </tbody>
+            </table>
+            <p class="note-lead">La batería/solar del Super Premium la presupuesta y ejecuta la instaladora partner; domina el coste (~6.500-13.000 € la parte energética).</p>
         </section>
 
-        <section>
-            <div class="wrap">
-                <div class="section-label">Sourcing</div>
-                <h2 class="sec">Dos vías de compra, misma arquitectura</h2>
-                <p class="sec-intro">Para arrancar y validar con los primeros clientes podemos abaratar el material comprando en AliExpress; cuando escalemos, pasamos a marcas homologadas por fiabilidad y soporte. La promesa "funciona sin internet" <strong>no cambia</strong> en ningún caso.</p>
-                <div class="callout local">
-                    <h3>La regla de oro con AliExpress</h3>
-                    <p><span class="pill local">Zigbee&nbsp;✓</span> Un módulo Zigbee barato (Tuya, Moes, Girier, Sonoff…) emparejado a <em>nuestro</em> coordinador funciona <strong>100% local</strong>, sin tocar jamás la nube de Tuya. Es el mismo hardware que reetiquetan las marcas "premium", a una fracción del precio.<br>
-                    <span class="pill cloud">WiFi&nbsp;✗</span> El mismo fabricante en <strong>wifi</strong> depende de su nube. Ese no entra. La diferencia barato/premium pasa a ser acabado, fiabilidad y soporte — no "local vs nube".</p>
-                </div>
-            </div>
+        <!-- CATALOG -->
+        <section id="catalogo">
+            <h2><span class="num">3</span> Catálogo con specs y sourcing</h2>
+
+            <h3>3.1 Cerebro: hub + radio + NVR</h3>
+            <table>
+                <thead><tr><th>Pieza</th><th>Modelo</th><th>Specs clave</th><th>Local</th><th>Precio</th><th>AliExpress / nota</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Hub</td><td class="k">HA Green</td><td>Quad-core, 4GB, eMMC. Sin radio integrada.<span class="sub">Alt. potencia: mini-PC Intel N100, 8-16GB.</span></td><td><span class="pill p-local">local</span></td><td class="price">~110 €</td><td>Comprar oficial (Nabu Casa / Seeed). No clones.</td></tr>
+                    <tr><td class="k">Radio</td><td class="k">HA Connect ZBT-2</td><td>Zigbee 3.0 <i>o</i> Thread (uno a la vez). USB.<span class="sub">2ª ud si se necesita Zigbee + Thread a la vez.</span></td><td><span class="pill p-local">local</span></td><td class="price">~45 €</td><td><span class="pill p-warn">Cable alargador USB obligatorio + lejos de USB-3.0/SSD (ruido 2.4 GHz).</span></td></tr>
+                    <tr><td class="k">Mini-PC NVR</td><td class="k">Beelink EQ13</td><td>Intel N100, 2× NIC 2.5G, 16GB. iGPU OpenVINO.<span class="sub">Hailo-8L M.2 (~65 €) si &gt;6 cámaras.</span></td><td><span class="pill p-local">local</span></td><td class="price">~160-200 €</td><td>Frigate standalone (Docker), NO add-on del hub. 2ª NIC = VLAN cámaras.</td></tr>
+                    <tr><td class="k">SSD grabación</td><td class="k">SSD/HDD dedicado</td><td>Buffer de Frigate. Dimensionar: retención × bitrate.<span class="sub">~1-2 TB para 4 cám / 14 días a 1080p.</span></td><td>—</td><td class="price">~60-120 €</td><td>OS+Frigate en NVMe; grabaciones en disco aparte.</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.2 Luces — módulo Zigbee tras mecanismo (requiere neutro)</h3>
+            <table>
+                <thead><tr><th>Opción</th><th>Modelo</th><th>Specs</th><th>Precio</th><th>AliExpress (término)</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">homolog.</span></td><td class="k">NodOn SIN-4-1-20</td><td>Relé 16 A, multifunción, hace de router de malla. Input pulsador/conmutador, modo detached.</td><td class="price">~40-55 €</td><td class="ali">marca UE, sin equivalente Ali fiable</td></tr>
+                    <tr><td><span class="pill p-warn">alt.</span></td><td class="k">Aqara Single Switch T1 (N)</td><td>Versión con neutro. Local en Z2M/ZHA sin hub Aqara.</td><td class="price">~20-30 €</td><td class="ali">"Aqara T1 switch module neutral"</td></tr>
+                    <tr><td><span class="pill p-warn">dimmer</span></td><td class="k">Shelly Dimmer Gen4</td><td>Multiprotocolo. Usar en <b>WiFi</b> (integración local madura) o Zigbee (más verde). 0-10V/triac.</td><td class="price">~40-50 €</td><td class="ali">tienda Shelly oficial</td></tr>
+                    <tr><td><span class="pill p-warn">económico</span></td><td class="k">Tuya/Moes Zigbee módulo</td><td>1 o 2 canales, con/sin neutro. Mismo chip que marca.</td><td class="price">~8-12 €</td><td class="ali">"Tuya Zigbee switch module" (¡Zigbee, no WiFi!)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 Persianas — módulo Zigbee roller shutter (requiere neutro)</h3>
+            <table>
+                <thead><tr><th>Opción</th><th>Modelo</th><th>Specs</th><th>Precio</th><th>AliExpress (término)</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">homolog.</span></td><td class="k">NodOn SIN-4-RS-20</td><td>Subir/bajar/stop + posición + autocalibración. Enclava motor (no activa ambos relés). Router de malla.</td><td class="price">~45-55 €</td><td class="ali">marca UE</td></tr>
+                    <tr><td><span class="pill p-warn">económico</span></td><td class="k">Tuya TS130F (MS-108ZR)</td><td>Up/down/stop + posición. Calibración manual. Router.</td><td class="price">~12-20 €</td><td class="ali">"Zigbee roller shutter module TS130F"</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Motor persiana:</b> el módulo NO sustituye al final de carrera del motor. El motor debe ser de persiana estándar 230 V con finales de carrera propios; el módulo solo conmuta sentido. <b>Nunca</b> dar tensión a subir y bajar a la vez (los módulos de arriba ya lo enclavan, pero confirmarlo).</div>
+
+            <h3>3.4 Sensores (Zigbee, directos al coordinador, sin hub fabricante)</h3>
+            <table>
+                <thead><tr><th>Tipo</th><th>Homologado</th><th>Económico</th><th>Specs</th><th>Precio</th><th>AliExpress</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Puerta/ventana</td><td class="k">Aqara P2</td><td>Sonoff SNZB-04</td><td>Contacto magnético, pila CR2032/CR1632, 2+ años.</td><td class="price">~7-18 €</td><td class="ali">"Aqara P2 door" / "SNZB-04"</td></tr>
+                    <tr><td class="k">Movimiento</td><td class="k">Aqara Motion P1</td><td>Sonoff SNZB-03P</td><td>PIR, intervalo ajustable, lux. Ángulo ~170°.</td><td class="price">~12-25 €</td><td class="ali">"Aqara motion P1"</td></tr>
+                    <tr><td class="k">Temp/humedad</td><td class="k">Aqara T&H</td><td>Sonoff SNZB-02P</td><td>±0.3°C. Para clima/confort y alarmas de helada.</td><td class="price">~12-18 €</td><td class="ali">"Aqara temperature humidity"</td></tr>
+                    <tr><td class="k">Fuga agua</td><td class="k">Frient Water Leak</td><td>Aqara Water Leak</td><td>Sonda de suelo. Frient "Works with HA".</td><td class="price">~18-30 €</td><td class="ali">"Aqara water leak sensor"</td></tr>
+                    <tr><td class="k">Humo</td><td class="k">Heiman HS1SA-E</td><td>Frient Smoke</td><td><b>EN14604</b>. Sirena autónoma aunque el hub caiga. Pila 10 años.</td><td class="price">~35-55 €</td><td class="ali">homologado (no económico fiable)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.5 Cámaras + grabación (PoE, local, Frigate)</h3>
+            <table>
+                <thead><tr><th>Pieza</th><th>Modelo</th><th>Specs</th><th>Precio</th><th>Nota Frigate</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">Estándar</td><td class="k">Reolink RLC-810A / 820A</td><td>4K/8MP, PoE, RTSP+ONVIF, microSD, IR. Bullet/domo.</td><td class="price">~85-110 €</td><td>Detección por <b>substream 1080p/5fps</b>; main 4K solo grabación.</td></tr>
+                    <tr><td class="k">Gran angular</td><td class="k">Reolink Duo 3 PoE</td><td>16MP, 180°, doble lente. 3V = IK10 antivandálico.</td><td class="price">~150-210 €</td><td>Una cubre fachada/entrada (= 2 cámaras).</td></tr>
+                    <tr><td class="k">PoE switch</td><td class="k">Switch PoE 5-8 pto</td><td>802.3af, presupuesto W ≥ Σ cámaras. En el rack.</td><td class="price">~40-70 €</td><td>Cámaras en VLAN aislada (2ª NIC del mini-PC).</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Frigate:</b> Frigate "dueño" de los streams RTSP; HA recibe eventos vía MQTT, no segundo pull nativo (Reolink tira conexiones con doble pull pesado). Algunos modelos prefieren HTTP-FLV en alta — ver doc "camera specific" al fijar SKU.</div>
+
+            <h3>3.6 Cerraduras — la categoría con trampa</h3>
+            <table>
+                <thead><tr><th>Opción</th><th>Modelo</th><th>Local en HA</th><th>Tipo</th><th>Precio</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="pill p-local">defecto</span></td><td class="k">Nuki Smart Lock Pro + MQTT</td><td><b>Completo</b>: lock/unlock, unlatch, batería, códigos. MQTT local nativo (Pro/Ultra/Go).</td><td>Retrofit sobre cilindro existente (no toca cilindro).</td><td class="price">~229-279 €</td></tr>
+                    <tr><td><span class="pill p-warn">alt.</span></td><td class="k">Aqara U200</td><td><b>Solo lock/unlock</b> en HA (Matter). Batería/unlatch solo en app Aqara.</td><td>Cilindro europeo (medir backset/longitud).</td><td class="price">~160 € + cil.</td></tr>
+                    <tr><td><span class="pill p-warn">purista</span></td><td class="k">Danalock V4 Z-Wave</td><td>Local por protocolo (lock/unlock + batería). Requiere stick Z-Wave.</td><td>Retrofit thumb-turn. Fiabilidad irregular.</td><td class="price">~150-200 €</td></tr>
+                </tbody>
+            </table>
+            <div class="box danger"><b>Tratar como NUBE (no usar como "local"):</b> Yale Linus / Linus L2 (BT + bridge cloud, salvo Matter confirmado en la unidad), Tedee (Matter solo por firmware reciente, verificar), cualquier wifi/Tuya/BT genérica. <b>Fallback 100% local Nuki:</b> Nuki Hub (ESP32, open source) sobre BT → MQTT, sin nube ni puente Nuki.</div>
+
+            <h3>3.7 Energía y respaldo</h3>
+            <table>
+                <thead><tr><th>Pieza</th><th>Modelo</th><th>Specs</th><th>Precio</th><th>Nota</th></tr></thead>
+                <tbody>
+                    <tr><td class="k">SAI cerebro+red</td><td class="k">Salicru SPS 700 ONE</td><td>700 VA / 360 W, 2× Schuko + USB. Línea interactiva.</td><td class="price">~65-70 €</td><td>HA lo lee por <b>NUT</b> (USB al host): corte, %batería, apagado seguro, shedding.</td></tr>
+                    <tr><td class="k">Inversor/batería</td><td class="k">Victron (Cerbo GX)</td><td>Integración HA <b>oficial local</b> (victron_gx, MQTT). Control ESS: setpoint, min SoC, carga.</td><td class="price">part. instaladora</td><td>Respaldo en corte = nativo (MultiPlus/Quattro). Alt: Huawei LUNA2000, Sungrow SHxRT.</td></tr>
+                </tbody>
+            </table>
+            <div class="box warn"><b>Evitar SolarEdge</b> como principal: integración oficial cloud y limitada (300 calls/día), ajustes de batería bloqueados por instalador. Modbus local existe pero con fricción. <b>Respaldo ≠ HA:</b> sobrevivir al apagón es hardware del inversor + cableado (lo entrega la instaladora), HA solo observa/optimiza. Subvenciones IDAE/Next-Gen ~140-490 €/kWh (según CCAA, agotables) — confirmar por presupuesto.</div>
         </section>
 
-        <section>
-            <div class="wrap">
-                <div class="section-label">Catálogo homologado</div>
-                <h2 class="sec">Dispositivos, validados uno a uno</h2>
-                <p class="sec-intro">Pocos modelos, todos con <strong>control local real</strong> verificado y disponibles en España/UE. Cada categoría con su opción homologada (fiable, para escalar) y su alternativa económica (AliExpress, para validar).</p>
+        <!-- OBRA -->
+        <section id="obra">
+            <h2><span class="num">4</span> Guía de obra para el albañil</h2>
+            <p class="note-lead">Qué debe dejar la obra para que la instalación domótica sea limpia y ampliable. Idea clave: <b>dejar preparado de más</b> (neutro en todo, tubo y Cat6 aunque hoy no se use) cuesta poco con la pared abierta y evita repicar mañana. Lo eléctrico lo ejecuta/firma electricista; aquí va el "qué dejar dónde".</p>
 
-                <details class="cat" open>
-                    <summary><span>🧠 El cerebro: hub + radio</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">El corazón del sistema. Idéntico en los tres kits. Estandarizamos un único modelo para que reponer o diagnosticar sea trivial.</p>
-                        <table>
-                            <thead><tr><th>Pieza</th><th>Recomendado</th><th>Protocolo</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Pieza">Hub</td>
-                                    <td data-label="Recomendado"><span class="m">Home Assistant Green</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Local</span></td>
-                                    <td data-label="Precio" class="price-cell">~110 €</td>
-                                    <td data-label="Notas"><span class="note">Appliance cerrado, fácil de reponer. Alternativa con más potencia: mini-PC Intel N100 (~120-160 €) para casas con cámaras.</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Pieza">Radio</td>
-                                    <td data-label="Recomendado"><span class="m">HA Connect ZBT-2</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Zigbee / Thread</span></td>
-                                    <td data-label="Precio" class="price-cell">~45 €</td>
-                                    <td data-label="Notas"><span class="note">USB. Zigbee 3.0 o Thread/Matter. Obligatorio cable alargador USB y lejos de puertos USB-3.0 (ruido 2.4 GHz).</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Pieza">Mini-PC cámaras</td>
-                                    <td data-label="Recomendado"><span class="m">Beelink EQ13 (N100, 2× NIC)</span></td>
-                                    <td data-label="Protocolo"><span class="pill homo">Premium+</span></td>
-                                    <td data-label="Precio" class="price-cell">~160-200 €</td>
-                                    <td data-label="Notas"><span class="note">Para Frigate. La 2ª tarjeta de red aísla las cámaras en una VLAN sin internet. Solo en kits con cámara.</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
+            <h3>4.1 Cajetines y cajas (lo más importante)</h3>
+            <ul class="tight">
+                <li><b>Neutro en TODOS los puntos</b> de luz y persiana (no solo fase + retorno). Los módulos Zigbee se alimentan a 230 V y necesitan N permanente. Sin neutro no hay módulo fiable.</li>
+                <li><b>Cajetín profundo</b> detrás de cada interruptor/persiana que vaya a llevar módulo: caja de empotrar de <b>fondo ≥ 50 mm</b> (mejor caja universal/“octogonal” o doble) — el módulo va detrás del mecanismo y no entra en caja estándar de 40 mm con holgura.</li>
+                <li>Una <b>caja de registro</b> accesible por estancia/zona donde concentrar derivaciones; facilita meter módulos de varios canales en un punto si interesa.</li>
+                <li>Interruptores: pueden ser normales (pulsador o conmutador); el módulo respeta el físico. Si se quiere look minimalista, dejar previsto pulsador.</li>
+            </ul>
+            <div class="box"><b>Esquema tipo módulo de luz</b> (confirmar con electricista y manual del módulo):
+            <div class="wire"><span class="l">L</span>  fase permanente      → módulo IN (L)
+<span class="n">N</span>  neutro permanente    → módulo IN (N)
+   salida lámpara       ← módulo OUT
+   interruptor pared    → módulo S1 (y S2 si conmutado)</div></div>
 
-                <details class="cat">
-                    <summary><span>💡 Luces</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Módulo Zigbee <strong>detrás del mecanismo</strong> (hay neutro porque es reforma). Respeta siempre el interruptor físico de la pared.</p>
-                        <table>
-                            <thead><tr><th>Opción</th><th>Modelo</th><th>Protocolo</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Opción"><span class="pill homo">Homologado</span></td>
-                                    <td data-label="Modelo"><span class="m">NodOn SIN-4-1-20</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Zigbee 3.0</span></td>
-                                    <td data-label="Precio" class="price-cell">~40-55 €</td>
-                                    <td data-label="Notas"><span class="note">Marca UE, relé 16 A, hace de repetidor de malla. La mejor fabricación y soporte.</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Opción"><span class="pill homo">Alternativa</span></td>
-                                    <td data-label="Modelo"><span class="m">Aqara Single Switch T1 (con neutro)</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Zigbee</span></td>
-                                    <td data-label="Precio" class="price-cell">~20-30 €</td>
-                                    <td data-label="Notas"><span class="note">Local vía Zigbee2MQTT, sin hub Aqara. Regulación de luz: Shelly Dimmer Gen4 (~40-50 €).</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Opción"><span class="pill ali">Económico</span></td>
-                                    <td data-label="Modelo"><span class="m">Tuya/Moes Zigbee Switch Module</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Zigbee</span></td>
-                                    <td data-label="Precio" class="price-cell">~8-12 €</td>
-                                    <td data-label="Notas"><span class="note">AliExpress: buscar <em>"Tuya Zigbee switch module no neutral required"</em> en versión <strong>Zigbee</strong> (no wifi). Mismo chip que los de marca.</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
+            <h3>4.2 Persianas</h3>
+            <ul class="tight">
+                <li>Motor de persiana <b>230 V con finales de carrera</b> propios (estándar). El módulo solo conmuta subir/bajar.</li>
+                <li>Dejar <b>tubo corrugado</b> desde el cajón de la persiana (donde sale el motor) hasta el cajetín del pulsador, con hilos: subir, bajar, neutro, fase, tierra.</li>
+                <li>Cajetín del pulsador de persiana también <b>profundo</b> (lleva módulo).</li>
+            </ul>
 
-                <details class="cat">
-                    <summary><span>🪟 Persianas</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Módulo de persiana Zigbee: subir / bajar / parar, posición exacta y calibración. Respeta los pulsadores de pared.</p>
-                        <table>
-                            <thead><tr><th>Opción</th><th>Modelo</th><th>Protocolo</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Opción"><span class="pill homo">Homologado</span></td>
-                                    <td data-label="Modelo"><span class="m">NodOn SIN-4-RS-20</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Zigbee 3.0</span></td>
-                                    <td data-label="Precio" class="price-cell">~45-55 €</td>
-                                    <td data-label="Notas"><span class="note">Específico de persiana, autocalibración, posición por slider. El "just works" de los kits.</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Opción"><span class="pill ali">Económico</span></td>
-                                    <td data-label="Modelo"><span class="m">Tuya TS130F (MS-108ZR)</span></td>
-                                    <td data-label="Protocolo"><span class="pill local">Zigbee</span></td>
-                                    <td data-label="Precio" class="price-cell">~12-20 €</td>
-                                    <td data-label="Notas"><span class="note">AliExpress: <em>"Zigbee roller shutter module TS130F"</em>. Posición/calibración algo más manual.</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
+            <h3>4.3 Red y "rack" (corazón de la instalación)</h3>
+            <ul class="tight">
+                <li>Definir ubicación del <b>armario/rack</b>: ventilado, seco, con <b>2-3 enchufes</b> y cerca de la entrada de fibra/router. Aloja: hub HA, mini-PC Frigate, switch PoE, SAI, ONT/router.</li>
+                <li><b>Cat6 (o mejor Cat6A) desde el rack a:</b> cada cámara (PoE), 1-2 puntos de <b>AP WiFi</b> (techo/pared central), TV/salón, y 1 reserva por planta. Todo a regletas/patch en el rack.</li>
+                <li>Tubo de <b>Ø25 mm mínimo</b> en las canalizaciones de datos para poder pasar más cable a futuro. Separar de fuerza ≥ 10-15 cm para evitar interferencias.</li>
+                <li>Dejar <b>guía pasahilos</b> en los tubos vacíos de reserva.</li>
+            </ul>
+            <div class="box ok"><b>Regla barata:</b> con la pared abierta, tirar Cat6 a las esquinas donde <i>podría</i> ir una cámara aunque el kit hoy sea Básico. Subir a Premium luego = enchufar, no repicar.</div>
 
-                <details class="cat">
-                    <summary><span>📡 Sensores</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Todos emparejados directamente al coordinador, sin hub ni nube del fabricante. Línea cotidiana (Aqara) + grado seguridad (Frient/Heiman), con alternativa económica Sonoff.</p>
-                        <table>
-                            <thead><tr><th>Tipo</th><th>Recomendado</th><th>Económico</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Tipo">Puerta / ventana</td><td data-label="Recomendado"><span class="m">Aqara P2</span></td><td data-label="Económico">Sonoff SNZB-04</td><td data-label="Precio" class="price-cell">~7-18 €</td><td data-label="Notas"><span class="note">Pila de 2+ años.</span></td></tr>
-                                <tr><td data-label="Tipo">Movimiento (PIR)</td><td data-label="Recomendado"><span class="m">Aqara Motion P1</span></td><td data-label="Económico">Sonoff SNZB-03P</td><td data-label="Precio" class="price-cell">~12-25 €</td><td data-label="Notas"><span class="note">Intervalo de detección ajustable.</span></td></tr>
-                                <tr><td data-label="Tipo">Temp. / humedad</td><td data-label="Recomendado"><span class="m">Aqara T&H</span></td><td data-label="Económico">Sonoff SNZB-02P</td><td data-label="Precio" class="price-cell">~12-18 €</td><td data-label="Notas"><span class="note">Para clima y confort.</span></td></tr>
-                                <tr><td data-label="Tipo">Fuga de agua</td><td data-label="Recomendado"><span class="m">Frient Water Leak</span></td><td data-label="Económico">Aqara Water Leak</td><td data-label="Precio" class="price-cell">~18-30 €</td><td data-label="Notas"><span class="note">Bajo lavadora / caldera. Frient certificado "Works with HA".</span></td></tr>
-                                <tr><td data-label="Tipo">Humo</td><td data-label="Recomendado"><span class="m">Heiman HS1SA-E</span></td><td data-label="Económico">Frient Smoke Alarm</td><td data-label="Precio" class="price-cell">~35-55 €</td><td data-label="Notas"><span class="note">Certificado <strong>EN14604</strong>. La sirena suena sola aunque el hub esté caído.</span></td></tr>
-                            </tbody>
-                        </table>
-                        <div class="callout warn">
-                            <strong>CO (monóxido):</strong> no hay todavía un detector de CO Zigbee, certificado EN50291 y con soporte local fiable que homologaríamos a ciegas. Para CO ponemos un <strong>detector autónomo certificado</strong> (la norma primero) y la visibilidad en el sistema como secundaria.
-                        </div>
-                    </div>
-                </details>
+            <h3>4.4 Cámaras (PoE)</h3>
+            <ul class="tight">
+                <li>Posiciones típicas: <b>entrada/puerta</b>, fachada/acceso vehículos, perímetro trasero. Altura <b>~2,5-3 m</b>, fuera de alcance pero sin “mirar al cielo”.</li>
+                <li><b>1 cable Cat6 por cámara</b> hasta el rack (PoE lleva datos + alimentación, sin enchufe en la cámara).</li>
+                <li>En exterior: caja de conexiones <b>estanca IP65</b> detrás de la cámara; dejar lazo de holgura de cable.</li>
+                <li>Evitar apuntar a vía pública/vecinos (RGPD) — encuadre solo finca propia.</li>
+            </ul>
 
-                <details class="cat">
-                    <summary><span>📷 Cámaras + grabación</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Aprovechamos la obra para tirar cable de red: cámaras <strong>PoE con grabación local</strong>, nunca cámaras wifi de nube. Funcionan sin internet y los vídeos no salen de casa (argumento RGPD fuerte).</p>
-                        <table>
-                            <thead><tr><th>Pieza</th><th>Modelo</th><th>Protocolo</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Pieza">Cámara estándar</td><td data-label="Modelo"><span class="m">Reolink RLC-810A / RLC-820A</span></td><td data-label="Protocolo"><span class="pill local">RTSP / ONVIF</span></td><td data-label="Precio" class="price-cell">~85-110 €</td><td data-label="Notas"><span class="note">4K/8MP, bullet o domo. El caballo de batalla, probadísimo con Frigate.</span></td></tr>
-                                <tr><td data-label="Pieza">Gran angular</td><td data-label="Modelo"><span class="m">Reolink Duo 3 PoE</span></td><td data-label="Protocolo"><span class="pill local">RTSP / ONVIF</span></td><td data-label="Precio" class="price-cell">~150-210 €</td><td data-label="Notas"><span class="note">16 MP, 180°. Una unidad cubre fachada/entrada (sustituye a dos cámaras).</span></td></tr>
-                                <tr><td data-label="Pieza">Grabación / IA</td><td data-label="Modelo"><span class="m">Frigate en el mini-PC N100</span></td><td data-label="Protocolo"><span class="pill local">100% local</span></td><td data-label="Precio" class="price-cell">incl. mini-PC</td><td data-label="Notas"><span class="note">Detección de personas/vehículos por iGPU (OpenVINO). Hailo-8L M.2 (~60-70 €) si hay muchas cámaras. El Coral ya es legacy.</span></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
+            <h3>4.5 Cerradura</h3>
+            <ul class="tight">
+                <li><b>Nuki (recomendado)</b>: retrofit por dentro sobre el bombín existente, <b>sin obra</b>. Solo requiere que el cilindro tenido pomo/llave interior compatible (botón o adaptador). No necesita nada del albañil salvo… nada.</li>
+                <li><b>Aqara U200</b>: sustituye cilindro → <b>medir el cilindro europeo</b> (longitud exterior/interior, backset) antes de pedir. Esto sí toca puerta.</li>
+                <li>Si hay videoportero/abrepuertas, prever tubo de datos hasta el rack.</li>
+            </ul>
 
-                <details class="cat">
-                    <summary><span>🔒 Cerraduras</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">La categoría más delicada: la mayoría de cerraduras "smart" son Bluetooth o nube. Estas tres sí son genuinamente locales — con sus matices, que contamos siempre por adelantado.</p>
-                        <table>
-                            <thead><tr><th>Opción</th><th>Modelo</th><th>Local en HA</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Opción"><span class="pill homo">Por defecto</span></td><td data-label="Modelo"><span class="m">Nuki Smart Lock Pro + MQTT</span></td><td data-label="Local en HA"><span class="pill local">Completo</span></td><td data-label="Precio" class="price-cell">~229-279 €</td><td data-label="Notas"><span class="note">La única con set <strong>completo y local</strong>: abrir/cerrar, unlatch, batería, códigos. Retrofit sobre tu cilindro, muy vendida en España.</span></td></tr>
-                                <tr><td data-label="Opción"><span class="pill homo">Alternativa</span></td><td data-label="Modelo"><span class="m">Aqara U200 + cilindro europeo</span></td><td data-label="Local en HA"><span class="pill ali">Solo abrir/cerrar</span></td><td data-label="Precio" class="price-cell">~160 € + cilindro</td><td data-label="Notas"><span class="note">Matter-over-Thread, local — pero HA solo ve abrir/cerrar (ni batería ni unlatch). El resto vive en la app Aqara.</span></td></tr>
-                                <tr><td data-label="Opción"><span class="pill homo">Puristas</span></td><td data-label="Modelo"><span class="m">Danalock V4 Z-Wave</span></td><td data-label="Local en HA"><span class="pill local">Local</span></td><td data-label="Precio" class="price-cell">~150-200 €</td><td data-label="Notas"><span class="note">100% local por protocolo, pero línea madura y fiabilidad irregular. Requiere stick Z-Wave.</span></td></tr>
-                            </tbody>
-                        </table>
-                        <div class="callout warn">
-                            <strong>A evitar como "local":</strong> Yale Linus y Tedee se tratan como <strong>nube</strong> salvo que Matter esté confirmado en esa unidad concreta. Cualquier cerradura wifi/Tuya/Bluetooth genérica: nube hasta que se demuestre lo contrario.
-                        </div>
-                    </div>
-                </details>
+            <h3>4.6 Sensores y detectores</h3>
+            <ul class="tight">
+                <li><b>Puerta/ventana, movimiento, temp/hum, fuga</b>: a pila, <b>sin obra</b> (adhesivo). Fuga: dejar accesible el suelo bajo lavadora/lavavajillas/caldera.</li>
+                <li><b>Humo (EN14604)</b>: en <b>techo</b>, centrado en la estancia, <b>≥ 0,5 m de paredes/rincones</b> y lejos de rejillas de ventilación, cocina y baño (vapor = falsas alarmas). Uno por dormitorio/pasillo según norma; confirmar ubicación con normativa/instalador.</li>
+                <li>No requieren cableado, pero conviene <b>decidir posiciones en obra</b> para estética (centrados, alineados).</li>
+            </ul>
 
-                <details class="cat">
-                    <summary><span>🔋 Energía y respaldo</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Dos niveles: el SAI barato que mantiene vivo el cerebro en microcortes (va en todos los kits), y la batería de casa que mantiene la vivienda entera (Super Premium, con instaladora partner).</p>
-                        <table>
-                            <thead><tr><th>Pieza</th><th>Modelo</th><th>Ámbito</th><th>Precio</th><th>Notas</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Pieza">SAI cerebro+red</td><td data-label="Modelo"><span class="m">Salicru SPS 700 ONE</span></td><td data-label="Ámbito"><span class="pill homo">Todos los kits</span></td><td data-label="Precio" class="price-cell">~65-70 €</td><td data-label="Notas"><span class="note">700 VA + USB. HA lo monitoriza por NUT: avisa del corte, apaga con seguridad y descarga cargas no esenciales.</span></td></tr>
-                                <tr><td data-label="Pieza">Batería + solar</td><td data-label="Modelo"><span class="m">Inversor Victron (Cerbo GX)</span></td><td data-label="Ámbito"><span class="pill homo">Super Premium</span></td><td data-label="Precio" class="price-cell">~6.500-13.000 €</td><td data-label="Notas"><span class="note">Integración HA <strong>oficial y local</strong>, con control de carga/descarga real y respaldo nativo en corte. Alternativas: Huawei LUNA2000, Sungrow. Evitamos SolarEdge (nube/bloqueado).</span></td></tr>
-                            </tbody>
-                        </table>
-                        <p class="disclaimer">Respaldo en corte de luz = hardware del inversor (no solo el software). En España hay subvenciones IDAE/Next-Gen (~140-490 €/kWh, según comunidad autónoma) que confirmamos en cada presupuesto.</p>
-                    </div>
-                </details>
-            </div>
+            <h3>4.7 Energía (Super Premium)</h3>
+            <ul class="tight">
+                <li><b>SAI</b>: solo necesita un enchufe junto al rack (lo coloca Menta).</li>
+                <li><b>Batería + solar</b>: lo define y ejecuta la <b>instaladora partner</b>. Obra debe prever: <b>cuarto técnico</b> con espacio + ventilación, acometida/cuadro adecuado, paso de cable a cubierta para paneles, y previsión de <b>cuadro de respaldo</b> (cargas esenciales separadas). Coordinar con ellos antes de cerrar el cuadro eléctrico.</li>
+            </ul>
+
+            <h3>4.8 Frontera de responsabilidad</h3>
+            <table>
+                <thead><tr><th>Albañil + electricista</th><th>Menta Systems</th></tr></thead>
+                <tbody>
+                    <tr><td>Cajeado profundo, neutro en todo, tubos, Cat6, rack, posiciones. Montaje físico de mecanismos y módulos según esquema. Boletín eléctrico firmado.</td><td>Suministro homologado, config de HA, emparejado Zigbee, Frigate, cerradura, alta en monitorización/Tailscale, backups, soporte y cuota.</td></tr>
+                </tbody>
+            </table>
+            <div class="box"><b>Checklist mínimo de obra:</b> neutro en todos los puntos · cajetines ≥50 mm en luz/persiana · tubo persiana cajón→pulsador · rack ventilado con enchufes · Cat6 a cámaras+APs+reservas · tubos Ø25 con guía · cajas estancas exteriores · cilindro medido (si Aqara) · cuarto técnico previsto (si batería).</div>
         </section>
 
-        <section>
-            <div class="wrap">
-                <div class="section-label">La cuota</div>
-                <h2 class="sec">Lo que de verdad nos diferencia: el servicio</h2>
-                <p class="sec-intro">Montar el sistema lo hace cualquiera. Operarlo bien a lo largo del tiempo, no. La cuota mensual cubre mantenimiento, soporte y <strong>sustitución de dispositivos averiados</strong>, todo en remoto y sin abrir puertos en tu router.</p>
-                <div class="svc-grid">
-                    <div class="svc"><h3>Acceso remoto seguro</h3><p>Cada casa entra en nuestra red privada (Tailscale): diagnosticamos y arreglamos sin desplazarnos y sin exponer tu casa a internet.</p></div>
-                    <div class="svc"><h3>Monitorización de salud</h3><p>Vigilamos que el hub esté vivo, las pilas de los sensores, los dispositivos desconectados — antes de que nos llames.</p></div>
-                    <div class="svc"><h3>Backups y actualizaciones</h3><p>Copias de seguridad cifradas y fuera de casa, y actualizaciones por fases (probadas antes de aplicarlas) en ventanas de mantenimiento.</p></div>
-                    <div class="svc"><h3>Sustitución de averías</h3><p>Si un dispositivo del kit falla, lo reemplazamos. Tú no peleas con firmwares ni con la garantía del fabricante.</p></div>
-                </div>
-            </div>
+        <!-- CAVEATS -->
+        <section id="caveats">
+            <h2><span class="num">5</span> Caveats técnicos</h2>
+            <ul class="tight">
+                <li><b>ZBT-2</b>: Zigbee O Thread, no ambos. Cable USB alargador + lejos de USB-3.0/SSD o se degrada el alcance.</li>
+                <li><b>Shelly Gen4 en Zigbee</b>: funciona pero firmware verde (input detached, fiabilidad). Si se quiere Shelly, su modo <b>WiFi local</b> es más maduro — pero rompe la pureza “solo Zigbee”. Decidir por proyecto.</li>
+                <li><b>Cerraduras Matter</b>: integración deliberadamente mínima (solo lock/unlock). Para batería/unlatch/códigos en HA → Nuki MQTT.</li>
+                <li><b>CO</b>: sin detector Zigbee EN50291 local fiable homologable hoy → poner autónomo certificado, visibilidad en HA secundaria.</li>
+                <li><b>Frigate</b>: detección en substream, no en 4K. Coral = legacy, usar iGPU/Hailo.</li>
+                <li><b>Fleet</b>: Tailscale da acceso a TODA la LAN del cliente → ACLs estrictas (operador → solo host:puerto de HA). Monitorización fleet (HA Fleet Manager) aún joven: pilotar, no apostar a ciegas. Updates: canary + por fases, nunca masivo.</li>
+            </ul>
+        </section>
+
+        <!-- PENDING -->
+        <section id="pendiente">
+            <h2><span class="num">6</span> Pendiente de validar antes de homologar</h2>
+            <ul class="tight">
+                <li>SKU concreto de <b>detector CO</b> local EN50291 (o asumir autónomo).</li>
+                <li>Madurez firmware <b>Shelly Gen4 Zigbee</b> si se usa en Zigbee.</li>
+                <li>Lote de prueba <b>módulos AliExpress</b> (luz + persiana) en Z2M antes de comprar cantidad.</li>
+                <li>Confirmar <b>Matter local</b> en la unidad concreta si se valora Yale L2 / Tedee.</li>
+                <li>Cerrar <b>instaladora partner</b> de batería/solar (preferencia Victron por integración local).</li>
+                <li>Precisar <b>cuota</b> real (margen monitorización + soporte + sustitución averías) por tier.</li>
+            </ul>
         </section>
 
         <footer>
-            <div class="wrap"><span>&copy; 2026 Menta Systems</span> &nbsp;·&nbsp; Domótica local-first &nbsp;·&nbsp; <a href="mailto:hello@mentasystems.com">hello@mentasystems.com</a></div>
+            Menta Systems — documento interno. No enlazado, noindex. Versión pública: <a href="/home">/home</a>.
         </footer>
     </div>
-
-    <!-- ===================== ENGLISH ===================== -->
-    <div class="only-en">
-        <header class="top">
-            <div class="wrap">
-                <div class="brand"><img src="icon.png" alt="">MENTA<span class="accent">systems</span></div>
-                <div class="kicker">Home Automation · Home Assistant</div>
-                <h1>Your home, automated — and it keeps working when the internet goes down</h1>
-                <p class="sub">We install a <strong>local</strong> brain in your home that controls lights, blinds, sensors, cameras and energy. No dependence on anyone's cloud: if the internet drops, everything keeps running.</p>
-            </div>
-        </header>
-
-        <section>
-            <div class="wrap">
-                <div class="section-label">The principle</div>
-                <h2 class="sec">Local-first, for real</h2>
-                <p class="sec-intro">The system lives inside your home (Home Assistant), not on a remote server. That's what separates a serious install from a handful of "smart" plugs that go dumb the moment the neighbourhood wifi hiccups.</p>
-                <div class="principle">
-                    <div class="p-item">
-                        <h3><span class="pill local">Zigbee&nbsp;✓</span> Local control</h3>
-                        <p>Devices over Zigbee radio (and Thread/Matter) paired to your own coordinator. They talk directly to the home brain, never through the internet.</p>
-                    </div>
-                    <div class="p-item">
-                        <h3><span class="pill cloud">WiFi-cloud&nbsp;✗</span> What we avoid</h3>
-                        <p>WiFi devices that depend on the manufacturer's server (Tuya cloud and friends): if the internet drops or the vendor shuts down their cloud, they stop working. Not in the catalog.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="wrap">
-                <div class="section-label">The kits</div>
-                <h2 class="sec">Three levels, one shared base</h2>
-                <p class="sec-intro">The "brain" (Home Assistant + radio + secure remote access + backups) is identical across all three. What changes is which devices it carries. So today's basic kit grows tomorrow <strong>without opening the walls again</strong> — especially if we leave network cabling in place during the renovation.</p>
-                <div class="tiers">
-                    <div class="tier">
-                        <div class="tname">Basic</div>
-                        <div class="tfor">Comfort, savings and peace of mind. The essentials, done right.</div>
-                        <ul>
-                            <li>Local brain + secure remote access</li>
-                            <li>Lights (modules behind the switch)</li>
-                            <li>Motorized blinds</li>
-                            <li>Door and window sensors</li>
-                            <li>Motion, temperature, humidity</li>
-                            <li>Smoke and water-leak detection</li>
-                            <li>UPS so the brain survives short cuts</li>
-                        </ul>
-                        <div class="price-block">
-                            <div class="price-label">Indicative hardware</div>
-                            <div class="price">€500 – 1,200 <small>by sourcing</small></div>
-                            <div class="fee">Plan from ~€15/mo</div>
-                        </div>
-                    </div>
-                    <div class="tier featured">
-                        <div class="tname">Premium</div>
-                        <div class="tfor">Everything in Basic, plus security and access.</div>
-                        <ul>
-                            <li>Everything in Basic</li>
-                            <li class="add">PoE cameras with local recording</li>
-                            <li class="add">Person detection, no cloud (Frigate)</li>
-                            <li class="add">Integrated smart lock</li>
-                            <li class="add">Video doorbell / climate (optional)</li>
-                        </ul>
-                        <div class="price-block">
-                            <div class="price-label">Indicative hardware</div>
-                            <div class="price">€1,500 – 2,800</div>
-                            <div class="fee">Plan from ~€25/mo</div>
-                        </div>
-                    </div>
-                    <div class="tier">
-                        <div class="tname">Super Premium</div>
-                        <div class="tfor">Energy independence: it works even with no power.</div>
-                        <ul>
-                            <li>Everything in Premium</li>
-                            <li class="add">Batteries + (optional) solar panels</li>
-                            <li class="add">The whole home rides through a blackout</li>
-                            <li class="add">Energy management: tariff and solar surplus</li>
-                        </ul>
-                        <div class="price-block">
-                            <div class="price-label">Indicative hardware</div>
-                            <div class="price">from ~€8,000 <small>incl. battery/solar</small></div>
-                            <div class="fee">Plan from ~€40/mo</div>
-                        </div>
-                    </div>
-                </div>
-                <p class="disclaimer">Indicative hardware figures for an average home (devices only, excl. VAT and labor). Electrical/building work and configuration are quoted separately. The Super Premium battery/solar is delivered by a partner installer.</p>
-            </div>
-        </section>
-
-        <section>
-            <div class="wrap">
-                <div class="section-label">Sourcing</div>
-                <h2 class="sec">Two buying tracks, same architecture</h2>
-                <p class="sec-intro">To get started and validate with the first clients we can cut hardware cost by buying on AliExpress; as we scale, we move to homologated brands for reliability and support. The "works without internet" promise <strong>never changes</strong>.</p>
-                <div class="callout local">
-                    <h3>The golden rule with AliExpress</h3>
-                    <p><span class="pill local">Zigbee&nbsp;✓</span> A cheap Zigbee module (Tuya, Moes, Girier, Sonoff…) paired to <em>our</em> coordinator runs <strong>100% locally</strong>, never touching the Tuya cloud. It's the same hardware the "premium" brands rebadge, at a fraction of the price.<br>
-                    <span class="pill cloud">WiFi&nbsp;✗</span> The same maker over <strong>wifi</strong> depends on its cloud. That one's out. The cheap/premium difference becomes finish, reliability and support — not "local vs cloud".</p>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="wrap">
-                <div class="section-label">Homologated catalog</div>
-                <h2 class="sec">Devices, validated one by one</h2>
-                <p class="sec-intro">Few models, every one with verified <strong>real local control</strong> and available in Spain/EU. Each category has its homologated option (reliable, to scale) and its budget alternative (AliExpress, to validate).</p>
-
-                <details class="cat" open>
-                    <summary><span>🧠 The brain: hub + radio</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">The heart of the system. Identical across all three kits. We standardize on a single model so replacing or diagnosing is trivial.</p>
-                        <table>
-                            <thead><tr><th>Part</th><th>Recommended</th><th>Protocol</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Part">Hub</td>
-                                    <td data-label="Recommended"><span class="m">Home Assistant Green</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Local</span></td>
-                                    <td data-label="Price" class="price-cell">~€110</td>
-                                    <td data-label="Notes"><span class="note">Closed appliance, easy to replace. Higher-power alternative: Intel N100 mini-PC (~€120-160) for homes with cameras.</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Part">Radio</td>
-                                    <td data-label="Recommended"><span class="m">HA Connect ZBT-2</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Zigbee / Thread</span></td>
-                                    <td data-label="Price" class="price-cell">~€45</td>
-                                    <td data-label="Notes"><span class="note">USB. Zigbee 3.0 or Thread/Matter. USB extension cable mandatory, away from USB-3.0 ports (2.4 GHz noise).</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Part">Camera mini-PC</td>
-                                    <td data-label="Recommended"><span class="m">Beelink EQ13 (N100, 2× NIC)</span></td>
-                                    <td data-label="Protocol"><span class="pill homo">Premium+</span></td>
-                                    <td data-label="Price" class="price-cell">~€160-200</td>
-                                    <td data-label="Notes"><span class="note">For Frigate. The 2nd NIC isolates cameras on a VLAN with no internet. Only in camera kits.</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-
-                <details class="cat">
-                    <summary><span>💡 Lights</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Zigbee module <strong>behind the switch</strong> (neutral is available since it's a renovation). Always respects the physical wall switch.</p>
-                        <table>
-                            <thead><tr><th>Option</th><th>Model</th><th>Protocol</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Option"><span class="pill homo">Homologated</span></td>
-                                    <td data-label="Model"><span class="m">NodOn SIN-4-1-20</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Zigbee 3.0</span></td>
-                                    <td data-label="Price" class="price-cell">~€40-55</td>
-                                    <td data-label="Notes"><span class="note">EU brand, 16 A relay, acts as a mesh repeater. Best build quality and support.</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Option"><span class="pill homo">Alternative</span></td>
-                                    <td data-label="Model"><span class="m">Aqara Single Switch T1 (with neutral)</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Zigbee</span></td>
-                                    <td data-label="Price" class="price-cell">~€20-30</td>
-                                    <td data-label="Notes"><span class="note">Local via Zigbee2MQTT, no Aqara hub. Dimming: Shelly Dimmer Gen4 (~€40-50).</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Option"><span class="pill ali">Budget</span></td>
-                                    <td data-label="Model"><span class="m">Tuya/Moes Zigbee Switch Module</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Zigbee</span></td>
-                                    <td data-label="Price" class="price-cell">~€8-12</td>
-                                    <td data-label="Notes"><span class="note">AliExpress: search <em>"Tuya Zigbee switch module no neutral required"</em> in the <strong>Zigbee</strong> version (not wifi). Same chip as the branded ones.</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-
-                <details class="cat">
-                    <summary><span>🪟 Blinds</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Zigbee shutter module: up / down / stop, exact position and calibration. Respects the wall buttons.</p>
-                        <table>
-                            <thead><tr><th>Option</th><th>Model</th><th>Protocol</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Option"><span class="pill homo">Homologated</span></td>
-                                    <td data-label="Model"><span class="m">NodOn SIN-4-RS-20</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Zigbee 3.0</span></td>
-                                    <td data-label="Price" class="price-cell">~€45-55</td>
-                                    <td data-label="Notes"><span class="note">Purpose-built shutter module, auto-calibration, position slider. The "just works" pick.</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Option"><span class="pill ali">Budget</span></td>
-                                    <td data-label="Model"><span class="m">Tuya TS130F (MS-108ZR)</span></td>
-                                    <td data-label="Protocol"><span class="pill local">Zigbee</span></td>
-                                    <td data-label="Price" class="price-cell">~€12-20</td>
-                                    <td data-label="Notes"><span class="note">AliExpress: <em>"Zigbee roller shutter module TS130F"</em>. Position/calibration a bit more manual.</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-
-                <details class="cat">
-                    <summary><span>📡 Sensors</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">All paired directly to the coordinator, no manufacturer hub or cloud. Everyday line (Aqara) + safety grade (Frient/Heiman), with a budget Sonoff alternative.</p>
-                        <table>
-                            <thead><tr><th>Type</th><th>Recommended</th><th>Budget</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Type">Door / window</td><td data-label="Recommended"><span class="m">Aqara P2</span></td><td data-label="Budget">Sonoff SNZB-04</td><td data-label="Price" class="price-cell">~€7-18</td><td data-label="Notes"><span class="note">2+ year battery.</span></td></tr>
-                                <tr><td data-label="Type">Motion (PIR)</td><td data-label="Recommended"><span class="m">Aqara Motion P1</span></td><td data-label="Budget">Sonoff SNZB-03P</td><td data-label="Price" class="price-cell">~€12-25</td><td data-label="Notes"><span class="note">Adjustable detection interval.</span></td></tr>
-                                <tr><td data-label="Type">Temp. / humidity</td><td data-label="Recommended"><span class="m">Aqara T&H</span></td><td data-label="Budget">Sonoff SNZB-02P</td><td data-label="Price" class="price-cell">~€12-18</td><td data-label="Notes"><span class="note">For climate and comfort.</span></td></tr>
-                                <tr><td data-label="Type">Water leak</td><td data-label="Recommended"><span class="m">Frient Water Leak</span></td><td data-label="Budget">Aqara Water Leak</td><td data-label="Price" class="price-cell">~€18-30</td><td data-label="Notes"><span class="note">Under washer / boiler. Frient is "Works with HA" certified.</span></td></tr>
-                                <tr><td data-label="Type">Smoke</td><td data-label="Recommended"><span class="m">Heiman HS1SA-E</span></td><td data-label="Budget">Frient Smoke Alarm</td><td data-label="Price" class="price-cell">~€35-55</td><td data-label="Notes"><span class="note"><strong>EN14604</strong> certified. The siren sounds on its own even if the hub is down.</span></td></tr>
-                            </tbody>
-                        </table>
-                        <div class="callout warn">
-                            <strong>CO (carbon monoxide):</strong> there isn't yet a Zigbee CO detector that is EN50291-certified with reliable local support we'd homologate blindly. For CO we fit a <strong>certified standalone detector</strong> (compliance first) and treat in-system visibility as secondary.
-                        </div>
-                    </div>
-                </details>
-
-                <details class="cat">
-                    <summary><span>📷 Cameras + recording</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">We use the renovation to pull network cable: <strong>PoE cameras with local recording</strong>, never cloud wifi cams. They work without internet and the footage never leaves the house (strong GDPR argument).</p>
-                        <table>
-                            <thead><tr><th>Part</th><th>Model</th><th>Protocol</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Part">Standard camera</td><td data-label="Model"><span class="m">Reolink RLC-810A / RLC-820A</span></td><td data-label="Protocol"><span class="pill local">RTSP / ONVIF</span></td><td data-label="Price" class="price-cell">~€85-110</td><td data-label="Notes"><span class="note">4K/8MP, bullet or dome. The workhorse, thoroughly proven with Frigate.</span></td></tr>
-                                <tr><td data-label="Part">Wide angle</td><td data-label="Model"><span class="m">Reolink Duo 3 PoE</span></td><td data-label="Protocol"><span class="pill local">RTSP / ONVIF</span></td><td data-label="Price" class="price-cell">~€150-210</td><td data-label="Notes"><span class="note">16 MP, 180°. One unit covers a façade/driveway (replaces two cameras).</span></td></tr>
-                                <tr><td data-label="Part">Recording / AI</td><td data-label="Model"><span class="m">Frigate on the N100 mini-PC</span></td><td data-label="Protocol"><span class="pill local">100% local</span></td><td data-label="Price" class="price-cell">incl. mini-PC</td><td data-label="Notes"><span class="note">Person/vehicle detection on the iGPU (OpenVINO). Hailo-8L M.2 (~€60-70) for many cameras. Coral is now legacy.</span></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-
-                <details class="cat">
-                    <summary><span>🔒 Locks</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">The trickiest category: most "smart" locks are Bluetooth or cloud. These three are genuinely local — with their caveats, which we always state up front.</p>
-                        <table>
-                            <thead><tr><th>Option</th><th>Model</th><th>Local in HA</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Option"><span class="pill homo">Default</span></td><td data-label="Model"><span class="m">Nuki Smart Lock Pro + MQTT</span></td><td data-label="Local in HA"><span class="pill local">Full</span></td><td data-label="Price" class="price-cell">~€229-279</td><td data-label="Notes"><span class="note">The only one with a <strong>full local</strong> feature set: lock/unlock, unlatch, battery, codes. Retrofit over your cylinder, widely sold in Spain.</span></td></tr>
-                                <tr><td data-label="Option"><span class="pill homo">Alternative</span></td><td data-label="Model"><span class="m">Aqara U200 + euro cylinder</span></td><td data-label="Local in HA"><span class="pill ali">Lock/unlock only</span></td><td data-label="Price" class="price-cell">~€160 + cylinder</td><td data-label="Notes"><span class="note">Matter-over-Thread, local — but HA only sees lock/unlock (no battery or unlatch). The rest lives in the Aqara app.</span></td></tr>
-                                <tr><td data-label="Option"><span class="pill homo">Purists</span></td><td data-label="Model"><span class="m">Danalock V4 Z-Wave</span></td><td data-label="Local in HA"><span class="pill local">Local</span></td><td data-label="Price" class="price-cell">~€150-200</td><td data-label="Notes"><span class="note">100% local by protocol, but an aging line with uneven reliability. Needs a Z-Wave stick.</span></td></tr>
-                            </tbody>
-                        </table>
-                        <div class="callout warn">
-                            <strong>Not to be treated as "local":</strong> Yale Linus and Tedee are treated as <strong>cloud</strong> unless Matter is confirmed on that specific unit. Any generic wifi/Tuya/Bluetooth lock: cloud until proven otherwise.
-                        </div>
-                    </div>
-                </details>
-
-                <details class="cat">
-                    <summary><span>🔋 Energy and backup</span><span class="chev">›</span></summary>
-                    <div class="body">
-                        <p class="lead">Two levels: the cheap UPS that keeps the brain alive through short cuts (in every kit), and the home battery that keeps the whole house running (Super Premium, with a partner installer).</p>
-                        <table>
-                            <thead><tr><th>Part</th><th>Model</th><th>Scope</th><th>Price</th><th>Notes</th></tr></thead>
-                            <tbody>
-                                <tr><td data-label="Part">Brain+network UPS</td><td data-label="Model"><span class="m">Salicru SPS 700 ONE</span></td><td data-label="Scope"><span class="pill homo">All kits</span></td><td data-label="Price" class="price-cell">~€65-70</td><td data-label="Notes"><span class="note">700 VA + USB. HA monitors it over NUT: alerts on the cut, shuts down safely and sheds non-essential loads.</span></td></tr>
-                                <tr><td data-label="Part">Battery + solar</td><td data-label="Model"><span class="m">Victron inverter (Cerbo GX)</span></td><td data-label="Scope"><span class="pill homo">Super Premium</span></td><td data-label="Price" class="price-cell">~€6,500-13,000</td><td data-label="Notes"><span class="note"><strong>Official, local</strong> HA integration, with real charge/discharge control and native blackout backup. Alternatives: Huawei LUNA2000, Sungrow. We avoid SolarEdge (cloud/locked).</span></td></tr>
-                            </tbody>
-                        </table>
-                        <p class="disclaimer">Blackout backup = inverter hardware (not just software). In Spain there are IDAE/Next-Gen subsidies (~€140-490/kWh, region-dependent) that we confirm per quote.</p>
-                    </div>
-                </details>
-            </div>
-        </section>
-
-        <section>
-            <div class="wrap">
-                <div class="section-label">The plan</div>
-                <h2 class="sec">What truly sets us apart: the service</h2>
-                <p class="sec-intro">Anyone can put the system together. Running it well over time is the hard part. The monthly plan covers maintenance, support and <strong>replacement of failed devices</strong>, all remotely and without opening ports on your router.</p>
-                <div class="svc-grid">
-                    <div class="svc"><h3>Secure remote access</h3><p>Each home joins our private network (Tailscale): we diagnose and fix without driving out and without exposing your home to the internet.</p></div>
-                    <div class="svc"><h3>Health monitoring</h3><p>We watch that the hub is alive, sensor batteries, disconnected devices — before you have to call us.</p></div>
-                    <div class="svc"><h3>Backups and updates</h3><p>Encrypted off-site backups, and staged updates (tested before rollout) during maintenance windows.</p></div>
-                    <div class="svc"><h3>Failure replacement</h3><p>If a kit device fails, we replace it. You don't wrestle with firmware or manufacturer warranties.</p></div>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <div class="wrap"><span>&copy; 2026 Menta Systems</span> &nbsp;·&nbsp; Local-first home automation &nbsp;·&nbsp; <a href="mailto:hello@mentasystems.com">hello@mentasystems.com</a></div>
-        </footer>
-    </div>
-
-    <script>
-        function setLang(l) {
-            document.documentElement.setAttribute('data-lang', l);
-            document.documentElement.setAttribute('lang', l);
-            try { localStorage.setItem('menta-lang', l); } catch (e) {}
-            document.title = l === 'en' ? 'Menta Systems · Home Automation' : 'Menta Systems · Domótica';
-        }
-        // Sync title with the language chosen before paint.
-        setLang(document.documentElement.getAttribute('data-lang') || 'es');
-    </script>
 </body>
 </html>
