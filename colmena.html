@@ -657,42 +657,18 @@
     <header class="hero">
         <canvas id="particles-canvas" aria-hidden="true"></canvas>
         <div class="hero-glow" aria-hidden="true"></div>
-        <div class="hero-peers floating" id="hero-peers" aria-hidden="true"></div>
         <div class="container hero-inner">
             <span class="hero-eyebrow"><span class="dot"></span>Embeddable · Raft + SQLite · pure Go</span>
             <h1 class="hero-title"><span class="accent">colmena</span></h1>
             <p class="hero-sub">Distributed SQLite as an embeddable Go library. No CGo, no external processes, no broker. Just <code>import</code> and go — every node holds a full copy of the database and exposes a standard <code>database/sql</code> interface.</p>
             <div class="hero-cta">
                 <a class="btn btn-primary" href="https://github.com/mentasystems/colmena" target="_blank" rel="noopener">View on GitHub →</a>
-                <a class="btn" href="#demo">See it running</a>
                 <a class="btn" href="#install">Install</a>
             </div>
         </div>
     </header>
-    <div class="hero-peers stacked" id="hero-peers-mobile" aria-hidden="true"></div>
 
     <main>
-        <section class="block" id="demo">
-            <div class="container">
-                <div class="section-label">Live demo</div>
-                <div class="demo-stream-wrap">
-                    <div class="demo-card">
-                        <h3>Replicated event log <span class="count" id="demo-event-count"></span></h3>
-                        <div class="demo-events" id="demo-events"></div>
-                    </div>
-                </div>
-                <h2 class="section-heading">Watch a 4-node cluster heal itself.</h2>
-                <p class="section-lead">A 4-machine Colmena cluster running right now on Fly.io. Every few seconds your browser fires a write at a random node — the row above shows which peer received it and which one applied the entry as leader, after Raft commits the replica. Restart any node with the <code>↻</code> button on its hero card; Fly brings it back in ~4&nbsp;s and the cluster catches it up automatically.</p>
-                <div id="demo-error" class="demo-error"></div>
-                <div class="demo-status">
-                    <span><span class="pulse"></span>polling every 2s from <strong id="demo-served-by">…</strong></span>
-                    <span><b>Leader:</b> <strong id="demo-leader-info">electing…</strong></span>
-                    <span><b>Source:</b> <a href="https://github.com/mentasystems/colmena/tree/main/examples/fly-ha" target="_blank" rel="noopener">examples/fly-ha</a></span>
-                    <span><b>API:</b> <a href="https://colmena-ha-demo-5a1181.fly.dev" target="_blank" rel="noopener">colmena-ha-demo-5a1181.fly.dev</a></span>
-                </div>
-            </div>
-        </section>
-
         <section class="block">
             <div class="container">
                 <div class="section-label">In one import</div>
@@ -945,196 +921,5 @@ db.<span class="fn">QueryRow</span>(<span class="str">"SELECT value FROM kv WHER
         })();
     </script>
 
-    <script>
-        // Live colmena cluster on Fly.io. Fetches /api/* directly from the
-        // mentasystems origin (the backend allows wildcard CORS — see
-        // examples/fly-ha/main.go corsMiddleware).
-        (function () {
-            const API = "https://colmena-ha-demo-5a1181.fly.dev";
-            const SLOTS = ["slot-tl", "slot-tr", "slot-bl", "slot-br"];
-            const EVENT_LIMIT = 5;
-            const POLL_MS = 2000;
-            const WRITE_MS = 2500;
-            const $peersDesktop = document.getElementById("hero-peers");
-            const $peersMobile  = document.getElementById("hero-peers-mobile");
-            const $events       = document.getElementById("demo-events");
-            const $leader       = document.getElementById("demo-leader-info");
-            const $count        = document.getElementById("demo-event-count");
-            const $servedBy     = document.getElementById("demo-served-by");
-            const $err          = document.getElementById("demo-error");
-
-            if (!$peersDesktop) return;
-
-            // Latest cluster view, refreshed by poll(). The auto-writer uses
-            // these to (a) pick a random peer to route the write through and
-            // (b) tag the message with the current leader id so each event
-            // row can show "origin → writer" without a schema change.
-            let livePeers = [];
-            let liveLeader = "";
-            // Event ids we've already rendered. Lets us slide-in only the
-            // newly arrived ones instead of re-animating the whole list on
-            // every poll.
-            const seen = new Set();
-            let firstRender = true;
-
-            function escapeHTML(s) {
-                return String(s).replace(/[&<>"']/g, c => ({
-                    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-                })[c]);
-            }
-            const short = (s) => (s || "").slice(0, 12);
-
-            function renderPeers(peers) {
-                // Lex-sort by machine id so each peer keeps its slot across
-                // polls (no card shuffle when the leader changes).
-                const sorted = peers.slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).slice(0, 4);
-                liveLeader = (sorted.find(p => p.is_leader) || {}).id || "";
-
-                for (const $container of [$peersDesktop, $peersMobile]) {
-                    $container.innerHTML = "";
-                    sorted.forEach((p, i) => {
-                        const cls = ["hero-peer"];
-                        if ($container === $peersDesktop) cls.push(SLOTS[i]);
-                        if (p.is_leader) cls.push("is-leader");
-                        if (p.suffrage === "Nonvoter") cls.push("is-nonvoter");
-                        if (!p.reachable) cls.push("unreachable");
-                        const role = p.is_leader ? "leader" : (p.suffrage === "Nonvoter" ? "non-voter" : "voter");
-                        const card = document.createElement("div");
-                        card.className = cls.join(" ");
-                        card.innerHTML = `
-                            <span class="dot"></span>
-                            <span class="pid" title="${escapeHTML(p.id)}">${escapeHTML(short(p.id))}</span>
-                            <span class="role">${role}</span>
-                            <span class="restart">
-                                <span>${p.is_self ? "this node" : ""}</span>
-                                <button class="demo-restart" data-id="${escapeHTML(p.id)}" title="Restart this machine — Fly brings it back automatically">↻</button>
-                            </span>
-                        `;
-                        $container.appendChild(card);
-                    });
-                }
-                $leader.textContent = liveLeader ? short(liveLeader) : "electing…";
-            }
-
-            function renderEvents(events) {
-                const visible = (events || []).slice(0, EVENT_LIMIT);
-                $events.innerHTML = "";
-                visible.forEach((ev) => {
-                    const isNew = !firstRender && !seen.has(ev.id);
-                    const d = new Date(ev.ts);
-                    const t = d.toTimeString().slice(0, 8);
-                    // The auto-writer encodes the leader-at-write-time in
-                    // the message body. Pre-existing rows from the manual
-                    // form may not follow that convention — fall back to
-                    // "n/a" so the row still renders consistently.
-                    const looksLikeId = /^[0-9a-f]{6,}$/.test(ev.message || "");
-                    const writerID = looksLikeId ? ev.message : "n/a";
-                    const row = document.createElement("div");
-                    row.className = "demo-event" + (isNew ? " is-new" : "");
-                    row.innerHTML = `
-                        <span class="ts">${t}</span>
-                        <span class="flow">
-                            <span class="from"><span class="dot"></span><span class="nodelabel">from</span> ${escapeHTML(short(ev.origin))}</span>
-                            <span class="arrow">→</span>
-                            <span class="to"><span class="dot"></span><span class="nodelabel">written by</span> ${escapeHTML(short(writerID))}</span>
-                        </span>
-                    `;
-                    $events.appendChild(row);
-                });
-                // Refresh the seen set to the visible window so a row that
-                // scrolls off and reappears (unlikely) animates again.
-                seen.clear();
-                visible.forEach((ev) => seen.add(ev.id));
-                firstRender = false;
-            }
-
-            async function poll() {
-                try {
-                    const [pr, er] = await Promise.all([
-                        fetch(API + "/api/peers"),
-                        fetch(API + "/api/events"),
-                    ]);
-                    if (!pr.ok || !er.ok) throw new Error("HTTP " + pr.status + "/" + er.status);
-                    const peers = await pr.json();
-                    const events = await er.json();
-                    $err.classList.remove("show");
-
-                    $servedBy.textContent = short(peers.self_machine_id || "?");
-                    $count.textContent = (events.total != null ? events.total : "?") + " rows on this node";
-
-                    livePeers = peers.peers || [];
-                    renderPeers(livePeers);
-                    renderEvents(events.events || []);
-                } catch (err) {
-                    $err.textContent = "live demo unreachable: " + err.message + " — the cluster may be cold-starting; retrying.";
-                    $err.classList.add("show");
-                }
-            }
-
-            // Auto-writer. Picks a reachable peer at random and fires a
-            // write through it, tagging the message body with the current
-            // leader id so the row can show "origin → writer". If the
-            // request fails (mid leader-election, peer restarting) we just
-            // wait for the next tick — colmena's retry path handles short
-            // gaps already.
-            async function autoWrite() {
-                if (!livePeers.length) return;
-                const candidates = livePeers.filter(p => p.reachable);
-                if (!candidates.length) return;
-                const target = candidates[Math.floor(Math.random() * candidates.length)];
-                try {
-                    await fetch(API + "/api/write", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "fly-force-instance-id": target.id,
-                        },
-                        body: JSON.stringify({ message: liveLeader || "unknown" }),
-                    });
-                } catch (_) { /* expected during failover; next tick retries */ }
-            }
-
-            // Lazy start: the cluster lives in Paris and the cold-start
-            // polling would burn requests on every visitor. Only begin
-            // when the demo section is near the viewport.
-            let started = false;
-            const start = () => {
-                if (started) return;
-                started = true;
-                poll();
-                setInterval(poll, POLL_MS);
-                // Give the first poll a moment so the writer has a peer
-                // list and a current leader before firing.
-                setTimeout(() => setInterval(autoWrite, WRITE_MS), 1200);
-            };
-
-            const obs = new IntersectionObserver((entries) => {
-                for (const e of entries) if (e.isIntersecting) { start(); obs.disconnect(); break; }
-            }, { rootMargin: "200px" });
-            obs.observe(document.getElementById("demo"));
-            // The hero is always above the demo section, so wire the
-            // floating cards immediately too (otherwise they'd stay empty
-            // until the user scrolls down to the live-demo section).
-            start();
-
-            // Restart buttons live in both the floating hero cards and the
-            // stacked mobile list — delegate at document level so we don't
-            // need two listeners.
-            document.addEventListener("click", async (e) => {
-                const btn = e.target.closest(".demo-restart");
-                if (!btn) return;
-                const id = btn.dataset.id;
-                btn.disabled = true;
-                btn.textContent = "…";
-                try {
-                    await fetch(API + "/api/restart", {
-                        method: "POST",
-                        headers: { "fly-force-instance-id": id },
-                    });
-                } catch (_) { /* expected — the machine drops its connection as it shuts down */ }
-                setTimeout(poll, 1500);
-            });
-        })();
-    </script>
 </body>
 </html>
