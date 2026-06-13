@@ -12,31 +12,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-from: #060a0e;
-            --bg-to: #0a1620;
-            --surface: rgba(255, 255, 255, 0.03);
-            --surface-strong: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(120, 200, 240, 0.25);
-            --text: #e8f3fa;
-            --text-muted: rgba(207, 216, 220, 0.65);
-            --text-dim: rgba(207, 216, 220, 0.4);
-            --accent: #6ebee6;
-            --accent-warm: #cdb478;
-            --danger: #d97870;
+            --bg-from: #0b0803;
+            --bg-to: #1c1206;
+            --surface: rgba(255, 214, 130, 0.04);
+            --surface-strong: rgba(255, 214, 130, 0.07);
+            --border: rgba(255, 198, 110, 0.1);
+            --border-strong: rgba(245, 185, 60, 0.32);
+            --text: #f7ecd4;
+            --text-muted: rgba(233, 216, 180, 0.7);
+            --text-dim: rgba(233, 216, 180, 0.42);
+            --accent: #f5b428;
+            --accent-warm: #ffd66b;
+            --danger: #e08a6b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: radial-gradient(ellipse at 50% -20%, var(--bg-to) 0%, var(--bg-from) 70%);
+            background-color: var(--bg-from);
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
         }
         a { color: var(--accent); text-decoration: none; }
-        a:hover { color: #b6e1f5; }
+        a:hover { color: #ffd66b; }
         code, pre {
             font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
         }
@@ -46,7 +47,7 @@
             padding: 0.1em 0.4em;
             border-radius: 4px;
             font-size: 0.88em;
-            color: #cfe7f3;
+            color: #f4dca0;
         }
         .container {
             max-width: 920px;
@@ -60,6 +61,27 @@
             padding: 7rem 0 5rem;
             overflow: hidden;
         }
+        /* The colmena banner photo sits behind everything, faded into the
+           page background so the honeycomb/circuit art reads as the hero. */
+        .hero-banner {
+            position: absolute;
+            inset: 0;
+            background-image: url('colmena-banner.webp');
+            background-size: cover;
+            background-position: center 30%;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                rgba(11, 8, 3, 0.45) 0%,
+                rgba(11, 8, 3, 0.6) 45%,
+                rgba(11, 8, 3, 0.88) 80%,
+                var(--bg-from) 100%);
+        }
         #particles-canvas {
             position: absolute;
             inset: 0;
@@ -67,13 +89,14 @@
             height: 100%;
             display: block;
             pointer-events: none;
-            opacity: 0.7;
+            opacity: 0.75;
         }
         .hero-glow {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 50% 35%, rgba(80, 170, 220, 0.18) 0%, transparent 45%);
+            background: radial-gradient(circle at 50% 38%, rgba(245, 185, 60, 0.22) 0%, transparent 48%);
             pointer-events: none;
+            mix-blend-mode: screen;
         }
         .hero-inner {
             position: relative;
@@ -108,7 +131,7 @@
             letter-spacing: 0.08em;
             line-height: 1;
             margin-bottom: 1rem;
-            text-shadow: 0 0 24px rgba(80, 170, 220, 0.35);
+            text-shadow: 0 0 28px rgba(245, 185, 60, 0.45), 0 2px 20px rgba(0, 0, 0, 0.55);
         }
         .hero-title .accent {
             color: var(--accent);
@@ -145,13 +168,13 @@
             color: var(--text);
         }
         .btn-primary {
-            background: linear-gradient(180deg, rgba(110, 190, 230, 0.18) 0%, rgba(110, 190, 230, 0.08) 100%);
-            border-color: rgba(110, 190, 230, 0.4);
-            color: #e8f3fa;
+            background: linear-gradient(180deg, rgba(245, 185, 60, 0.22) 0%, rgba(245, 185, 60, 0.1) 100%);
+            border-color: rgba(245, 185, 60, 0.45);
+            color: #fff3d6;
         }
         .btn-primary:hover {
-            border-color: rgba(110, 190, 230, 0.7);
-            box-shadow: 0 0 24px rgba(110, 190, 230, 0.25);
+            border-color: rgba(255, 214, 107, 0.75);
+            box-shadow: 0 0 24px rgba(245, 185, 60, 0.3);
         }
 
         /* Sections */
@@ -183,7 +206,7 @@
 
         /* Terminal */
         .terminal {
-            background: #050a10;
+            background: #0f0b04;
             border: 1px solid var(--border);
             border-radius: 12px;
             overflow: hidden;
@@ -216,16 +239,16 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.88rem;
             line-height: 1.7;
-            color: #cfe7f3;
+            color: #f0e2c4;
             overflow-x: auto;
         }
         .terminal-body .prompt { color: var(--accent); }
         .terminal-body .comment { color: var(--text-dim); }
-        .terminal-body .kw { color: #c89bff; }
+        .terminal-body .kw { color: #e9a23b; }
         .terminal-body .str { color: var(--accent-warm); }
-        .terminal-body .fn { color: #7fc99f; }
+        .terminal-body .fn { color: #c9d98a; }
         .terminal-body .err { color: var(--danger); }
-        .terminal-body .ok { color: #7fc99f; }
+        .terminal-body .ok { color: #c9d98a; }
 
         /* Hero peer cards — live cluster topology. Two containers share the
            same JS-populated cards: one floats around the title on desktop,
@@ -255,7 +278,7 @@
             gap: 0.55rem;
             min-width: 200px;
             padding: 0.55rem 0.7rem;
-            background: rgba(8, 16, 24, 0.72);
+            background: rgba(22, 15, 5, 0.72);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid var(--border);
@@ -406,7 +429,7 @@
         .demo-badge.leader { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
         .demo-badge.voter { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
         .demo-badge.nonvoter { background: rgba(205, 180, 120, 0.15); color: var(--accent-warm); }
-        .demo-badge.self { background: rgba(110, 190, 230, 0.15); color: var(--accent); margin-left: 6px; }
+        .demo-badge.self { background: rgba(245, 185, 60, 0.15); color: var(--accent); margin-left: 6px; }
         .demo-restart {
             background: transparent;
             color: var(--text-dim);
@@ -471,7 +494,7 @@
 
         /* Slide-in animation when a new event arrives at the top of the list. */
         @keyframes demo-event-in {
-            0%   { opacity: 0; transform: translateY(-10px); border-color: var(--accent); background: rgba(110, 190, 230, 0.12); }
+            0%   { opacity: 0; transform: translateY(-10px); border-color: var(--accent); background: rgba(245, 185, 60, 0.12); }
             60%  { opacity: 1; transform: translateY(0); }
             100% { opacity: 1; transform: translateY(0); border-color: var(--border); background: rgba(255, 255, 255, 0.025); }
         }
@@ -655,6 +678,7 @@
 </head>
 <body>
     <header class="hero">
+        <div class="hero-banner" aria-hidden="true"></div>
         <canvas id="particles-canvas" aria-hidden="true"></canvas>
         <div class="hero-glow" aria-hidden="true"></div>
         <div class="container hero-inner">
@@ -858,8 +882,9 @@ db.<span class="fn">QueryRow</span>(<span class="str">"SELECT value FROM kv WHER
                         y: Math.random() * height,
                         vx: (Math.random() - 0.5) * 0.18,
                         vy: (Math.random() - 0.5) * 0.18,
-                        r: Math.random() * 1.2 + 0.4,
+                        r: Math.random() * 1.2 + 0.7,
                         tw: Math.random() * Math.PI * 2,
+                        rot: Math.random() * Math.PI,
                     });
                 }
             }
@@ -875,9 +900,9 @@ db.<span class="fn">QueryRow</span>(<span class="str">"SELECT value FROM kv WHER
                         const dy = a.y - b.y;
                         const d2 = dx * dx + dy * dy;
                         if (d2 < LINK_DIST_SQ) {
-                            const alpha = (1 - d2 / LINK_DIST_SQ) * 0.3;
-                            ctx.strokeStyle = `rgba(110, 190, 230, ${alpha})`;
-                            ctx.lineWidth = 0.55;
+                            const alpha = (1 - d2 / LINK_DIST_SQ) * 0.32;
+                            ctx.strokeStyle = `rgba(245, 185, 60, ${alpha})`;
+                            ctx.lineWidth = 0.6;
                             ctx.beginPath();
                             ctx.moveTo(a.x, a.y);
                             ctx.lineTo(b.x, b.y);
@@ -897,18 +922,32 @@ db.<span class="fn">QueryRow</span>(<span class="str">"SELECT value FROM kv WHER
 
                     p.tw += 0.018;
                     const flicker = 0.6 + 0.4 * Math.sin(p.tw);
+
+                    // Warm amber glow, echoing the glowing honeycomb cells in the banner.
                     const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
-                    glow.addColorStop(0, `rgba(140, 210, 245, ${0.42 * flicker})`);
-                    glow.addColorStop(1, 'rgba(140, 210, 245, 0)');
+                    glow.addColorStop(0, `rgba(255, 200, 90, ${0.4 * flicker})`);
+                    glow.addColorStop(1, 'rgba(255, 200, 90, 0)');
                     ctx.fillStyle = glow;
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
                     ctx.fill();
 
-                    ctx.fillStyle = `rgba(220, 240, 250, ${0.8 * flicker})`;
+                    // Each node is a tiny hexagon — a honeycomb cell.
+                    const hr = p.r * 2.1;
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    for (let k = 0; k < 6; k++) {
+                        const ang = p.rot + k * Math.PI / 3;
+                        const hx = p.x + hr * Math.cos(ang);
+                        const hy = p.y + hr * Math.sin(ang);
+                        if (k === 0) ctx.moveTo(hx, hy);
+                        else ctx.lineTo(hx, hy);
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = `rgba(255, 226, 150, ${0.85 * flicker})`;
                     ctx.fill();
+                    ctx.lineWidth = 0.7;
+                    ctx.strokeStyle = `rgba(245, 185, 60, ${0.6 * flicker})`;
+                    ctx.stroke();
                 }
 
                 if (!prefersReduced) requestAnimationFrame(step);
