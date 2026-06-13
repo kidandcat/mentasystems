@@ -12,6 +12,7 @@ COPY *.html ./
 COPY *.css ./
 COPY *.png ./
 COPY *.svg ./
+COPY *.webp ./
 
 EXPOSE 8080
 CMD ["./server"]
