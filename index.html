@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menta Systems — Custom Software Development</title>
     <meta name="description" content="We turn ideas into digital products. Custom software development: web and mobile apps, desktop software, AI integration, automation and cloud infrastructure. From concept to launch.">
-    <meta name="theme-color" content="#0f9d76">
+    <meta name="theme-color" content="#0d5c84">
     <link rel="icon" type="image/png" href="icon.png">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Menta Systems — Custom Software Development">
@@ -16,24 +16,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@300;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f9d76;
-            --primary-dark: #0b7a5c;
-            --primary-light: #15b88a;
-            --mint-glow: rgba(16, 185, 129, 0.12);
-            --mint-soft: rgba(16, 185, 129, 0.07);
+            --primary: #0d5c84;
+            --primary-dark: #094a6a;
+            --primary-light: #2a86b8;
+            --accent-glow: rgba(13, 92, 132, 0.12);
+            --accent-soft: rgba(13, 92, 132, 0.07);
             --bg: #ffffff;
-            --bg-soft: #f4f9f7;
-            --bg-card: #f8fbfa;
-            --bg-card-hover: #eef6f2;
-            --text: #0e1a16;
-            --text-secondary: #44574f;
-            --text-muted: #7a8d85;
-            --border: #e4ede9;
-            --border-strong: #cbdcd5;
+            --bg-soft: #f3f7fa;
+            --bg-card: #f7fafc;
+            --bg-card-hover: #eef4f8;
+            --text: #0e1820;
+            --text-secondary: #44545f;
+            --text-muted: #788893;
+            --border: #e3eaef;
+            --border-strong: #cbd9e2;
             --radius: 14px;
-            --shadow-sm: 0 1px 2px rgba(14, 26, 22, 0.04);
-            --shadow: 0 8px 30px rgba(11, 122, 92, 0.08);
-            --shadow-lg: 0 20px 50px rgba(11, 122, 92, 0.12);
+            --shadow-sm: 0 1px 2px rgba(14, 24, 32, 0.04);
+            --shadow: 0 8px 30px rgba(9, 74, 106, 0.08);
+            --shadow-lg: 0 20px 50px rgba(9, 74, 106, 0.13);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -46,7 +46,7 @@
             -webkit-font-smoothing: antialiased;
         }
         a { color: inherit; text-decoration: none; }
-        ::selection { background: var(--mint-glow); }
+        ::selection { background: var(--accent-glow); }
         .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
         .mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
 
@@ -82,6 +82,18 @@
             box-shadow: var(--shadow-sm); transition: all 0.2s ease;
         }
         .nav-cta:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow); }
+        .nav-right { display: flex; align-items: center; gap: 1rem; }
+        .lang-toggle {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            background: none; border: 1px solid var(--border-strong);
+            border-radius: 8px; padding: 0.32rem 0.6rem; cursor: pointer;
+            font-family: inherit; font-size: 0.78rem; font-weight: 600;
+            color: var(--text-muted); transition: border-color 0.2s ease;
+        }
+        .lang-toggle:hover { border-color: var(--primary); }
+        .lang-toggle [data-lang] { padding: 0 0.1rem; transition: color 0.2s ease; cursor: pointer; }
+        .lang-toggle [data-lang].active { color: var(--primary); }
+        .lang-toggle .sep { color: var(--border-strong); }
         .mobile-menu-btn {
             display: none; background: none; border: none; color: var(--text);
             cursor: pointer; padding: 0.25rem;
@@ -95,12 +107,12 @@
         .hero-bg {
             position: absolute; inset: 0; z-index: 0; pointer-events: none;
             background:
-                radial-gradient(60% 50% at 75% 12%, var(--mint-glow) 0%, transparent 60%),
-                radial-gradient(50% 45% at 10% 90%, rgba(16,185,129,0.06) 0%, transparent 65%);
+                radial-gradient(60% 50% at 75% 12%, var(--accent-glow) 0%, transparent 60%),
+                radial-gradient(50% 45% at 10% 90%, rgba(13,92,132,0.06) 0%, transparent 65%);
         }
         .hero-dots {
             position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
-            background-image: radial-gradient(rgba(11,122,92,0.10) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(9,74,106,0.10) 1px, transparent 1px);
             background-size: 28px 28px;
             -webkit-mask-image: radial-gradient(70% 60% at 60% 30%, #000 0%, transparent 75%);
             mask-image: radial-gradient(70% 60% at 60% 30%, #000 0%, transparent 75%);
@@ -109,18 +121,18 @@
         .eyebrow {
             display: inline-flex; align-items: center; gap: 0.55rem;
             font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em;
-            color: var(--primary-dark); background: var(--mint-soft);
+            color: var(--primary-dark); background: var(--accent-soft);
             border: 1px solid var(--border-strong); padding: 0.4rem 0.9rem;
             border-radius: 100px; margin-bottom: 1.5rem;
         }
         .eyebrow .dot {
             width: 7px; height: 7px; border-radius: 50%; background: var(--primary);
-            box-shadow: 0 0 0 0 rgba(16,185,129,0.5); animation: pulse 2.4s infinite;
+            box-shadow: 0 0 0 0 rgba(13,92,132,0.5); animation: pulse 2.4s infinite;
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.45); }
-            70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
-            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+            0% { box-shadow: 0 0 0 0 rgba(13,92,132,0.45); }
+            70% { box-shadow: 0 0 0 8px rgba(13,92,132,0); }
+            100% { box-shadow: 0 0 0 0 rgba(13,92,132,0); }
         }
         .hero h1 {
             font-family: 'Rajdhani', sans-serif; font-weight: 700;
@@ -183,7 +195,7 @@
         }
         .service-icon {
             width: 50px; height: 50px; border-radius: 12px;
-            background: var(--mint-soft); color: var(--primary);
+            background: var(--accent-soft); color: var(--primary);
             display: flex; align-items: center; justify-content: center; margin-bottom: 1.3rem;
         }
         .service-icon svg { width: 24px; height: 24px; }
@@ -202,7 +214,7 @@
         }
         .work-card::after {
             content: ''; position: absolute; inset: 0; border-radius: var(--radius);
-            background: radial-gradient(120% 80% at 100% 0%, var(--mint-soft) 0%, transparent 50%);
+            background: radial-gradient(120% 80% at 100% 0%, var(--accent-soft) 0%, transparent 50%);
             opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
         }
         .work-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow); }
@@ -210,7 +222,7 @@
         .work-badge {
             align-self: flex-start; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
             text-transform: uppercase; color: var(--primary-dark);
-            background: var(--mint-soft); border: 1px solid var(--border-strong);
+            background: var(--accent-soft); border: 1px solid var(--border-strong);
             padding: 0.25rem 0.6rem; border-radius: 6px; margin-bottom: 1.1rem;
         }
         .work-name {
@@ -227,7 +239,7 @@
         .work-link svg { width: 16px; height: 16px; transition: transform 0.2s ease; }
         .work-card:hover .work-link svg { transform: translateX(3px); }
 
-        /* ---------- Solutions ---------- */
+        /* ---------- Solutions / Cases ---------- */
         .solutions-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
             gap: 1.3rem;
@@ -238,25 +250,8 @@
             padding: 2rem; transition: all 0.3s ease;
         }
         .solution-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow); }
-        .solution-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .solution-card .blurb { color: var(--text-secondary); font-size: 0.93rem; margin-bottom: 1.3rem; }
-        .solution-features { list-style: none; margin-bottom: 1.6rem; flex: 1; }
-        .solution-features li {
-            display: flex; align-items: flex-start; gap: 0.6rem;
-            font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.6rem;
-        }
-        .solution-features svg { width: 16px; height: 16px; color: var(--primary); flex-shrink: 0; margin-top: 0.2rem; }
-        .solution-price {
-            padding-top: 1.2rem; border-top: 1px solid var(--border);
-            display: flex; align-items: baseline; gap: 0.4rem;
-        }
-        .solution-price .from { font-size: 0.8rem; color: var(--text-muted); }
-        .solution-price .amount {
-            font-family: 'Rajdhani', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text);
-        }
         .solutions-note { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 2.2rem; }
 
-        /* ---------- Case studies ---------- */
         .case-card .case-meta {
             display: inline-flex; align-items: center; gap: 0.5rem;
             font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
@@ -264,7 +259,7 @@
         }
         .case-card .case-meta .live {
             display: inline-flex; align-items: center; gap: 0.35rem;
-            color: var(--primary); background: var(--mint-soft);
+            color: var(--primary); background: var(--accent-soft);
             border: 1px solid var(--border-strong); padding: 0.15rem 0.5rem; border-radius: 100px;
         }
         .case-card .case-meta .live .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
@@ -272,6 +267,7 @@
             font-family: 'Rajdhani', sans-serif; font-size: 1.55rem; font-weight: 700;
             letter-spacing: 0.01em; margin-bottom: 0.5rem;
         }
+        .case-card .blurb { color: var(--text-secondary); font-size: 0.93rem; }
         .case-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1.2rem 0 1.4rem; }
         .case-tags span {
             font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.74rem;
@@ -331,7 +327,7 @@
             background: #fff; border: 1px solid var(--border); padding: 0.9rem 1.2rem;
             border-radius: 10px; color: var(--text); transition: all 0.2s ease; font-weight: 500;
         }
-        .contact-card:hover { border-color: var(--primary); background: var(--mint-soft); }
+        .contact-card:hover { border-color: var(--primary); background: var(--accent-soft); }
         .contact-card svg { width: 20px; height: 20px; color: var(--primary); }
         .contact-note {
             display: inline-flex; align-items: center; gap: 0.5rem;
@@ -349,6 +345,7 @@
             display: block; font-size: 0.85rem; font-weight: 600;
             margin-bottom: 0.4rem; color: var(--text-secondary);
         }
+        .form-group .opt { color: var(--text-muted); font-weight: 400; }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 0.75rem 0.9rem; border: 1px solid var(--border-strong);
             border-radius: 9px; font-size: 0.95rem; font-family: inherit; color: var(--text);
@@ -356,13 +353,13 @@
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none; border-color: var(--primary); background: #fff;
-            box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+            box-shadow: 0 0 0 3px rgba(13,92,132,0.12);
         }
         .form-group textarea { resize: vertical; min-height: 120px; }
         .contact-form .btn-primary { width: 100%; justify-content: center; margin-top: 0.4rem; }
         .form-success {
             display: none; align-items: center; gap: 0.7rem;
-            background: var(--mint-soft); border: 1px solid var(--border-strong);
+            background: var(--accent-soft); border: 1px solid var(--border-strong);
             color: var(--primary-dark); padding: 1rem 1.2rem; border-radius: 10px;
             margin-bottom: 1.4rem; font-weight: 500; font-size: 0.95rem;
         }
@@ -427,15 +424,20 @@
                 <span class="logo-text">MENTA<span class="logo-accent"> systems</span></span>
             </a>
             <ul class="nav-links">
-                <li><a href="#services">Services</a></li>
-                <li><a href="#work">Work</a></li>
-                <li><a href="#cases">Cases</a></li>
-                <li><a href="#process">Process</a></li>
-                <li><a href="#contact" class="nav-cta">Let's talk</a></li>
+                <li><a href="#services" data-i18n="nav_services">Services</a></li>
+                <li><a href="#work" data-i18n="nav_work">Work</a></li>
+                <li><a href="#cases" data-i18n="nav_cases">Cases</a></li>
+                <li><a href="#process" data-i18n="nav_process">Process</a></li>
+                <li><a href="#contact" class="nav-cta" data-i18n="nav_cta">Let's talk</a></li>
             </ul>
-            <button class="mobile-menu-btn" aria-label="Menu">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
+            <div class="nav-right">
+                <button class="lang-toggle" aria-label="Language">
+                    <span data-lang="en">EN</span><span class="sep">/</span><span data-lang="es">ES</span>
+                </button>
+                <button class="mobile-menu-btn" aria-label="Menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -444,20 +446,20 @@
         <div class="hero-dots"></div>
         <div class="container">
             <div class="hero-content">
-                <span class="eyebrow"><span class="dot"></span> Custom software, built end to end</span>
-                <h1>We turn ideas into <span class="highlight">digital products</span></h1>
-                <p class="hero-subtitle">Custom software development for companies that need solutions built right. From the first sketch to production — web, mobile, desktop, AI and cloud.</p>
+                <span class="eyebrow"><span class="dot"></span> <span data-i18n="hero_eyebrow">Custom software, built end to end</span></span>
+                <h1 data-i18n="hero_h1">We turn ideas into <span class="highlight">digital products</span></h1>
+                <p class="hero-subtitle" data-i18n="hero_sub">Custom software development for companies that need solutions built right. From the first sketch to production — web, mobile, desktop, AI and cloud.</p>
                 <div class="hero-cta">
                     <a href="#contact" class="btn btn-primary">
-                        Start your project
+                        <span data-i18n="btn_start">Start your project</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </a>
-                    <a href="#work" class="btn btn-secondary">See our work</a>
+                    <a href="#work" class="btn btn-secondary" data-i18n="btn_seework">See our work</a>
                 </div>
                 <div class="hero-trust">
-                    <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Senior engineering</span>
-                    <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Fixed-scope quotes</span>
-                    <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> We ship and maintain</span>
+                    <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <span data-i18n="trust_1">Senior engineering</span></span>
+                    <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <span data-i18n="trust_2">Fixed-scope quotes</span></span>
+                    <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <span data-i18n="trust_3">We ship and maintain</span></span>
                 </div>
             </div>
         </div>
@@ -466,52 +468,52 @@
     <section id="services">
         <div class="container">
             <div class="section-head reveal">
-                <div class="section-tag">Services</div>
-                <h2 class="section-title">What we build</h2>
-                <p class="section-subtitle">Technology tailored to the way your business actually works.</p>
+                <div class="section-tag" data-i18n="tag_services">Services</div>
+                <h2 class="section-title" data-i18n="services_title">What we build</h2>
+                <p class="section-subtitle" data-i18n="services_sub">Technology tailored to the way your business actually works.</p>
             </div>
             <div class="services-grid">
                 <div class="service-card reveal">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     </div>
-                    <h3>Web Applications</h3>
-                    <p>Modern, scalable and secure web platforms — from internal dashboards to full SaaS products.</p>
+                    <h3 data-i18n="svc_web_t">Web Applications</h3>
+                    <p data-i18n="svc_web_d">Modern, scalable and secure web platforms — from internal dashboards to full SaaS products.</p>
                 </div>
                 <div class="service-card reveal">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                     </div>
-                    <h3>Mobile Apps</h3>
-                    <p>Native and cross-platform apps for iOS and Android. Smooth experiences on every device.</p>
+                    <h3 data-i18n="svc_mobile_t">Mobile Apps</h3>
+                    <p data-i18n="svc_mobile_d">Native and cross-platform apps for iOS and Android. Smooth experiences on every device.</p>
                 </div>
                 <div class="service-card reveal">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     </div>
-                    <h3>Desktop Software</h3>
-                    <p>Cross-platform desktop applications with native performance on Windows, macOS and Linux.</p>
+                    <h3 data-i18n="svc_desktop_t">Desktop Software</h3>
+                    <p data-i18n="svc_desktop_d">Cross-platform desktop applications with native performance on Windows, macOS and Linux.</p>
                 </div>
                 <div class="service-card reveal">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4 4 4 0 0 0-2 7.5 4 4 0 0 0 2 7.5 4 4 0 0 0 8 0 4 4 0 0 0 2-7.5A4 4 0 0 0 16 6a4 4 0 0 0-4-4z"/><path d="M12 2v20"/></svg>
                     </div>
-                    <h3>Artificial Intelligence</h3>
-                    <p>AI woven into your workflows — intelligent automation, assistants and predictive analytics.</p>
+                    <h3 data-i18n="svc_ai_t">Artificial Intelligence</h3>
+                    <p data-i18n="svc_ai_d">AI woven into your workflows — intelligent automation, assistants and predictive analytics.</p>
                 </div>
                 <div class="service-card reveal">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20v-2M18 20v-10"/><circle cx="12" cy="9" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="18" cy="7" r="2"/></svg>
                     </div>
-                    <h3>Automation</h3>
-                    <p>Connect systems, kill repetitive work and free your team to focus on what matters.</p>
+                    <h3 data-i18n="svc_auto_t">Automation</h3>
+                    <p data-i18n="svc_auto_d">Connect systems, kill repetitive work and free your team to focus on what matters.</p>
                 </div>
                 <div class="service-card reveal">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
                     </div>
-                    <h3>Cloud Infrastructure</h3>
-                    <p>Scalable, secure cloud architectures — deployment, monitoring and ongoing maintenance.</p>
+                    <h3 data-i18n="svc_cloud_t">Cloud Infrastructure</h3>
+                    <p data-i18n="svc_cloud_d">Scalable, secure cloud architectures — deployment, monitoring and ongoing maintenance.</p>
                 </div>
             </div>
         </div>
@@ -520,28 +522,28 @@
     <section id="work" class="section-soft">
         <div class="container">
             <div class="section-head reveal">
-                <div class="section-tag">Work</div>
-                <h2 class="section-title">Products we build for ourselves</h2>
-                <p class="section-subtitle">We don't just ship client work — we build hard engineering products. This is the depth you get on your project.</p>
+                <div class="section-tag" data-i18n="tag_work">Work</div>
+                <h2 class="section-title" data-i18n="work_title">Products we build for ourselves</h2>
+                <p class="section-subtitle" data-i18n="work_sub">We don't just ship client work — we build hard engineering products. This is the depth you get on your project.</p>
             </div>
             <div class="work-grid">
                 <a class="work-card reveal" href="/gox">
-                    <span class="work-badge">Developer tooling</span>
+                    <span class="work-badge" data-i18n="badge_tooling">Developer tooling</span>
                     <div class="work-name">gox</div>
-                    <p>A strict static analyzer for Go that catches the bugs the compiler won't — built for teams that take correctness seriously.</p>
-                    <span class="work-link">Explore gox <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                    <p data-i18n="work_gox_d">A strict static analyzer for Go that catches the bugs the compiler won't — built for teams that take correctness seriously.</p>
+                    <span class="work-link"><span data-i18n="link_gox">Explore gox</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
                 </a>
                 <a class="work-card reveal" href="/colmena">
-                    <span class="work-badge">Distributed systems</span>
+                    <span class="work-badge" data-i18n="badge_distsys">Distributed systems</span>
                     <div class="work-name">colmena</div>
-                    <p>Distributed SQLite for Go — high-availability data without the operational weight of a full database cluster.</p>
-                    <span class="work-link">Explore colmena <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                    <p data-i18n="work_colmena_d">Distributed SQLite for Go — high-availability data without the operational weight of a full database cluster.</p>
+                    <span class="work-link"><span data-i18n="link_colmena">Explore colmena</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
                 </a>
                 <a class="work-card reveal" href="/fragua">
-                    <span class="work-badge">AI · Hardware</span>
+                    <span class="work-badge" data-i18n="badge_aihw">AI · Hardware</span>
                     <div class="work-name">fragua</div>
-                    <p>AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.</p>
-                    <span class="work-link">Explore fragua <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+                    <p data-i18n="work_fragua_d">AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.</p>
+                    <span class="work-link"><span data-i18n="link_fragua">Explore fragua</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
                 </a>
             </div>
         </div>
@@ -550,70 +552,70 @@
     <section id="cases">
         <div class="container">
             <div class="section-head reveal">
-                <div class="section-tag">Case studies</div>
-                <h2 class="section-title">Built and shipped</h2>
-                <p class="section-subtitle">Real products in production — from a live marketplace to a platform with our own custom hardware.</p>
+                <div class="section-tag" data-i18n="tag_cases">Case studies</div>
+                <h2 class="section-title" data-i18n="cases_title">Built and shipped</h2>
+                <p class="section-subtitle" data-i18n="cases_sub">Real products in production — from a live marketplace to a platform with our own custom hardware.</p>
             </div>
             <div class="solutions-grid">
                 <div class="solution-card case-card reveal">
-                    <span class="case-meta">Marketplace · iOS &amp; Android <span class="live"><span class="dot"></span> Live</span></span>
+                    <span class="case-meta" data-i18n="case_fq_meta">Marketplace · iOS &amp; Android <span class="live"><span class="dot"></span> Live</span></span>
                     <h3>Funquila</h3>
-                    <p class="blurb">A property-rental marketplace for Spain's police community. Native iOS &amp; Android apps on a Go/Fiber API, photo storage on S3 and SQLite on Fly.io — live and serving real users.</p>
+                    <p class="blurb" data-i18n="case_fq_d">A property-rental marketplace for Spain's police community. Native iOS &amp; Android apps on a Go/Fiber API, photo storage on S3 and SQLite on Fly.io — live and serving real users.</p>
                     <div class="case-tags"><span>Flutter</span><span>Go / Fiber</span><span>SQLite</span><span>Fly.io</span><span>S3</span></div>
                     <a class="case-link" href="https://funquila.es" target="_blank" rel="noopener">
-                        Visit funquila.es
+                        <span data-i18n="link_fq">Visit funquila.es</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
                     </a>
                 </div>
                 <div class="solution-card case-card reveal">
-                    <span class="case-meta">Software + Hardware <span class="live"><span class="dot"></span> Live</span></span>
+                    <span class="case-meta" data-i18n="case_fe_meta">Software + Hardware <span class="live"><span class="dot"></span> Live</span></span>
                     <h3>Fecha</h3>
-                    <p class="blurb">A community access-control, reservations and management platform. A Go backend and Flutter app paired with our own Rust firmware running a LoRa mesh on ESP32 — software and hardware, end to end.</p>
+                    <p class="blurb" data-i18n="case_fe_d">A community access-control, reservations and management platform. A Go backend and Flutter app paired with our own Rust firmware running a LoRa mesh on ESP32 — software and hardware, end to end.</p>
                     <div class="case-tags"><span>Flutter</span><span>Go / chi</span><span>Rust</span><span>ESP32 · LoRa</span><span>Fly.io</span></div>
                     <a class="case-link" href="https://fecha.fly.dev" target="_blank" rel="noopener">
-                        Visit fecha.fly.dev
+                        <span data-i18n="link_fe">Visit fecha.fly.dev</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
                     </a>
                 </div>
                 <div class="solution-card case-card reveal">
-                    <span class="case-meta">Business management</span>
+                    <span class="case-meta" data-i18n="case_ko_meta">Business management</span>
                     <h3>Konecta</h3>
-                    <p class="blurb">An all-in-one platform for a holistic academy: billing, point of sale, subscriptions, student records and community — one Flutter codebase across web, iOS and Android, with Stripe and continuous data replication.</p>
+                    <p class="blurb" data-i18n="case_ko_d">An all-in-one platform for a holistic academy: billing, point of sale, subscriptions, student records and community — one Flutter codebase across web, iOS and Android, with Stripe and continuous data replication.</p>
                     <div class="case-tags"><span>Flutter</span><span>Stripe</span><span>SQLite · Litestream</span><span>Fly.io</span><span>Cloudflare</span></div>
-                    <span class="case-link" style="color:var(--text-muted)">Built for Konecta Academy</span>
+                    <span class="case-link" style="color:var(--text-muted)" data-i18n="label_ko">Built for Konecta Academy</span>
                 </div>
             </div>
-            <p class="solutions-note">Every project is unique. Tell us what you need and we'll scope it with a fixed quote.</p>
+            <p class="solutions-note" data-i18n="cases_note">Every project is unique. Tell us what you need and we'll scope it with a fixed quote.</p>
         </div>
     </section>
 
     <section id="process" class="section-soft">
         <div class="container">
             <div class="section-head reveal">
-                <div class="section-tag">Process</div>
-                <h2 class="section-title">How we work</h2>
-                <p class="section-subtitle">A transparent process from first call to launch — and beyond.</p>
+                <div class="section-tag" data-i18n="tag_process">Process</div>
+                <h2 class="section-title" data-i18n="process_title">How we work</h2>
+                <p class="section-subtitle" data-i18n="process_sub">A transparent process from first call to launch — and beyond.</p>
             </div>
             <div class="process-timeline">
                 <div class="process-step reveal">
                     <div class="step-number">01</div>
-                    <h3>Discovery</h3>
-                    <p>We understand your business, goals and constraints, then define the scope and requirements together.</p>
+                    <h3 data-i18n="p1_t">Discovery</h3>
+                    <p data-i18n="p1_d">We understand your business, goals and constraints, then define the scope and requirements together.</p>
                 </div>
                 <div class="process-step reveal">
                     <div class="step-number">02</div>
-                    <h3>Design</h3>
-                    <p>We prototype and define the architecture, validating the solution before a line of production code.</p>
+                    <h3 data-i18n="p2_t">Design</h3>
+                    <p data-i18n="p2_d">We prototype and define the architecture, validating the solution before a line of production code.</p>
                 </div>
                 <div class="process-step reveal">
                     <div class="step-number">03</div>
-                    <h3>Development</h3>
-                    <p>We build with agile methods — incremental deliveries and continuous feedback, no black boxes.</p>
+                    <h3 data-i18n="p3_t">Development</h3>
+                    <p data-i18n="p3_d">We build with agile methods — incremental deliveries and continuous feedback, no black boxes.</p>
                 </div>
                 <div class="process-step reveal">
                     <div class="step-number">04</div>
-                    <h3>Launch</h3>
-                    <p>We deploy to production and stay with you through launch. Support and maintenance included.</p>
+                    <h3 data-i18n="p4_t">Launch</h3>
+                    <p data-i18n="p4_d">We deploy to production and stay with you through launch. Support and maintenance included.</p>
                 </div>
             </div>
         </div>
@@ -622,25 +624,25 @@
     <section id="tech">
         <div class="container">
             <div class="section-head reveal">
-                <div class="section-tag">Stack</div>
-                <h2 class="section-title">Technologies</h2>
-                <p class="section-subtitle">We pick the right tool for the job — not the trendy one.</p>
+                <div class="section-tag" data-i18n="tag_stack">Stack</div>
+                <h2 class="section-title" data-i18n="tech_title">Technologies</h2>
+                <p class="section-subtitle" data-i18n="tech_sub">We pick the right tool for the job — not the trendy one.</p>
             </div>
             <div class="tech-grid">
                 <div class="tech-category reveal">
-                    <h4>Frontend</h4>
+                    <h4 data-i18n="tech_frontend">Frontend</h4>
                     <div class="tech-tags"><span>React</span><span>Vue</span><span>Svelte</span><span>TypeScript</span><span>Tailwind</span></div>
                 </div>
                 <div class="tech-category reveal">
-                    <h4>Backend</h4>
+                    <h4 data-i18n="tech_backend">Backend</h4>
                     <div class="tech-tags"><span>Go</span><span>Rust</span><span>Node.js</span><span>Python</span><span>PostgreSQL</span></div>
                 </div>
                 <div class="tech-category reveal">
-                    <h4>Mobile</h4>
+                    <h4 data-i18n="tech_mobile">Mobile</h4>
                     <div class="tech-tags"><span>Flutter</span><span>React Native</span><span>Swift</span><span>Kotlin</span></div>
                 </div>
                 <div class="tech-category reveal">
-                    <h4>Cloud &amp; DevOps</h4>
+                    <h4 data-i18n="tech_cloud">Cloud &amp; DevOps</h4>
                     <div class="tech-tags"><span>Google Cloud</span><span>AWS</span><span>Docker</span><span>Kubernetes</span><span>Terraform</span></div>
                 </div>
             </div>
@@ -651,8 +653,8 @@
         <div class="container">
             <div class="contact-wrap">
                 <div class="contact-intro reveal">
-                    <h2>Let's talk about your project</h2>
-                    <p>Tell us what you have in mind — an idea, a problem, a half-built product. We'll get back to you with honest next steps.</p>
+                    <h2 data-i18n="contact_title">Let's talk about your project</h2>
+                    <p data-i18n="contact_p">Tell us what you have in mind — an idea, a problem, a half-built product. We'll get back to you with honest next steps.</p>
                     <div class="contact-methods">
                         <a href="mailto:hello@mentasystems.com" class="contact-card">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -661,51 +663,51 @@
                     </div>
                     <span class="contact-note">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        We reply within 24 hours
+                        <span data-i18n="contact_note">We reply within 24 hours</span>
                     </span>
                 </div>
                 <div class="contact-form reveal">
                     <div class="form-success" id="formSuccess">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        Thanks — your message is on its way. We'll be in touch shortly.
+                        <span data-i18n="form_success">Thanks — your message is on its way. We'll be in touch shortly.</span>
                     </div>
                     <form action="/api/contact" method="POST">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="name">Name</label>
+                                <label for="name" data-i18n="lbl_name">Name</label>
                                 <input type="text" id="name" name="name" required>
                             </div>
                             <div class="form-group">
-                                <label for="email">Email</label>
+                                <label for="email" data-i18n="lbl_email">Email</label>
                                 <input type="email" id="email" name="email" required>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="company">Company <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+                                <label for="company"><span data-i18n="lbl_company">Company</span> <span class="opt" data-i18n="lbl_optional">(optional)</span></label>
                                 <input type="text" id="company" name="company">
                             </div>
                             <div class="form-group">
-                                <label for="service">Project type</label>
+                                <label for="service" data-i18n="lbl_service">Project type</label>
                                 <select id="service" name="service" required>
-                                    <option value="" disabled selected>Select…</option>
-                                    <option value="Web Application">Web Application</option>
-                                    <option value="Mobile App">Mobile App</option>
-                                    <option value="Desktop Software">Desktop Software</option>
-                                    <option value="AI / Automation">AI / Automation</option>
-                                    <option value="Marketplace / Platform">Marketplace / Platform</option>
-                                    <option value="IoT / Hardware">IoT / Hardware</option>
-                                    <option value="Website + CMS">Website + CMS</option>
-                                    <option value="Other">Other</option>
+                                    <option value="" disabled selected data-i18n="opt_select">Select…</option>
+                                    <option value="Web Application" data-i18n="opt_web">Web Application</option>
+                                    <option value="Mobile App" data-i18n="opt_mobile">Mobile App</option>
+                                    <option value="Desktop Software" data-i18n="opt_desktop">Desktop Software</option>
+                                    <option value="AI / Automation" data-i18n="opt_ai">AI / Automation</option>
+                                    <option value="Marketplace / Platform" data-i18n="opt_marketplace">Marketplace / Platform</option>
+                                    <option value="IoT / Hardware" data-i18n="opt_iot">IoT / Hardware</option>
+                                    <option value="Website + CMS" data-i18n="opt_website">Website + CMS</option>
+                                    <option value="Other" data-i18n="opt_other">Other</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="message">Tell us about your project</label>
-                            <textarea id="message" name="message" required placeholder="What are you trying to build, and what's the goal?"></textarea>
+                            <label for="message" data-i18n="lbl_message">Tell us about your project</label>
+                            <textarea id="message" name="message" required data-i18n-ph="ph_message" placeholder="What are you trying to build, and what's the goal?"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            Send message
+                            <span data-i18n="btn_send">Send message</span>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         </button>
                     </form>
@@ -722,18 +724,18 @@
                         <img src="icon.png" alt="Menta Systems" class="logo-img">
                         <span class="logo-text">MENTA<span class="logo-accent"> systems</span></span>
                     </a>
-                    <p>Custom software development — from idea to production.</p>
+                    <p data-i18n="foot_brand">Custom software development — from idea to production.</p>
                 </div>
                 <div class="footer-links">
-                    <h4>Company</h4>
+                    <h4 data-i18n="foot_company">Company</h4>
                     <ul>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#cases">Cases</a></li>
-                        <li><a href="#process">Process</a></li>
+                        <li><a href="#services" data-i18n="nav_services">Services</a></li>
+                        <li><a href="#cases" data-i18n="nav_cases">Cases</a></li>
+                        <li><a href="#process" data-i18n="nav_process">Process</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
-                    <h4>Work</h4>
+                    <h4 data-i18n="foot_work">Work</h4>
                     <ul>
                         <li><a href="/gox">gox</a></li>
                         <li><a href="/colmena">colmena</a></li>
@@ -741,21 +743,141 @@
                     </ul>
                 </div>
                 <div class="footer-links">
-                    <h4>Legal</h4>
+                    <h4 data-i18n="foot_legal">Legal</h4>
                     <ul>
-                        <li><a href="legal-notice.html">Legal Notice</a></li>
-                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="legal-notice.html" data-i18n="foot_legalnotice">Legal Notice</a></li>
+                        <li><a href="privacy-policy.html" data-i18n="foot_privacy">Privacy Policy</a></li>
                         <li><a href="mailto:hello@mentasystems.com">hello@mentasystems.com</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Menta Systems. All rights reserved.</p>
+                <p data-i18n="foot_copy">&copy; 2025 Menta Systems. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        const I18N = {
+            en: {
+                __title: "Menta Systems — Custom Software Development",
+                nav_services: "Services", nav_work: "Work", nav_cases: "Cases", nav_process: "Process", nav_cta: "Let's talk",
+                hero_eyebrow: "Custom software, built end to end",
+                hero_h1: 'We turn ideas into <span class="highlight">digital products</span>',
+                hero_sub: "Custom software development for companies that need solutions built right. From the first sketch to production — web, mobile, desktop, AI and cloud.",
+                btn_start: "Start your project", btn_seework: "See our work",
+                trust_1: "Senior engineering", trust_2: "Fixed-scope quotes", trust_3: "We ship and maintain",
+                tag_services: "Services", services_title: "What we build", services_sub: "Technology tailored to the way your business actually works.",
+                svc_web_t: "Web Applications", svc_web_d: "Modern, scalable and secure web platforms — from internal dashboards to full SaaS products.",
+                svc_mobile_t: "Mobile Apps", svc_mobile_d: "Native and cross-platform apps for iOS and Android. Smooth experiences on every device.",
+                svc_desktop_t: "Desktop Software", svc_desktop_d: "Cross-platform desktop applications with native performance on Windows, macOS and Linux.",
+                svc_ai_t: "Artificial Intelligence", svc_ai_d: "AI woven into your workflows — intelligent automation, assistants and predictive analytics.",
+                svc_auto_t: "Automation", svc_auto_d: "Connect systems, kill repetitive work and free your team to focus on what matters.",
+                svc_cloud_t: "Cloud Infrastructure", svc_cloud_d: "Scalable, secure cloud architectures — deployment, monitoring and ongoing maintenance.",
+                tag_work: "Work", work_title: "Products we build for ourselves", work_sub: "We don't just ship client work — we build hard engineering products. This is the depth you get on your project.",
+                badge_tooling: "Developer tooling", work_gox_d: "A strict static analyzer for Go that catches the bugs the compiler won't — built for teams that take correctness seriously.", link_gox: "Explore gox",
+                badge_distsys: "Distributed systems", work_colmena_d: "Distributed SQLite for Go — high-availability data without the operational weight of a full database cluster.", link_colmena: "Explore colmena",
+                badge_aihw: "AI · Hardware", work_fragua_d: "AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.", link_fragua: "Explore fragua",
+                tag_cases: "Case studies", cases_title: "Built and shipped", cases_sub: "Real products in production — from a live marketplace to a platform with our own custom hardware.",
+                case_fq_meta: 'Marketplace · iOS &amp; Android <span class="live"><span class="dot"></span> Live</span>',
+                case_fq_d: "A property-rental marketplace for Spain's police community. Native iOS &amp; Android apps on a Go/Fiber API, photo storage on S3 and SQLite on Fly.io — live and serving real users.", link_fq: "Visit funquila.es",
+                case_fe_meta: 'Software + Hardware <span class="live"><span class="dot"></span> Live</span>',
+                case_fe_d: "A community access-control, reservations and management platform. A Go backend and Flutter app paired with our own Rust firmware running a LoRa mesh on ESP32 — software and hardware, end to end.", link_fe: "Visit fecha.fly.dev",
+                case_ko_meta: "Business management",
+                case_ko_d: "An all-in-one platform for a holistic academy: billing, point of sale, subscriptions, student records and community — one Flutter codebase across web, iOS and Android, with Stripe and continuous data replication.", label_ko: "Built for Konecta Academy",
+                cases_note: "Every project is unique. Tell us what you need and we'll scope it with a fixed quote.",
+                tag_process: "Process", process_title: "How we work", process_sub: "A transparent process from first call to launch — and beyond.",
+                p1_t: "Discovery", p1_d: "We understand your business, goals and constraints, then define the scope and requirements together.",
+                p2_t: "Design", p2_d: "We prototype and define the architecture, validating the solution before a line of production code.",
+                p3_t: "Development", p3_d: "We build with agile methods — incremental deliveries and continuous feedback, no black boxes.",
+                p4_t: "Launch", p4_d: "We deploy to production and stay with you through launch. Support and maintenance included.",
+                tag_stack: "Stack", tech_title: "Technologies", tech_sub: "We pick the right tool for the job — not the trendy one.",
+                tech_frontend: "Frontend", tech_backend: "Backend", tech_mobile: "Mobile", tech_cloud: "Cloud & DevOps",
+                contact_title: "Let's talk about your project", contact_p: "Tell us what you have in mind — an idea, a problem, a half-built product. We'll get back to you with honest next steps.",
+                contact_note: "We reply within 24 hours",
+                lbl_name: "Name", lbl_email: "Email", lbl_company: "Company", lbl_optional: "(optional)", lbl_service: "Project type",
+                opt_select: "Select…", opt_web: "Web Application", opt_mobile: "Mobile App", opt_desktop: "Desktop Software", opt_ai: "AI / Automation", opt_marketplace: "Marketplace / Platform", opt_iot: "IoT / Hardware", opt_website: "Website + CMS", opt_other: "Other",
+                lbl_message: "Tell us about your project", ph_message: "What are you trying to build, and what's the goal?", btn_send: "Send message",
+                form_success: "Thanks — your message is on its way. We'll be in touch shortly.",
+                foot_brand: "Custom software development — from idea to production.", foot_company: "Company", foot_work: "Work", foot_legal: "Legal",
+                foot_legalnotice: "Legal Notice", foot_privacy: "Privacy Policy", foot_copy: "&copy; 2025 Menta Systems. All rights reserved."
+            },
+            es: {
+                __title: "Menta Systems — Desarrollo de Software a Medida",
+                nav_services: "Servicios", nav_work: "Productos", nav_cases: "Casos", nav_process: "Proceso", nav_cta: "Hablemos",
+                hero_eyebrow: "Software a medida, de principio a fin",
+                hero_h1: 'Convertimos ideas en <span class="highlight">productos digitales</span>',
+                hero_sub: "Desarrollo de software a medida para empresas que necesitan soluciones bien hechas. Desde el primer boceto hasta producción — web, móvil, escritorio, IA y cloud.",
+                btn_start: "Empieza tu proyecto", btn_seework: "Ver nuestro trabajo",
+                trust_1: "Ingeniería senior", trust_2: "Presupuesto cerrado", trust_3: "Desplegamos y mantenemos",
+                tag_services: "Servicios", services_title: "Lo que construimos", services_sub: "Tecnología adaptada a cómo funciona realmente tu negocio.",
+                svc_web_t: "Aplicaciones Web", svc_web_d: "Plataformas web modernas, escalables y seguras — desde dashboards internos hasta productos SaaS completos.",
+                svc_mobile_t: "Apps Móviles", svc_mobile_d: "Apps nativas y multiplataforma para iOS y Android. Experiencias fluidas en cualquier dispositivo.",
+                svc_desktop_t: "Software de Escritorio", svc_desktop_d: "Aplicaciones de escritorio multiplataforma con rendimiento nativo en Windows, macOS y Linux.",
+                svc_ai_t: "Inteligencia Artificial", svc_ai_d: "IA integrada en tus procesos — automatización inteligente, asistentes y análisis predictivo.",
+                svc_auto_t: "Automatización", svc_auto_d: "Conectamos sistemas, eliminamos el trabajo repetitivo y liberamos a tu equipo para lo que importa.",
+                svc_cloud_t: "Infraestructura Cloud", svc_cloud_d: "Arquitecturas cloud escalables y seguras — despliegue, monitorización y mantenimiento continuo.",
+                tag_work: "Productos", work_title: "Productos que construimos para nosotros", work_sub: "No solo entregamos trabajo de cliente — construimos productos de ingeniería exigente. Esa es la profundidad que tendrás en tu proyecto.",
+                badge_tooling: "Herramientas dev", work_gox_d: "Un analizador estático estricto para Go que detecta los bugs que el compilador no ve — para equipos que se toman en serio la corrección.", link_gox: "Explorar gox",
+                badge_distsys: "Sistemas distribuidos", work_colmena_d: "SQLite distribuido para Go — alta disponibilidad de datos sin el peso operativo de un clúster de base de datos completo.", link_colmena: "Explorar colmena",
+                badge_aihw: "IA · Hardware", work_fragua_d: "Diseño de PCB nativo con IA — un agente dirige esquemático, posicionado, ruteo y DRC, y entrega una placa lista para fabricar. Rust puro.", link_fragua: "Explorar fragua",
+                tag_cases: "Casos", cases_title: "Construido y desplegado", cases_sub: "Productos reales en producción — desde un marketplace en vivo hasta una plataforma con nuestro propio hardware.",
+                case_fq_meta: 'Marketplace · iOS y Android <span class="live"><span class="dot"></span> En vivo</span>',
+                case_fq_d: "Un marketplace de alquiler para la comunidad policial de España. Apps nativas iOS y Android sobre una API en Go/Fiber, almacenamiento de fotos en S3 y SQLite en Fly.io — en vivo y con usuarios reales.", link_fq: "Visitar funquila.es",
+                case_fe_meta: 'Software + Hardware <span class="live"><span class="dot"></span> En vivo</span>',
+                case_fe_d: "Una plataforma de control de acceso, reservas y gestión para comunidades. Backend en Go y app Flutter junto a nuestro propio firmware en Rust ejecutando una malla LoRa sobre ESP32 — software y hardware, de extremo a extremo.", link_fe: "Visitar fecha.fly.dev",
+                case_ko_meta: "Gestión de negocio",
+                case_ko_d: "Una plataforma todo-en-uno para una academia holística: facturación, TPV, suscripciones, fichas de alumnos y comunidad — un único código Flutter en web, iOS y Android, con Stripe y replicación continua de datos.", label_ko: "Hecho para Konecta Academy",
+                cases_note: "Cada proyecto es único. Cuéntanos qué necesitas y lo presupuestamos con precio cerrado.",
+                tag_process: "Proceso", process_title: "Cómo trabajamos", process_sub: "Un proceso transparente desde la primera llamada hasta el lanzamiento — y más allá.",
+                p1_t: "Descubrimiento", p1_d: "Entendemos tu negocio, objetivos y limitaciones, y definimos juntos el alcance y los requisitos.",
+                p2_t: "Diseño", p2_d: "Prototipamos y definimos la arquitectura, validando la solución antes de una línea de código de producción.",
+                p3_t: "Desarrollo", p3_d: "Construimos con métodos ágiles — entregas incrementales y feedback continuo, sin cajas negras.",
+                p4_t: "Lanzamiento", p4_d: "Desplegamos en producción y te acompañamos en el lanzamiento. Soporte y mantenimiento incluidos.",
+                tag_stack: "Stack", tech_title: "Tecnologías", tech_sub: "Elegimos la herramienta adecuada para cada trabajo — no la de moda.",
+                tech_frontend: "Frontend", tech_backend: "Backend", tech_mobile: "Móvil", tech_cloud: "Cloud y DevOps",
+                contact_title: "Hablemos de tu proyecto", contact_p: "Cuéntanos qué tienes en mente — una idea, un problema, un producto a medio construir. Te responderemos con próximos pasos honestos.",
+                contact_note: "Respondemos en menos de 24 horas",
+                lbl_name: "Nombre", lbl_email: "Email", lbl_company: "Empresa", lbl_optional: "(opcional)", lbl_service: "Tipo de proyecto",
+                opt_select: "Selecciona…", opt_web: "Aplicación Web", opt_mobile: "App Móvil", opt_desktop: "Software de Escritorio", opt_ai: "IA / Automatización", opt_marketplace: "Marketplace / Plataforma", opt_iot: "IoT / Hardware", opt_website: "Web + CMS", opt_other: "Otro",
+                lbl_message: "Cuéntanos sobre tu proyecto", ph_message: "¿Qué quieres construir y cuál es el objetivo?", btn_send: "Enviar mensaje",
+                form_success: "Gracias — tu mensaje está en camino. Te escribiremos en breve.",
+                foot_brand: "Desarrollo de software a medida — de la idea a producción.", foot_company: "Empresa", foot_work: "Trabajo", foot_legal: "Legal",
+                foot_legalnotice: "Aviso Legal", foot_privacy: "Política de Privacidad", foot_copy: "&copy; 2025 Menta Systems. Todos los derechos reservados."
+            }
+        };
+
+        function getLang() {
+            const stored = localStorage.getItem('menta_lang');
+            if (stored === 'en' || stored === 'es') return stored;
+            return (navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
+        }
+        function applyLang(lang) {
+            const dict = I18N[lang] || I18N.en;
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const v = dict[el.dataset.i18n];
+                if (v != null) el.innerHTML = v;
+            });
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const v = dict[el.dataset.i18nPh];
+                if (v != null) el.placeholder = v;
+            });
+            if (dict.__title) document.title = dict.__title;
+            document.querySelectorAll('.lang-toggle [data-lang]').forEach(s => {
+                s.classList.toggle('active', s.dataset.lang === lang);
+            });
+        }
+        let currentLang = getLang();
+        applyLang(currentLang);
+        document.querySelectorAll('.lang-toggle [data-lang]').forEach(s => {
+            s.addEventListener('click', () => {
+                currentLang = s.dataset.lang;
+                localStorage.setItem('menta_lang', currentLang);
+                applyLang(currentLang);
+            });
+        });
+
         // Navbar scroll effect
         const navbar = document.querySelector('.navbar');
         const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 30);
