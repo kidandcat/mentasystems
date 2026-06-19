@@ -247,10 +247,46 @@
         .solution-card {
             display: flex; flex-direction: column; background: #fff;
             border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 2rem; transition: all 0.3s ease;
+            padding: 2rem; transition: all 0.3s ease; overflow: hidden;
         }
-        .solution-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow); }
+        .solution-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .case-thumb {
+            display: block; width: calc(100% + 4rem); margin: -2rem -2rem 1.6rem;
+            aspect-ratio: 16 / 9; object-fit: cover; object-position: top center;
+            border-bottom: 1px solid var(--border); background: var(--bg-soft);
+        }
         .solutions-note { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 2.2rem; }
+
+        /* Featured cases — give the projects section more weight */
+        .cases-featured .section-title { font-size: clamp(2.2rem, 4.4vw, 3.1rem); }
+        .cases-featured .solution-card { padding: 0 2rem 2rem; }
+
+        /* ---------- Tools strip (compact, end of page) ---------- */
+        .section-compact { padding: 4.5rem 0; }
+        .section-head-sm { max-width: 620px; margin: 0 auto 2.2rem; text-align: center; }
+        .section-head-sm .section-title { font-size: clamp(1.6rem, 3vw, 2.1rem); }
+        .section-head-sm .section-subtitle { font-size: 1rem; }
+        .tools-list { max-width: 840px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.7rem; }
+        .tool-item {
+            display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.3rem;
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1rem 1.3rem; transition: all 0.2s ease;
+        }
+        .tool-item:hover { background: #fff; border-color: var(--border-strong); box-shadow: var(--shadow-sm); transform: translateX(2px); }
+        .tool-id { display: flex; align-items: baseline; gap: 0.7rem; }
+        .tool-name { font-family: 'Rajdhani', sans-serif; font-size: 1.35rem; font-weight: 700; letter-spacing: 0.02em; }
+        .tool-tag {
+            font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+            color: var(--primary-dark); background: var(--accent-soft); border: 1px solid var(--border-strong);
+            padding: 0.16rem 0.5rem; border-radius: 6px; white-space: nowrap;
+        }
+        .tool-desc { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
+        .tool-item > svg { width: 18px; height: 18px; color: var(--primary); transition: transform 0.2s ease; flex-shrink: 0; }
+        .tool-item:hover > svg { transform: translateX(3px); }
+        @media (max-width: 680px) {
+            .tool-item { grid-template-columns: 1fr auto; gap: 0.5rem 1rem; }
+            .tool-desc { grid-column: 1 / -1; }
+        }
 
         .case-card .case-meta {
             display: inline-flex; align-items: center; gap: 0.5rem;
@@ -424,10 +460,10 @@
                 <span class="logo-text">MENTA<span class="logo-accent"> systems</span></span>
             </a>
             <ul class="nav-links">
-                <li><a href="#services" data-i18n="nav_services">Services</a></li>
-                <li><a href="#work" data-i18n="nav_work">Work</a></li>
                 <li><a href="#cases" data-i18n="nav_cases">Cases</a></li>
+                <li><a href="#services" data-i18n="nav_services">Services</a></li>
                 <li><a href="#process" data-i18n="nav_process">Process</a></li>
+                <li><a href="#work" data-i18n="nav_work">Tools</a></li>
                 <li><a href="#contact" class="nav-cta" data-i18n="nav_cta">Let's talk</a></li>
             </ul>
             <div class="nav-right">
@@ -454,7 +490,7 @@
                         <span data-i18n="btn_start">Start your project</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </a>
-                    <a href="#work" class="btn btn-secondary" data-i18n="btn_seework">See our work</a>
+                    <a href="#cases" class="btn btn-secondary" data-i18n="btn_seework">See our work</a>
                 </div>
                 <div class="hero-trust">
                     <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <span data-i18n="trust_1">Senior engineering</span></span>
@@ -465,7 +501,50 @@
         </div>
     </header>
 
-    <section id="services">
+    <section id="cases" class="cases-featured">
+        <div class="container">
+            <div class="section-head reveal">
+                <div class="section-tag" data-i18n="tag_cases">Case studies</div>
+                <h2 class="section-title" data-i18n="cases_title">Built and shipped</h2>
+                <p class="section-subtitle" data-i18n="cases_sub">Real products in production — from a live marketplace to a platform with our own custom hardware.</p>
+            </div>
+            <div class="solutions-grid">
+                <div class="solution-card case-card reveal">
+                    <img class="case-thumb" src="case-funquila.webp" alt="Funquila app landing" loading="lazy" width="720" height="405">
+                    <span class="case-meta" data-i18n="case_fq_meta">Marketplace · iOS &amp; Android <span class="live"><span class="dot"></span> Live</span></span>
+                    <h3>Funquila</h3>
+                    <p class="blurb" data-i18n="case_fq_d">A property-rental marketplace for Spain's police community. Native iOS &amp; Android apps on a Go/Fiber API, photo storage on S3 and SQLite on Fly.io — live and serving real users.</p>
+                    <div class="case-tags"><span>Flutter</span><span>Go / Fiber</span><span>SQLite</span><span>Fly.io</span><span>S3</span></div>
+                    <a class="case-link" href="https://funquila.es" target="_blank" rel="noopener">
+                        <span data-i18n="link_fq">Visit funquila.es</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+                    </a>
+                </div>
+                <div class="solution-card case-card reveal">
+                    <img class="case-thumb" src="case-fecha.webp" alt="Fecha platform landing" loading="lazy" width="720" height="405">
+                    <span class="case-meta" data-i18n="case_fe_meta">Software + Hardware <span class="live"><span class="dot"></span> Live</span></span>
+                    <h3>Fecha</h3>
+                    <p class="blurb" data-i18n="case_fe_d">A community access-control, reservations and management platform. A Go backend and Flutter app paired with our own Rust firmware running a LoRa mesh on ESP32 — software and hardware, end to end.</p>
+                    <div class="case-tags"><span>Flutter</span><span>Go / chi</span><span>Rust</span><span>ESP32 · LoRa</span><span>Fly.io</span></div>
+                    <a class="case-link" href="https://fecha.app" target="_blank" rel="noopener">
+                        <span data-i18n="link_fe">Visit fecha.app</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+                    </a>
+                </div>
+                <div class="solution-card case-card reveal">
+                    <img class="case-thumb" src="case-konecta.webp" alt="Konecta Academy platform" loading="lazy" width="720" height="405">
+                    <span class="case-meta" data-i18n="case_ko_meta">Business management</span>
+                    <h3>Konecta</h3>
+                    <p class="blurb" data-i18n="case_ko_d">An all-in-one platform for a holistic academy: billing, point of sale, subscriptions, student records and community — one Flutter codebase across web, iOS and Android, with Stripe and continuous data replication.</p>
+                    <div class="case-tags"><span>Flutter</span><span>Stripe</span><span>SQLite · Litestream</span><span>Fly.io</span><span>Cloudflare</span></div>
+                    <span class="case-link" style="color:var(--text-muted)" data-i18n="label_ko">Built for Konecta Academy</span>
+                </div>
+            </div>
+            <p class="solutions-note" data-i18n="cases_note">Every project is unique. Tell us what you need and we'll scope it with a fixed quote.</p>
+        </div>
+    </section>
+
+    <section id="services" class="section-soft">
         <div class="container">
             <div class="section-head reveal">
                 <div class="section-tag" data-i18n="tag_services">Services</div>
@@ -519,77 +598,7 @@
         </div>
     </section>
 
-    <section id="work" class="section-soft">
-        <div class="container">
-            <div class="section-head reveal">
-                <div class="section-tag" data-i18n="tag_work">Work</div>
-                <h2 class="section-title" data-i18n="work_title">Products we build for ourselves</h2>
-                <p class="section-subtitle" data-i18n="work_sub">We don't just ship client work — we build hard engineering products. This is the depth you get on your project.</p>
-            </div>
-            <div class="work-grid">
-                <a class="work-card reveal" href="/gox">
-                    <span class="work-badge" data-i18n="badge_tooling">Developer tooling</span>
-                    <div class="work-name">gox</div>
-                    <p data-i18n="work_gox_d">A strict static analyzer for Go that catches the bugs the compiler won't — built for teams that take correctness seriously.</p>
-                    <span class="work-link"><span data-i18n="link_gox">Explore gox</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-                </a>
-                <a class="work-card reveal" href="/colmena">
-                    <span class="work-badge" data-i18n="badge_distsys">Distributed systems</span>
-                    <div class="work-name">colmena</div>
-                    <p data-i18n="work_colmena_d">Distributed SQLite for Go — high-availability data without the operational weight of a full database cluster.</p>
-                    <span class="work-link"><span data-i18n="link_colmena">Explore colmena</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-                </a>
-                <a class="work-card reveal" href="/fragua">
-                    <span class="work-badge" data-i18n="badge_aihw">AI · Hardware</span>
-                    <div class="work-name">fragua</div>
-                    <p data-i18n="work_fragua_d">AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.</p>
-                    <span class="work-link"><span data-i18n="link_fragua">Explore fragua</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <section id="cases">
-        <div class="container">
-            <div class="section-head reveal">
-                <div class="section-tag" data-i18n="tag_cases">Case studies</div>
-                <h2 class="section-title" data-i18n="cases_title">Built and shipped</h2>
-                <p class="section-subtitle" data-i18n="cases_sub">Real products in production — from a live marketplace to a platform with our own custom hardware.</p>
-            </div>
-            <div class="solutions-grid">
-                <div class="solution-card case-card reveal">
-                    <span class="case-meta" data-i18n="case_fq_meta">Marketplace · iOS &amp; Android <span class="live"><span class="dot"></span> Live</span></span>
-                    <h3>Funquila</h3>
-                    <p class="blurb" data-i18n="case_fq_d">A property-rental marketplace for Spain's police community. Native iOS &amp; Android apps on a Go/Fiber API, photo storage on S3 and SQLite on Fly.io — live and serving real users.</p>
-                    <div class="case-tags"><span>Flutter</span><span>Go / Fiber</span><span>SQLite</span><span>Fly.io</span><span>S3</span></div>
-                    <a class="case-link" href="https://funquila.es" target="_blank" rel="noopener">
-                        <span data-i18n="link_fq">Visit funquila.es</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
-                    </a>
-                </div>
-                <div class="solution-card case-card reveal">
-                    <span class="case-meta" data-i18n="case_fe_meta">Software + Hardware <span class="live"><span class="dot"></span> Live</span></span>
-                    <h3>Fecha</h3>
-                    <p class="blurb" data-i18n="case_fe_d">A community access-control, reservations and management platform. A Go backend and Flutter app paired with our own Rust firmware running a LoRa mesh on ESP32 — software and hardware, end to end.</p>
-                    <div class="case-tags"><span>Flutter</span><span>Go / chi</span><span>Rust</span><span>ESP32 · LoRa</span><span>Fly.io</span></div>
-                    <a class="case-link" href="https://fecha.app" target="_blank" rel="noopener">
-                        <span data-i18n="link_fe">Visit fecha.app</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
-                    </a>
-                </div>
-                <div class="solution-card case-card reveal">
-                    <span class="case-meta" data-i18n="case_ko_meta">Business management</span>
-                    <h3>Konecta</h3>
-                    <p class="blurb" data-i18n="case_ko_d">An all-in-one platform for a holistic academy: billing, point of sale, subscriptions, student records and community — one Flutter codebase across web, iOS and Android, with Stripe and continuous data replication.</p>
-                    <div class="case-tags"><span>Flutter</span><span>Stripe</span><span>SQLite · Litestream</span><span>Fly.io</span><span>Cloudflare</span></div>
-                    <span class="case-link" style="color:var(--text-muted)" data-i18n="label_ko">Built for Konecta Academy</span>
-                </div>
-            </div>
-            <p class="solutions-note" data-i18n="cases_note">Every project is unique. Tell us what you need and we'll scope it with a fixed quote.</p>
-        </div>
-    </section>
-
-    <section id="process" class="section-soft">
+    <section id="process">
         <div class="container">
             <div class="section-head reveal">
                 <div class="section-tag" data-i18n="tag_process">Process</div>
@@ -621,7 +630,7 @@
         </div>
     </section>
 
-    <section id="tech">
+    <section id="tech" class="section-soft">
         <div class="container">
             <div class="section-head reveal">
                 <div class="section-tag" data-i18n="tag_stack">Stack</div>
@@ -645,6 +654,33 @@
                     <h4 data-i18n="tech_cloud">Cloud &amp; DevOps</h4>
                     <div class="tech-tags"><span>Google Cloud</span><span>AWS</span><span>Docker</span><span>Kubernetes</span><span>Terraform</span></div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="work" class="section-compact">
+        <div class="container">
+            <div class="section-head-sm reveal">
+                <div class="section-tag" data-i18n="tag_work">Open source</div>
+                <h2 class="section-title" data-i18n="work_title">Engineering tools we build</h2>
+                <p class="section-subtitle" data-i18n="work_sub">The same depth we put into client work, in the open-source tooling we rely on.</p>
+            </div>
+            <div class="tools-list">
+                <a class="tool-item reveal" href="/gox">
+                    <span class="tool-id"><span class="tool-name">gox</span><span class="tool-tag" data-i18n="badge_tooling">Developer tooling</span></span>
+                    <p class="tool-desc" data-i18n="work_gox_d">A strict static analyzer for Go that catches the bugs the compiler won't — built for teams that take correctness seriously.</p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+                <a class="tool-item reveal" href="/colmena">
+                    <span class="tool-id"><span class="tool-name">colmena</span><span class="tool-tag" data-i18n="badge_distsys">Distributed systems</span></span>
+                    <p class="tool-desc" data-i18n="work_colmena_d">Distributed SQLite for Go — high-availability data without the operational weight of a full database cluster.</p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+                <a class="tool-item reveal" href="/fragua">
+                    <span class="tool-id"><span class="tool-name">fragua</span><span class="tool-tag" data-i18n="badge_aihw">AI · Hardware</span></span>
+                    <p class="tool-desc" data-i18n="work_fragua_d">AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.</p>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
             </div>
         </div>
     </section>
@@ -761,7 +797,7 @@
         const I18N = {
             en: {
                 __title: "Menta Systems — Custom Software Development",
-                nav_services: "Services", nav_work: "Work", nav_cases: "Cases", nav_process: "Process", nav_cta: "Let's talk",
+                nav_services: "Services", nav_work: "Tools", nav_cases: "Cases", nav_process: "Process", nav_cta: "Let's talk",
                 hero_eyebrow: "Custom software, built end to end",
                 hero_h1: 'We turn ideas into <span class="highlight">digital products</span>',
                 hero_sub: "Custom software development for companies that need solutions built right. From the first sketch to production — web, mobile, desktop, AI and cloud.",
@@ -774,7 +810,7 @@
                 svc_ai_t: "Artificial Intelligence", svc_ai_d: "AI woven into your workflows — intelligent automation, assistants and predictive analytics.",
                 svc_auto_t: "Automation", svc_auto_d: "Connect systems, kill repetitive work and free your team to focus on what matters.",
                 svc_cloud_t: "Cloud Infrastructure", svc_cloud_d: "Scalable, secure cloud architectures — deployment, monitoring and ongoing maintenance.",
-                tag_work: "Work", work_title: "Products we build for ourselves", work_sub: "We don't just ship client work — we build hard engineering products. This is the depth you get on your project.",
+                tag_work: "Open source", work_title: "Engineering tools we build", work_sub: "The same depth we put into client work, in the open-source tooling we rely on.",
                 badge_tooling: "Developer tooling", work_gox_d: "A strict static analyzer for Go that catches the bugs the compiler won't — built for teams that take correctness seriously.", link_gox: "Explore gox",
                 badge_distsys: "Distributed systems", work_colmena_d: "Distributed SQLite for Go — high-availability data without the operational weight of a full database cluster.", link_colmena: "Explore colmena",
                 badge_aihw: "AI · Hardware", work_fragua_d: "AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.", link_fragua: "Explore fragua",
@@ -804,7 +840,7 @@
             },
             es: {
                 __title: "Menta Systems — Desarrollo de Software a Medida",
-                nav_services: "Servicios", nav_work: "Productos", nav_cases: "Casos", nav_process: "Proceso", nav_cta: "Hablemos",
+                nav_services: "Servicios", nav_work: "Herramientas", nav_cases: "Casos", nav_process: "Proceso", nav_cta: "Hablemos",
                 hero_eyebrow: "Software a medida, de principio a fin",
                 hero_h1: 'Convertimos ideas en <span class="highlight">productos digitales</span>',
                 hero_sub: "Desarrollo de software a medida para empresas que necesitan soluciones bien hechas. Desde el primer boceto hasta producción — web, móvil, escritorio, IA y cloud.",
@@ -817,7 +853,7 @@
                 svc_ai_t: "Inteligencia Artificial", svc_ai_d: "IA integrada en tus procesos — automatización inteligente, asistentes y análisis predictivo.",
                 svc_auto_t: "Automatización", svc_auto_d: "Conectamos sistemas, eliminamos el trabajo repetitivo y liberamos a tu equipo para lo que importa.",
                 svc_cloud_t: "Infraestructura Cloud", svc_cloud_d: "Arquitecturas cloud escalables y seguras — despliegue, monitorización y mantenimiento continuo.",
-                tag_work: "Productos", work_title: "Productos que construimos para nosotros", work_sub: "No solo entregamos trabajo de cliente — construimos productos de ingeniería exigente. Esa es la profundidad que tendrás en tu proyecto.",
+                tag_work: "Open source", work_title: "Herramientas que construimos", work_sub: "La misma exigencia que ponemos en los proyectos de cliente, en las herramientas open source que usamos.",
                 badge_tooling: "Herramientas dev", work_gox_d: "Un analizador estático estricto para Go que detecta los bugs que el compilador no ve — para equipos que se toman en serio la corrección.", link_gox: "Explorar gox",
                 badge_distsys: "Sistemas distribuidos", work_colmena_d: "SQLite distribuido para Go — alta disponibilidad de datos sin el peso operativo de un clúster de base de datos completo.", link_colmena: "Explorar colmena",
                 badge_aihw: "IA · Hardware", work_fragua_d: "Diseño de PCB nativo con IA — un agente dirige esquemático, posicionado, ruteo y DRC, y entrega una placa lista para fabricar. Rust puro.", link_fragua: "Explorar fragua",
