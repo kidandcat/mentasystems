@@ -251,15 +251,14 @@
         }
         .solution-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
         .case-thumb {
-            display: block; width: calc(100% + 4rem); margin: -2rem -2rem 1.6rem;
-            aspect-ratio: 16 / 9; object-fit: cover; object-position: top center;
+            display: block; width: calc(100% + 4rem); height: auto;
+            margin: -2rem -2rem 1.6rem;
             border-bottom: 1px solid var(--border); background: var(--bg-soft);
         }
         .solutions-note { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 2.2rem; }
 
         /* Featured cases — give the projects section more weight */
         .cases-featured .section-title { font-size: clamp(2.2rem, 4.4vw, 3.1rem); }
-        .cases-featured .solution-card { padding: 0 2rem 2rem; }
 
         /* ---------- Tools strip (compact, end of page) ---------- */
         .section-compact { padding: 4.5rem 0; }
@@ -510,7 +509,7 @@
             </div>
             <div class="solutions-grid">
                 <div class="solution-card case-card reveal">
-                    <img class="case-thumb" src="case-funquila.webp" alt="Funquila app landing" loading="lazy" width="720" height="405">
+                    <img class="case-thumb" src="case-funquila.webp" alt="Funquila app landing" loading="lazy" width="760" height="475">
                     <span class="case-meta" data-i18n="case_fq_meta">Marketplace · iOS &amp; Android <span class="live"><span class="dot"></span> Live</span></span>
                     <h3>Funquila</h3>
                     <p class="blurb" data-i18n="case_fq_d">A property-rental marketplace for Spain's police community. Native iOS &amp; Android apps on a Go/Fiber API, photo storage on S3 and SQLite on Fly.io — live and serving real users.</p>
@@ -521,7 +520,7 @@
                     </a>
                 </div>
                 <div class="solution-card case-card reveal">
-                    <img class="case-thumb" src="case-fecha.webp" alt="Fecha platform landing" loading="lazy" width="720" height="405">
+                    <img class="case-thumb" src="case-fecha.webp" alt="Fecha platform landing" loading="lazy" width="760" height="475">
                     <span class="case-meta" data-i18n="case_fe_meta">Software + Hardware <span class="live"><span class="dot"></span> Live</span></span>
                     <h3>Fecha</h3>
                     <p class="blurb" data-i18n="case_fe_d">A community access-control, reservations and management platform. A Go backend and Flutter app paired with our own Rust firmware running a LoRa mesh on ESP32 — software and hardware, end to end.</p>
@@ -532,7 +531,7 @@
                     </a>
                 </div>
                 <div class="solution-card case-card reveal">
-                    <img class="case-thumb" src="case-konecta.webp" alt="Konecta Academy platform" loading="lazy" width="720" height="405">
+                    <img class="case-thumb" src="case-konecta.webp" alt="Konecta Academy platform" loading="lazy" width="760" height="475">
                     <span class="case-meta" data-i18n="case_ko_meta">Business management</span>
                     <h3>Konecta</h3>
                     <p class="blurb" data-i18n="case_ko_d">An all-in-one platform for a holistic academy: billing, point of sale, subscriptions, student records and community — one Flutter codebase across web, iOS and Android, with Stripe and continuous data replication.</p>
@@ -540,7 +539,7 @@
                     <span class="case-link" style="color:var(--text-muted)" data-i18n="label_ko">Built for Konecta Academy</span>
                 </div>
                 <div class="solution-card case-card reveal">
-                    <img class="case-thumb" src="case-fragua.webp" alt="Fragua landing" loading="lazy" width="720" height="405">
+                    <img class="case-thumb" src="case-fragua.webp" alt="Fragua landing" loading="lazy" width="760" height="475">
                     <span class="case-meta" data-i18n="badge_aihw">AI · Hardware</span>
                     <h3>Fragua</h3>
                     <p class="blurb" data-i18n="work_fragua_d">AI-native PCB design — an agent drives schematic, placement, routing and DRC, then ships a fab-ready board. Pure Rust.</p>
@@ -551,7 +550,7 @@
                     </a>
                 </div>
                 <div class="solution-card case-card reveal">
-                    <img class="case-thumb" src="case-animux.webp" alt="Animux anime tracker landing" loading="lazy" width="720" height="405">
+                    <img class="case-thumb" src="case-animux.webp" alt="Animux anime tracker landing" loading="lazy" width="760" height="475">
                     <span class="case-meta" data-i18n="case_ax_meta">Mobile · Anime tracker</span>
                     <h3>Animux</h3>
                     <p class="blurb" data-i18n="case_ax_d">A mobile anime &amp; manga tracker with AI taste-match, a daily Tonight Pick and a personal Anime Wrapped. A Go backend on distributed SQLite with a Flutter app — dark, cyberpunk and native.</p>
